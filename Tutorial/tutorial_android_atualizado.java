@@ -2774,3 +2774,28 @@ setSupportActionBar(toolbar);
         app:showAsAction="always"
         android:title="" />
 </menu>
+
+
+
+//===========================================================================
+//ADD BORDER EDITEXT
+//===========================================================================
+<?xml version="1.0" encoding="utf-8"?>
+ <selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#ffffff"/>
+            <corners android:radius="5dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#949494"
+                />
+        </shape>
+    </item>
+</selector>
+
+<EditText
+ android:id="@+id/editText1"
+ android:background="@layout/my_edit_text_border">
