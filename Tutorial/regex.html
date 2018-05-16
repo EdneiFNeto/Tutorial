@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>REGEX</title>
+</head>
+<body>
+
+<script>		
+//======================================================================
+//FUNCOES
+//======================================================================
+//PRIMEIR A OCIRRENCIA [i = palavras minuscula e maiuscula]
+//======================================================================
+var regex;
+var str = "Qual o doce de batata doce";
+regex = /doce/ig.exec(str);
+//console.log(regex);
+//======================================================================
+//MATCH = RETORNA TODAS AS REFERENCIAS DENTRO DE UM ARRAY
+//======================================================================
+console.log(str.match(/doce/ig))
+//======================================================================
+//METACARACTERES PONTO[OCORRENCIA ADE QUALQUER CARACTER 
+// OU LETRA DENTRO DE UMA LINHA: /./
+//======================================================================
+console.log(/./.test("pier"));
+//======================================================================
+//METATA CARACTER 'W' PROCURA POR QUALQUER CARACTER DE A-Z E 9-0 
+//======================================================================
+console.log(/\w/.test("Existe caracter no texto"));
+//======================================================================
+//METATA CARACTER 'S' PROCURA ESPACO DENTRO DO TEXTO 
+//======================================================================
+console.log(/\s/.test("Existe espaço no texto"));
+//======================================================================
+//METATA CARACTER 'D' PROCURA DIGITOS NO TEXTO
+//======================================================================
+console.log(/\d/.test("Existe Digitos no texto 21"));
+//======================================================================
+//METATA CARACTER '^' INDICA OCORRENCIA NO INICIO DA STRING
+//======================================================================
+console.log("Inicia com a letra A");
+console.log(/^A/.test("Alguma coisa"));
+//======================================================================
+//METATA CARACTER '$' PROCURA OCORRENCIA NO FINAL DA STRING
+//======================================================================
+console.log(/21$/.test("TERMINAEM21"));
+
+//======================================================================
+//VERIFICAR SE EXISTE DIGITO NO FINAL DO TEXTO
+//======================================================================
+console.log(/\d$/.test("TERMINAEM21"));
+
+//======================================================================
+//REPLACE - ONDE ENCONTRAR EXPAÇO VAI TROCAR POR ##
+//======================================================================
+var str2 = "Trocar espaço por #";
+console.log(str2.replace(/\s/ig, "##"));
+</script>
+</body>
+</html>
