@@ -2799,3 +2799,15 @@ setSupportActionBar(toolbar);
 <EditText
  android:id="@+id/editText1"
  android:background="@layout/my_edit_text_border">
+ 
+  //===========================================================================
+//BUTTON + ICON LEFT
+//===========================================================================
+  <Button
+    android:id="@+id/bSearch"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:text="Search"
+    android:drawableLeft="@android:drawable/ic_menu_search"
+    android:textSize="24sp"/>
