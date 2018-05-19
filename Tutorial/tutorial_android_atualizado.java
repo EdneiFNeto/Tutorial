@@ -2811,3 +2811,96 @@ setSupportActionBar(toolbar);
     android:text="Search"
     android:drawableLeft="@android:drawable/ic_menu_search"
     android:textSize="24sp"/>
+    
+        
+ //===========================================================================
+//NAVEGACAO USANDO FRAGEMTNS
+//===========================================================================
+
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import fragments.FragmentMenu;
+import fragments.NotificationFragment;
+
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener
+{
+
+    private FragmentManager fragmentManager, fragmentManagerMenu, fragmentManagerNotification;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(this);
+
+        fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.container_map, new MapsActivity(), "MapsActivity");
+        transaction.commitAllowingStateLoss();
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_home:
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.container_map, new MapsActivity(), "MapsActivity");
+                transaction.commitAllowingStateLoss();
+                return true;
+
+            case R.id.action_menu:
+                fragmentManagerMenu = getSupportFragmentManager();
+                FragmentTransaction t2 = fragmentManagerMenu.beginTransaction();
+                t2.replace(R.id.container_map, new FragmentMenu(), "FragmentMenu");
+                t2.commitAllowingStateLoss();
+                return true;
+
+            case R.id.action_notification:
+                fragmentManagerNotification = getSupportFragmentManager();
+                FragmentTransaction t3 = fragmentManagerMenu.beginTransaction();
+                t3.replace(R.id.container_map, new NotificationFragment(), "NotificationFragment");
+                t3.commitAllowingStateLoss();
+                return true;
+        }
+        return false;
+    }
+}
+
+
+//XML DO FRAGEMT
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="fragments.FragmentMenu">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- TODO: Update blank fragment layout -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/hello_blank_fragment" />
+
+    </LinearLayout>
+</FrameLayout>
+
