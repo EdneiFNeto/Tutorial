@@ -2904,3 +2904,216 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     </LinearLayout>
 </FrameLayout>
 
+
+//===========================================================================
+//ADD MARKER VIA JSON MAP
+//===========================================================================
+package algrimsoromano.com.br.sistemafibras;
+
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CameraPosition.Builder;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import intents.FormEditarElementoActivity;
+import models.Markers;
+import models.Polylines;
+import utils.GenerateJSONURL;
+
+public class MapsActivity extends SupportMapFragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+
+    private GoogleMap mMap;
+    private String TAG ="MapsActivity";
+    private List<Markers> listMarkers;
+    private List<Polylines> listPolylines;
+    private Markers markers;
+    private String urlStr   = "https://appeste.000webhostapp.com/Map-Android/selectElem.php";
+    private String urlPolys = "http://wiki.moebius.com.br/fibra_externo/selectCabo.php";
+    private Marker marker;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+            new CameraPosition.Builder()
+            .target(new LatLng(-22.9132525,-43.7261822))
+            .zoom(10)
+            .bearing(0)
+            .tilt(90)
+            .build()));
+
+        mMap.setOnMapLongClickListener(this);
+
+        new ReaderJsonHttp().execute(urlStr);
+        new ReaderPolylinesHttp().execute(urlPolys);
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        mMap.addMarker(new MarkerOptions().position(latLng).title("novo").draggable(true));
+    }
+
+
+    class ReaderJsonHttp extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onProgressUpdate(String... progress) {
+            super.onProgressUpdate(progress);
+            Log.i(TAG, "download....");
+        }
+
+        //evernto ocorre apos a execussao 
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            LatLng []latLng = new LatLng[listMarkers.size()];
+            if(listMarkers.size() > 0){
+                for(int i=0;i<listMarkers.size();i++){
+                    latLng[i] = new LatLng(listMarkers.get(i).getLatitude(), listMarkers.get(i).getLongitude());
+                    drawMarkers(latLng[i],listMarkers.get(i).getNome(),listMarkers.get(i).getCodigo(),  mMap);
+                }
+            }
+        }
+
+
+        private void drawMarkers(LatLng latLng, final String nome, final String codigo, final GoogleMap googleMap) {
+
+            Marker marker = googleMap.addMarker(
+                new MarkerOptions()
+                .position(latLng)
+                .title(codigo+"-"+nome)
+                .draggable(true)
+                );
+
+
+            //evento clink no martker
+            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+
+                    String lat = String.valueOf(marker.getPosition().latitude);
+                    String lng = String.valueOf(marker.getPosition().longitude);
+                    Intent intent = new Intent(getActivity(), FormEditarElementoActivity.class);
+                    intent.putExtra("nome", marker.getTitle());
+                    intent.putExtra("latitude", lat);
+                    intent.putExtra("longitude",lng);
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
+
+            //updade marker
+            googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker marker) {
+                        //Log.i(TAG, "onMarkerDragStart: "+marker.getPosition().latitude);
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+
+                    //Log.i(TAG, "onMarkerDrag: "+marker.getPosition().latitude);
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    //Log.i(TAG, "onMarkerDragEnd: "+marker.getPosition().latitude);
+                }
+            });
+        }
+
+        @Override
+        protected String doInBackground(String... string) {
+
+            listMarkers = new ArrayList<>();
+            JSONParser parser = new JSONParser();
+
+            try {
+
+                URL url = new URL(string[0]);
+                URLConnection urlConnection = url.openConnection();
+
+                if(urlConnection.getURL()!=null){
+
+                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    String inputLine;
+
+                    //read json get url
+                    while((inputLine = in.readLine())!=null) {
+
+                        JSONArray arrayJson = (JSONArray) parser.parse(inputLine);
+
+                        for(int i=0;i<arrayJson.size();i++) {
+
+                            JSONObject jsonObject = (JSONObject) arrayJson.get(i);
+                            String codigo  = (String) jsonObject.get("codigo");
+                            String latitude  = (String) jsonObject.get("latitude");
+                            String longitude = (String) jsonObject.get("longitude");
+                            String nome = (String) jsonObject.get("nome");
+
+                            listMarkers.add(new Markers(Double.parseDouble(latitude), Double.parseDouble(longitude), nome,
+                                codigo));
+                        }
+                    }
+                }
+
+            }catch (MalformedURLException e) {
+                Log.e(TAG, "MalformedURLException: " + e.getMessage());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }  catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+}
+
+
+
+//===========================================================================
+//POLYLINES 
+//===========================================================================
+PolylineOptions options = new PolylineOptions();
+options.add(new LatLng(-22.94098140882,-43.243558108807), new LatLng(-22.73126084722601, -43.751180581748486));
+options.width(5);
+options.color(Color.RED);
+options.clickable(true);
+
+Polyline polyline = mMap.addPolyline(options);
+
