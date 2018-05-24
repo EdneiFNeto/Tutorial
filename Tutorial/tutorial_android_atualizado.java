@@ -3117,3 +3117,112 @@ options.clickable(true);
 
 Polyline polyline = mMap.addPolyline(options);
 
+//===========================================================================
+//READER JSON [OBS: IMPORTAR JAR ORG.JSON.SIMPLE]
+//===========================================================================
+/*
+    
+    [
+        {
+            "codigo":"1",
+            "points":[
+                {"latitude":-22.861623719624,"longitude":-43.243558108807},
+                {"latitude":-22.861623719624,"longitude":-43.582891412079},
+                {"latitude":-22.849586931423,"longitude":-43.436354622245}
+            ]
+        },
+        {
+            "codigo":"2",
+            "points":[
+                {"latitude":-23.154048490005913,"longitude":-43.64713165909052},
+                {"latitude":-22.73126084722601,"longitude":-43.751180581748486},
+                {"latitude":-23.46134275226831,"longitude":-42.51584925008842}
+            ]
+        }
+    ]
+*/
+//===========================================================================
+// CLASS LER JSON CITADO ACIMA
+//===========================================================================
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class ReaderJSON {
+
+    private static JSONParser parser = new JSONParser();
+
+    public static JSONArray readJSON(String urlStr) throws IOException, ParseException {
+
+        URL url = new URL(urlStr);
+        URLConnection urlConnection = url.openConnection();
+        String inputLine;
+
+        if(urlConnection.getURL()!=null){
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            while((inputLine = in.readLine())!=null) {
+                JSONArray arrayJson = (JSONArray) parser.parse(inputLine);
+                return arrayJson;
+            }
+        }
+
+        return null;
+    }
+}
+
+
+//===========================================================================
+// EXECUTA NO MAIN
+//===========================================================================
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class Main {
+
+    public static void main(String[] agrs) {
+
+        JSONParser parser = new JSONParser();
+        String url  = "https://appeste.000webhostapp.com/Map-Android/selectRotasCabos.php";
+
+        try {
+
+            JSONArray jsonArray = ReaderJSON.readJSON(url);
+            for(Object obj : jsonArray){
+                JSONObject objects = (JSONObject) obj;
+                String codigo = (String) objects.get("codigo");
+                JSONArray arr = (JSONArray) objects.get("points");
+
+                for(Object objPoints : arr){
+
+                    JSONObject objectPoints = (JSONObject) objPoints;
+                    Double lat = (Double) objectPoints.get("latitude");
+                    Double lng = (Double) objectPoints.get("longitude");
+                    System.out.println(codigo+"["+lat+" , "+lng+"]");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
