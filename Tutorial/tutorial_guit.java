@@ -92,4 +92,42 @@
 //$ git add . [add todos as arquivos para envio]
 //==================================================================================
 //git commit -m "Cmmit inicial" [apos add os arquivo relizar o commit]
+//==================================================================================
+//Verificando mudanças ainda não rastreadas
+//Se quisermos revisar a modificação efetuada, verificando as diferenças entre
+//o arquivo alterado e o que foi comitado anteriormente, podemos usar o
+//comando: $ git diff
+//==================================================================================
+//É possível mostrar as diferenças entre os arquivos na área de stage e a
+//última versão que foi comitada utilizando a opção --staged:
+//$ git diff --staged
+//==================================================================================
+//Desfazendo mudanças
+//==================================================================================
+//git checkout -- index.html
+//==================================================================================
+//E se apagarmos algum arquivo sem querer? Medo! Desespero!
+//Vamos dizer que apagamos o arquivo index.html.
+//Ao executarmos o comando git status, teríamos:
+//==================================================================================
+//Comando: git checkout -- index.html
+//==================================================================================
+//Repositório remoto
+//==================================================================================
+//git init --bare moveis-ecologicos.git
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
