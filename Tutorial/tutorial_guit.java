@@ -65,6 +65,7 @@
 //$ git remote add origin https://github.com/EdneiFNeto/citacoes.git
 //==================================================================================
 //$ git push origin master
+//==================================================================================
 //SE TUDO OCORRER BEM VAI APARECER UM PAINEL DO GIT PARA SER 	
 //so clicar na pasta do projeto e estara aparecendo tudo la
 //==================================================================================
@@ -96,6 +97,7 @@
 //Verificando mudanças ainda não rastreadas
 //Se quisermos revisar a modificação efetuada, verificando as diferenças entre
 //o arquivo alterado e o que foi comitado anteriormente, podemos usar o
+//==================================================================================
 //comando: $ git diff
 //==================================================================================
 //É possível mostrar as diferenças entre os arquivos na área de stage e a
