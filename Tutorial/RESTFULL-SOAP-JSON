@@ -1,0 +1,230 @@
+
+
+//====================================================================================================
+//REST FULL
+//====================================================================================================
+//criar projeto web
+//====================================================================================================
+//add webservice ao projeto
+//com botao direito implantar o projeto
+//com botao direito test webservice
+//====================================================================================================
+//ADD CLIENTE AO PROJETO
+//====================================================================================================
+//CRIAR UM NOVO PRETO
+//CRIAR UM WEBSERVCE  PARA CLIENT
+//NA OPCAO PREJETO ADD O WEB SERVICE DO PROJETO WEB CRIADO ANTERIRMENTE
+//DETRO DO MAIN ADD CODIGO:
+
+@WebService(serviceName = "WelcomeSOAP")
+public class WelcomeSOAP {
+    @WebMethod(operationName = "hello")
+    public String hello(@WebParam(name = "name") String txt) {
+        return "Hello " + txt + " !";
+    }
+}
+
+
+import com.welcomesoap.WelcomeSOAP;
+import com.welcomesoap.WelcomeSOAP_Service;//DENTRO DA PASTA
+public class WelcommeSOAPClientJFrame extends javax.swing.JFrame {
+
+    private WelcomeSOAP welcomeSOAProxy;
+
+    public WelcommeSOAPClientJFrame() {
+        initComponents();
+        try {
+
+            WelcomeSOAP_Service service = new WelcomeSOAP_Service();
+            welcomeSOAProxy = service.getWelcomeSOAPPort();
+        } catch (Exception e) {
+
+        }
+    }
+    //EVENTO NO BOTAO
+    private void jButtonActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        // TODO add your handling code here:
+        String name = jTextField.getText();
+        String message = welcomeSOAProxy.hello(name);
+        JOptionPane.showMessageDialog(this,message, "Welcome", JOptionPane.INFORMATION_MESSAGE);
+    } 
+}
+
+//====================================================================================================
+//REST SOAP VIA XML
+//====================================================================================================
+//CRIAR  REST
+//CRIAR PROJETO WEB
+//ADD WEB SERVICE RESTFUL APARTIR DE PADRAO[NOME FILE]
+//IMPLANTAR 
+//====================================================================================================
+//CLASS GERADA
+//====================================================================================================
+package com.welcomerestxml;
+
+import java.io.StringWriter;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.xml.bind.JAXB;
+
+@Path("welcomme")
+public class welcommeRESTXML {
+
+    @GET
+    @Path("{name}")
+    @Produces("application/xml")
+    public String getXml( @PathParam("name") String name) {
+        String message = "Welcomme "+name;
+        StringWriter writer = new StringWriter();
+        JAXB.marshal(message, writer);
+        return writer.toString();
+    }
+}
+
+//====================================================================================================
+//INCIAR TESTE
+//COM BOTAO DIREITO DENTRO DO PROJETO TESTA REST FULL
+//CRIAR PROJETO DESKTOP
+//====================================================================================================
+//ADD CODGIGO [ COM APENAS A URL E POSSIVEL PEGAR OS DADOS]
+//====================================================================================================
+
+package welcommerestservice;
+import javax.swing.JOptionPane;
+import javax.xml.bind.JAXB;
+
+public class WelcommeRESTJFrame extends javax.swing.JFrame {
+
+    
+    public WelcommeRESTJFrame() {
+        initComponents();
+        setVisible(true);
+        setSize(400, 300);
+    }     
+
+    private void initComponents() {
+
+        jTextField = new javax.swing.JTextField();
+        jButton = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jButton.setText("Enviar");
+        jButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonActionPerformed(evt);
+            }
+        });
+    }                    
+
+    private void jButtonActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        // TODO add your handling code here:
+        String name = jTextField.getText();
+        String url = "http://localhost:8080/WebServiceREST/webresources/welcomme/"+name;//URL PEGAS DADOS VIA 
+        String message = JAXB.unmarshal(url, String.class);
+        JOptionPane.showMessageDialog(this, message, "Titulo", JOptionPane.INFORMATION_MESSAGE);
+    }                                       
+                   
+}
+
+//====================================================================================================
+//CONSUMENDO WEB SERVICE  VIA JSON
+//====================================================================================================
+
+package com.webrestjson.rest;
+
+import com.google.gson.Gson;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+
+@Path("welcomme")
+public class WelcommeRESTJSON {
+
+
+    @GET
+    @Path("{name}")
+    @Produces("application/json")
+    public String getJon( @PathParam( "name" ) String name) {
+        TextMessage  message =  new TextMessage();//cria objeto impacotador
+        message.setMessage(String.format("%s, %s", "Welcomme JSON", name));
+        return new Gson().toJson(message);
+    }
+}
+//====================================================================================================
+class TextMessage{
+    
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+//====================================================================================================
+
+package webservicerestjson;
+
+import com.google.gson.Gson;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import javax.swing.JOptionPane;
+
+public class WebServoceRESTJSONJFrame extends javax.swing.JFrame {
+
+   
+    public WebServoceRESTJSONJFrame() {
+        initComponents();
+    }
+                        
+    private void initComponents() {
+
+        jTextField = new javax.swing.JTextField();
+        jButton = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jButton.setText("Enviar");
+        jButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonActionPerformed(evt);
+            }
+        });
+    }// </editor-fold>                        
+
+    private void jButtonActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        // TODO add your handling code here:
+        
+        String name = jTextField.getText();
+        
+        try{
+            String url = "http://localhost:8080/WebRESTJSON/webresources/welcomme/"+name;
+            
+            InputStreamReader reader = new InputStreamReader(new URL(url).openStream());
+            TextMessage message = new Gson().fromJson(reader, TextMessage.class);
+            JOptionPane.showMessageDialog(this, message.getMessage(), "Titulo", JOptionPane.INFORMATION_MESSAGE);
+            
+        }catch(Exception e){
+            System.err.println("Error "+e.getMessage());
+                    
+        }
+    }                                       
+
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JButton jButton;
+    private javax.swing.JTextField jTextField;
+    // End of variables declaration                   
+}
+
+
+
+
