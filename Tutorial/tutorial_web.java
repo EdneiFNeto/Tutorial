@@ -3224,6 +3224,289 @@ public class CodastroController extends HttpServlet {
 
 </html>
 
+//===================================================================================
+//CRUD
+//===================================================================================
+//MODEL
+//===================================================================================
+
+package util.test.model;
+
+public class UsuarioUtil {
+    private int codigo;
+    private String nome;
+    private String email;
+
+    //GETTER E SETTING
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s", getCodigo(), getNome(), getEmail()); //To change body of generated methods, choose Tools | Templates.
+    }
+}
+
+//===================================================================================
+//CONNECTIONFACOTRY
+//===================================================================================
+package util.test.factory;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConnectionFactoryUtil {
+
+    public static Connection conexao() throws SQLException, ClassNotFoundException {
+
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/javadb", "root", "");
+        return conn;
+    }
+}
+
+//===================================================================================
+//INTERFACES GENERICAS
+//===================================================================================
+package util.teste.interfaces;
+
+import java.util.List;
+
+public interface EntiadadesDAOUtil<T> {
+    
+    public void insert(T t);
+    public void update(T t);
+    public void delete(T t);
+    public List<T> select();
+}
+
+//===================================================================================
+//IMPLEMENTACAO DA INTERFACES
+//===================================================================================
+package util.test.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import util.test.factory.ConnectionFactoryUtil;
+import util.test.model.UsuarioUtil;
+import util.teste.interfaces.EntiadadesDAOUtil;
+
+public class UsuarioDaoUtil implements EntiadadesDAOUtil<UsuarioUtil> {
+
+    private PreparedStatement ps;
+    private Connection conn;
+
+    @Override
+    public void insert(UsuarioUtil user) {
+
+        try {
+            //create connection
+            conn = ConnectionFactoryUtil.conexao();
+            String sql = "INSERT INTO usuario (nome, email) VALUES(?, ?)";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, user.getNome());
+            ps.setString(2, user.getEmail());
+            ps.execute();
+
+            ps.close();
+            conn.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void update(UsuarioUtil user) {
+
+        try {
+            //create connection
+            conn = ConnectionFactoryUtil.conexao();
+            String sql = "UPDATE usuario SET nome = ?, email= ? WHERE codigo = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, user.getNome());
+            ps.setString(2, user.getEmail());
+            ps.setInt(3, user.getCodigo());
+            ps.execute();
+
+            ps.close();
+            conn.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void delete(UsuarioUtil user) {
+        try {
+            //create connection
+            conn = ConnectionFactoryUtil.conexao();
+            String sql = "DELETE FROM usuario  WHERE codigo = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, user.getCodigo());
+            ps.execute();
+
+            ps.close();
+            conn.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public List<UsuarioUtil> select() {
+
+        List<UsuarioUtil> usuarios = new ArrayList<>();
+        try {
+            conn = ConnectionFactoryUtil.conexao();
+            String sql = "SELECT * FROM usuario ";
+            ps = conn.prepareStatement(sql);
+            ResultSet res = ps.executeQuery();
+            
+            while (res.next()) {
+                UsuarioUtil user = new UsuarioUtil();
+                user.setCodigo(res.getInt("codigo"));
+                user.setNome(res.getString("nome"));
+                user.setEmail(res.getString("email"));
+                usuarios.add(user);
+            }
+
+            ps.close();
+            conn.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UsuarioDaoUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return usuarios;
+    }
+
+}
+
+
+//===================================================================================
+//SERVLET PARA EXECUTAR
+//===================================================================================
+package servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import util.test.dao.UsuarioDaoUtil;
+import util.test.factory.ConnectionFactoryUtil;
+import util.test.model.UsuarioUtil;
+
+@WebServlet(name = "Test", urlPatterns = {"/Test"})
+public class TestServlet extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+
+            Connection conn = ConnectionFactoryUtil.conexao();
+            UsuarioUtil user = new UsuarioUtil();
+            UsuarioDaoUtil dao = new UsuarioDaoUtil();
+
+            user.setCodigo(1);
+            user.setNome("Mario jose");
+            user.setEmail("edneifneto@gmail.com");
+            //dao.update(user);
+            dao.delete(user);
+            List<UsuarioUtil> usuarios = dao.select();
+            
+            out.print("<ul>");
+            for (int i = 0; i < usuarios.size(); i++) {
+                out.print("<li>"+usuarios.get(i).getCodigo()+"-"+ usuarios.get(i).getNome() +" - " +usuarios.get(i).getEmail()+"</li>");
+            }
+            out.print("</ul>");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TestServlet.class.getName()).log(Level.SEVERE, null, ex);
+            out.println("SQLException " + ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            out.println("ClassNotFoundException " + ex.getMessage());
+            Logger.getLogger(TestServlet.class.getName()).log(Level.SEVERE, null, ex);
+            out.println("rodando");
+        }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
+
+
 
 
 
