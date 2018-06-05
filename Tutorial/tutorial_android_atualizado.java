@@ -3104,8 +3104,6 @@ public class MapsActivity extends SupportMapFragment implements OnMapReadyCallba
     }
 }
 
-
-
 //===========================================================================
 //POLYLINES 
 //===========================================================================
@@ -3179,7 +3177,6 @@ public class ReaderJSON {
     }
 }
 
-
 //===========================================================================
 // EXECUTA NO MAIN
 //===========================================================================
@@ -3224,5 +3221,237 @@ public class Main {
     }
 }
 
+//===========================================================================
+// QRCODE
+//===========================================================================
 
 
+package fragments;
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Vibrator;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.zxing.integration.android.IntentIntegrator;
+
+import java.io.IOException;
+
+import algrimsoromano.com.br.sistemafibras.R;
+
+
+public class FragmentMenu extends Fragment {
+
+    private TextView textViewQRCODE;
+    private IntentIntegrator qrScan;
+    private SurfaceView surfaceView;
+    private CameraSource cameraSource;
+    private BarcodeDetector barcodeDetector;
+    private static final String TAG = "FragmentMenu";
+
+
+    private OnFragmentInteractionListener mListener;
+
+    public FragmentMenu() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_menu_fragments, container, false);
+
+
+        textViewQRCODE = (TextView) view.findViewById(R.id.textViewQRCODE);
+        surfaceView = (SurfaceView) view.findViewById(R.id.cameraPreview);
+        barcodeDetector = new BarcodeDetector.Builder(getActivity())
+                .setBarcodeFormats(Barcode.QR_CODE).build();
+
+        cameraSource = new CameraSource.Builder(getActivity(), barcodeDetector)
+                .setRequestedPreviewSize(640, 280).build();
+
+        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                try {
+                    if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.CAMERA)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    cameraSource.start(surfaceHolder);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+                cameraSource.stop();
+            }
+        });
+
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+            @Override
+            public void release() {
+
+            }
+
+            @Override
+            public void receiveDetections(Detector.Detections<Barcode> detections) {
+                SparseArray<Barcode> qrcode = detections.getDetectedItems();
+
+                if(qrcode.size()!=0){
+                    textViewQRCODE.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Vibrator vibrator = (Vibrator) getActivity().getApplicationContext()
+                                    .getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(1000);
+                            textViewQRCODE.setText(qrcode.valueAt(0).displayValue);
+                        }
+                    });
+                }
+            }
+        });
+
+        return view;
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+}
+
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.google.gms:google-services:3.2.1'
+        
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven(){
+            url "https://maven.google.com" //add linha
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "algrimsoromano.com.br.sistemafibras"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.google.android.gms:play-services-maps:15.0.0'
+    implementation 'com.android.support:support-v4:27.1.1'
+    // https://mvnrepository.com/artifact/org.json/json
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+
+
+
+    compile 'com.android.support:design:27.1.1'
+
+    //noinspection DuplicatePlatformClasses
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.5'
+
+    compile 'me.drakeet.materialdialog:library:1.2.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'com.google.zxing:core:3.2.1'
+    compile 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+    compile 'com.google.android.gms:play-services-vision:9.4.0+'//add linha
+
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+//xml
+<SurfaceView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/cameraPreview"/>
