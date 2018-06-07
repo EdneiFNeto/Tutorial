@@ -3226,128 +3226,6 @@ public class Main {
 //===========================================================================
 
 
-package fragments;
-
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Vibrator;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.zxing.integration.android.IntentIntegrator;
-
-import java.io.IOException;
-
-import algrimsoromano.com.br.sistemafibras.R;
-
-
-public class FragmentMenu extends Fragment {
-
-    private TextView textViewQRCODE;
-    private IntentIntegrator qrScan;
-    private SurfaceView surfaceView;
-    private CameraSource cameraSource;
-    private BarcodeDetector barcodeDetector;
-    private static final String TAG = "FragmentMenu";
-
-
-    private OnFragmentInteractionListener mListener;
-
-    public FragmentMenu() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_menu_fragments, container, false);
-
-
-        textViewQRCODE = (TextView) view.findViewById(R.id.textViewQRCODE);
-        surfaceView = (SurfaceView) view.findViewById(R.id.cameraPreview);
-        barcodeDetector = new BarcodeDetector.Builder(getActivity())
-                .setBarcodeFormats(Barcode.QR_CODE).build();
-
-        cameraSource = new CameraSource.Builder(getActivity(), barcodeDetector)
-                .setRequestedPreviewSize(640, 280).build();
-
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                try {
-                    if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    cameraSource.start(surfaceHolder);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-                cameraSource.stop();
-            }
-        });
-
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-
-            }
-
-            @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
-                SparseArray<Barcode> qrcode = detections.getDetectedItems();
-
-                if(qrcode.size()!=0){
-                    textViewQRCODE.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Vibrator vibrator = (Vibrator) getActivity().getApplicationContext()
-                                    .getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
-                            textViewQRCODE.setText(qrcode.valueAt(0).displayValue);
-                        }
-                    });
-                }
-            }
-        });
-
-        return view;
-    }
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-}
 
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -3448,10 +3326,105 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+package intents;
 
-//xml
-<SurfaceView
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.google.zxing.Result;
+
+import algrimsoromano.com.br.sistemafibras.MainActivity;
+import algrimsoromano.com.br.sistemafibras.R;
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+public class QRCodeActivity extends AppCompatActivity implements  ZXingScannerView.ResultHandler{
+
+    private Toolbar toolbar;
+    private ZXingScannerView zXingScannerView;
+
+    @Override
+    protected void onCreate( Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_qrcode);
+
+
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar_qrcode);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
+        zXingScannerView = new ZXingScannerView(this);
+        setContentView(zXingScannerView);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        zXingScannerView.startCamera();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        zXingScannerView.stopCamera();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void handleResult(Result result) {
+
+        zXingScannerView.resumeCameraPreview(this);
+
+        Toast.makeText(getApplicationContext(),
+                "Resultao "+result.getText(), Toast.LENGTH_SHORT).show();
+    }
+}
+XML
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar_qrcode"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/cameraPreview"/>
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+
+</LinearLayout>
+
