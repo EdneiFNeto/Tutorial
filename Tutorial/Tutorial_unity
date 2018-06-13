@@ -339,5 +339,108 @@ public class DestroyObject : MonoBehaviour {
 //=======================================================================
 
 
+//=======================================================================
+//JOGO AVIAO
+//=======================================================================
 
+//ADD IMAGEM 
+//ADD PHISIC 2D:
+//	-ADD RIGIBODY
+//	-DENTRO DO RIGIBODY MARCAR KINEMATIC[CAMNPO NAO CAI COIM A GRAVIDADE]
+//RENOMEAR AIMAGEM [IMAGEMFUNDOA]
+//CRIAR OUTRA IMAGEM [IMAGEMFUNDOB]
 
+//=======================================================================
+//ADD SCRIPT
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MoveFundo : MonoBehaviour {
+
+  
+    private float larguraTela;
+
+    void Start () {
+
+        SpriteRenderer grafico = GetComponent<SpriteRenderer>();
+
+        float larguraImage = grafico.sprite.bounds.size.x;
+        float alturaImage = grafico.sprite.bounds.size.y;
+
+        float alturaTela = Camera.main.orthographicSize * 2f;//recebe a canmera de frente
+        larguraTela = alturaTela/Screen.height * Screen.width;//largura da tela
+
+        //converte valor
+        Vector2 novoEscala = transform.localScale;
+        novoEscala.x = larguraTela / larguraImage + 0.25f;
+        novoEscala.y = alturaTela / alturaImage;
+        this.transform.localScale = novoEscala;
+
+        if (this.name == "imagemFundoB")
+        {
+            //reposiciona a imagem
+            transform.position = new Vector2(larguraTela, 0f);
+        }
+
+        //anima o fundo para esquerda
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-3, 0);
+    }
+	
+	// Update is called once per frame
+	void Update () {
+		
+        if(transform.position.x <= -larguraTela)
+        {
+            transform.position = new Vector2(larguraTela, 0f);
+        }
+	}
+}
+
+ 
+//=======================================================================
+//ADD PERSONAGEM AO PALCO
+//=======================================================================
+//IMPORTA TODOS OS SPRITES DO JOGADOR
+//ADD RIGITBODY--> ATIVAR OPCAO isKinematic 
+//ADD CIRCLE COLISE
+//ADD SCRIPT
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ControlaJogador : MonoBehaviour {
+
+    bool comecou;
+    bool acabou;
+    Rigidbody2D corpoJoigador;
+    Vector2 forcaInpulso = new Vector2(0, 500); //x, y
+
+	// Use this for initialization
+	void Start () {
+
+        corpoJoigador = GetComponent<Rigidbody2D>();
+        corpoJoigador.gravityScale = 2.00f;
+    }
+	
+	// Update is called once per frame
+	void Update () {
+
+        //evento  touch ou click
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (!comecou)
+            {
+                comecou = true;
+                corpoJoigador.isKinematic = false; //habilita a graviudade
+                
+            }
+
+            //zera avelocidade
+            corpoJoigador.velocity = new Vector2(0, 0);
+            corpoJoigador.AddForce(forcaInpulso);
+        }
+	}
+}
