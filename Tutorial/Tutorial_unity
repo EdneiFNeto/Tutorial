@@ -116,3 +116,42 @@ public class Bolinha : MonoBehaviour {
 
 
 
+
+//===============================================================
+//BOTAO
+//===============================================================
+
+//===============================================================
+//JOGOS 2D
+//===============================================================
+//ORDEN LKAYER: Z-INDEX [POCISAO DO OBJERTO SOBRE PO OUTRO]
+//PHISICA --> ADD COMPONENBT-->PHISICA 2D -->
+//-COLISOR CIRCULAR;
+//-RIGHTBODY
+//===============================================================
+//ADD COLISOR NO CAMPO
+//AO ADIC=CIONAR UMA COLISAO O OBJETTO PARA NO LOCAL
+//EX: UMA CAIXA CAI NO CHAO, O CHAO ESTA COM BOX COLIDER[CRIA UM CHAO PARA ACAIXA PARAR]
+//===============================================================
+//--PHISIC 2D--> BOX COLIDER
+//PROPERTY BOX COLIDER
+//-OFFSET X & Y: [ALTURA DO COLISOR]
+//SIZE : TAMANHO 
+//===============================================================
+//PARTICULAS
+//CREATE PARTICLE SYSTEM
+//CRIA MATERIAL--> ADD IMAGEM AOA MATERIAL
+//ARRASTAR MATERIAL PARA CIMA DA PARTICULA
+
+//===============================================================
+//SCRIPTS
+//===============================================================
+//ADD COMPONENT DE SCRIP NO OBJETO
+
+//===============================================================
+//JOGO DA BOLINAH
+//===============================================================
+//CRIA O PLANO
+//CRIAR A ESFERA
+//CRIAR MATRIAL --> ADD TEXTUREA AO MATERIAL[ALBEDO] --> ADD AO PLANO
+//ADD PHISICA NA ESPERA
