@@ -1,1 +1,118 @@
 
+
+
+//=======================================================================
+//GAME OBJECT
+//=======================================================================
+//ALT + MOVER CAMERA
+//=======================================================================
+//ALT + BOTAO MEIO [MAOZINHA]
+//=======================================================================
+//ALT + BOTAO BOTAO DIREITO [LUPA]
+//=======================================================================
+//SELECIONAR OBJETO TECLA F DAR FOCO[APROXIMACAO]
+//=======================================================================
+
+
+//=======================================================================
+//MATERIAL
+//=======================================================================
+//BOTAO DIREITO EMPROJETOS CREATE-->MATERIAL
+//ARRASTAR MATERIAL PARA OBJETO NA CENA
+//COLOCAR IMAGEM NO MATERIAL BASTA ARRASTARA IMAGEM PARA ALBEDO DO MATERIAL
+
+//=======================================================================
+//PREFABS
+//AGRUPA TODOS OS OBJETOS DENTRO 
+//=======================================================================
+//ARRASTAR O OBJETO PARA AERA DE PROJECTS
+
+//=======================================================================
+//FISICA
+//=======================================================================
+//CLICAR NO OBJETO--> ADD COMPONEBT--> RIDGIBODY
+//AO DAR O PLAY SE O OBJETO ESTIVER NO ALTO ELE VAI CAIR
+
+//=======================================================================
+//ANIMACAO KEY FRAME
+//=======================================================================
+//WUNDIWN-->ANIMATION
+//ADD CREATE --> NOMEAR -->  -->ADD PROPERTY-->POSITION --> CLICAR NO BOTAO RED
+
+//=======================================================================
+//PARTICULAS
+//=======================================================================
+//GAME OBJECT -->PARTICULE SYSTEM
+//GRAVI MODIFY = MUDA POCISAO DA PARTICULA, TIPO CRIAR UMA CHUVA, FOGO
+
+
+//=======================================================================
+//CAMERA JOGADOR
+//=======================================================================
+//IMPORT CAMERA--> DELETE CAMERA --> ADD MULT PURSE CAMERA READ
+//OPCAO AUTO CAM-->TARGE-->ADD OBJECT[QUANDO MOVER OBJETO CAMERA ACOMPANHA]
+//=======================================================================
+
+
+//=======================================================================
+//CAMERA RIG
+//=======================================================================
+//PORETEGE O JOGADOR QUANDO ENCONSTAR NA PAREDE, ONDE O PAREDE NAO PARECE
+//QUANDO O JOGADOR ENCOSTA
+
+//=======================================================================
+//FPS - CPONTROLLER[CONTROLE DE 1 PESSSOA]
+//ADD CONTRLLEAO SENA
+//=======================================================================
+
+
+//=======================================================================
+//THRIND PERSON CONTROLLER
+//[PREFABS] PERSONAGEM PRONTO
+//=======================================================================
+
+//=======================================================================
+//SIMULCAO DE TECISO - CLOTH
+//=======================================================================
+
+//=======================================================================
+//MODEOS .FBX
+//=======================================================================
+
+
+//=======================================================================
+//JOGO DA BOLINHA
+//=======================================================================
+//CRIAR CAMPO
+//CRIAR BOLA
+//ADD MATERIAL AO CAMPO E A BOLA
+//CRIAR SCRIPT
+//ADD FISICA A BOLA[rigidbody]
+//=======================================================================
+//SCRIPT - MOVER BOLA
+//ADD SCRIPT NA BOLA [ ADD COMPONENT-->NEW SCRIPT]
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bolinha : MonoBehaviour {
+
+    private Rigidbody rb;
+    public float veloc=5;
+	// Use this for initialization
+	void Start () {
+
+        rb = GetComponent<Rigidbody>();
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        rb.AddForce(move*veloc);
+	}
+}
+
+
+
