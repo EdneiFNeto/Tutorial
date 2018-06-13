@@ -79,48 +79,6 @@
 //MODEOS .FBX
 //=======================================================================
 
-
-//=======================================================================
-//JOGO DA BOLINHA
-//=======================================================================
-//CRIAR CAMPO
-//CRIAR BOLA
-//ADD MATERIAL AO CAMPO E A BOLA
-//CRIAR SCRIPT
-//ADD FISICA A BOLA[rigidbody]
-//=======================================================================
-//SCRIPT - MOVER BOLA
-//ADD SCRIPT NA BOLA [ ADD COMPONENT-->NEW SCRIPT]
-//=======================================================================
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Bolinha : MonoBehaviour {
-
-    private Rigidbody rb;
-    public float veloc=5;
-	// Use this for initialization
-	void Start () {
-
-        rb = GetComponent<Rigidbody>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        rb.AddForce(move*veloc);
-	}
-}
-
-
-
-
-//===============================================================
-//BOTAO
-//===============================================================
-
 //===============================================================
 //JOGOS 2D
 //===============================================================
@@ -143,15 +101,243 @@ public class Bolinha : MonoBehaviour {
 //CRIA MATERIAL--> ADD IMAGEM AOA MATERIAL
 //ARRASTAR MATERIAL PARA CIMA DA PARTICULA
 
-//===============================================================
-//SCRIPTS
-//===============================================================
-//ADD COMPONENT DE SCRIP NO OBJETO
 
-//===============================================================
-//JOGO DA BOLINAH
-//===============================================================
-//CRIA O PLANO
-//CRIAR A ESFERA
-//CRIAR MATRIAL --> ADD TEXTUREA AO MATERIAL[ALBEDO] --> ADD AO PLANO
-//ADD PHISICA NA ESPERA
+//=======================================================================
+//JOGO DA BOLINHA
+//=======================================================================
+//CRIAR CAMPO
+//CRIAR BOLA
+//ADD MATERIAL AO CAMPO E A BOLA
+//CRIAR SCRIPT
+//ADD FISICA A BOLA[rigidbody]
+//=======================================================================
+//SCRIPT - MOVER BOLA
+//ADD SCRIPT NA BOLA [ ADD COMPONENT-->NEW SCRIPT]
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bolinha : MonoBehaviour {
+
+	private Rigidbody rb;
+	public float veloc=5;
+	// Use this for initialization
+	void Start () {
+
+		rb = GetComponent<Rigidbody>();
+	}
+
+	//evento chamada antes do update
+	void FixedUpdate(){
+
+		Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		rb.AddForce(move*veloc);
+	}
+
+	// Update is called once per frame
+	void Update () {
+	}
+}
+//=======================================================================
+//MOVER BOLINHA E CAMNERA JUNTO
+//=======================================================================
+//ADD SCRIPT A CAMERA
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MoveCamera : MonoBehaviour {
+
+	public GameObject gameObject;
+	private Vector3 pocisaoInicial;
+
+	void Start () {
+
+		pocisaoInicial = transform.position; 
+         //pocisaoInicial = transform.position - gameObject.transform.position; 
+	}
+	
+	void LateUpdate() {
+		transform.position = gameObject.transform.position + pocisaoInicial;
+	}
+}
+
+
+//=======================================================================
+//NO CAMPO MOVE CAMERA (SCRIPT) LADO DIRETO [INPECTOR]:
+//ARRANTAR O BOLINHA PARA DENTRO DA OPCAO GAMEOBJECT   
+//=======================================================================
+
+//=======================================================================
+//CRIAR ITEM 
+//=======================================================================
+//CRIAR SCRIPT
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MoveItem : MonoBehaviour {
+
+	void Start () {
+		
+	}
+	
+	void Update () {
+
+		transform.Rotate(new Vector3(15, 30, 45) * Time.deltaTime);
+	}
+}
+
+//=======================================================================
+//CRIAR PREFABS [PARA ITEM]
+//=======================================================================
+
+//1 - ARRASTAR PARA PASTA DE ASSETS
+//2 - RENOMEAR [ITEM CUBO]
+//3 - ADD EFEECT HELLO M
+
+//=======================================================================
+//COLETAR ITEM
+//=======================================================================
+//ADD CAMPO NO SCRIPT MOVER BOLINHA
+//evento de colisao
+private void OnTriggerEnter(Collider outro)
+{
+	Destroy(outro.gameObject);
+}
+
+//=======================================================================
+//HABILITAR TRIGER NA PROPRIEDADE BOX COLIDER DO CUBO
+//EX: IS TRIGGER = TRUE[HABILITAR CHEKBOX]
+//DENTRO DO INSPECTOR DO CUBO ADD TAG
+//EXEMPLE TAG = ITEM
+//=======================================================================
+//VERIFICAR SE A TEG EXISTE PAR PODER DESTRIUR OBJETO
+//evento de colisao
+//ATUALIZAR SCRIPT MOVER BOLINHA
+//=======================================================================
+private void OnTriggerEnter(Collider outro)
+{
+	if (outro.gameObject.CompareTag("Item"))
+	{
+		Destroy(outro.gameObject);
+	}
+}
+
+//=======================================================================
+//EFEITOS DE PARTICULAS
+//=======================================================================
+//ADD PÁRTICULE SYSTEM
+//PRPOPERTY:
+//TRNASFORM : REST
+//SHAPE: 
+//	-SHAPE
+// 	-RADIUS: 0.01
+//LOOPING : FALSE 
+//DURATION: 0.49
+//START LIFETIME: 0.86
+//START DEPLAY: 0.9
+//START SPEED: 1.27
+//START SIZE: 0.99
+//DURATION: 0.49
+//=======================================================================
+//TRANSFORMA A PÁRTICULKA EM PREFABS
+//ARRASTAR PARA A PASTA DE ASSETS
+//RENOMEAR [Particula item]
+//=======================================================================
+//NOVO SCRIPT MOVER BOLINHA
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MoveBolinha : MonoBehaviour {
+	private Rigidbody rb;
+	public float velocidade = 10;
+    public GameObject particulaItem;//refenencia prefab párticula
+
+    // Use this for initialization
+
+    void Start()
+    {
+    	rb = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+    	Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+    	rb.AddForce(move * velocidade);
+    }
+
+    //evento de colisao
+    private void OnTriggerEnter(Collider outro)
+    {
+    	if (outro.gameObject.CompareTag("Item"))
+    	{
+    		Destroy(outro.gameObject);
+    	}
+
+    }
+}
+
+//=======================================================================
+//ASSOCIA PERTICULA A BOLINHA
+//=======================================================================
+//ADD PARTUCLUA NA PROPRIEDADE DE SCRIPT NO INPECTOR DO SHAPE[BOLINHA]
+//ARRASTAR PARTICULAS PARA DENTRO DA PROPRIEDADE GAME OBJECT 
+
+
+//ATUALIZAR EVENTO DE COLISAO [SCRIPT MOVER BOLINHA]
+private void OnTriggerEnter(Collider outro)
+{
+	if (outro.gameObject.CompareTag("Item"))
+	{
+            //exiobe particula antres de destruir iobjet
+		Instantiate(particulaItem, outro.gameObject.transform.position, Quaternion.identity);
+		Destroy(outro.gameObject);
+	}
+}
+
+//=======================================================================
+//APOAGAR PREFAB DA PARTICULA APOS SER CRIADO
+//ADD SCRIPT AO PREFABS DA PARTICULA
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DestroyObject : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+        Invoke("ApagaObjeto", 1.5f);//INVOCA O METHODO APOS CRIAR A PARTICULA
+	}
+	
+    //destroi o mesmo objeto[a particula]
+    void ApagaObjeto()
+    {
+    	//DESTRY A PARTICULA
+        Destroy(this.gameObject);
+    }
+}
+
+//=======================================================================
+//EFEITOS DE RASTRO
+//=======================================================================
+//SELECIONA A BOLINHA --> ADD COMPONENTO--> EFEITOS
+
+//=======================================================================
+//PONTUAÇÃO
+//=======================================================================
+//GAME OBJECT --> UI-->TEXT
+
+//=======================================================================
+//FIM GAME
+//=======================================================================
+
+
+
+
