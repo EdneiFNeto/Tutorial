@@ -340,7 +340,7 @@ public class DestroyObject : MonoBehaviour {
 
 
 //=======================================================================
-//JOGO AVIAO
+//--------------------------- JOGO AVIAO ------------------------------//
 //=======================================================================
 
 //ADD IMAGEM 
@@ -417,6 +417,8 @@ public class ControlaJogador : MonoBehaviour {
     bool acabou;
     Rigidbody2D corpoJoigador;
     Vector2 forcaInpulso = new Vector2(0, 500); //x, y
+    public GameObject particulaPena;
+
 
 	// Use this for initialization
 	void Start () {
@@ -441,6 +443,409 @@ public class ControlaJogador : MonoBehaviour {
             //zera avelocidade
             corpoJoigador.velocity = new Vector2(0, 0);
             corpoJoigador.AddForce(forcaInpulso);
+
+            //Instacia pena
+            GameObject peninhas = Instantiate(particulaPena);
+            //add posicao junto ao jogador
+            peninhas.transform.position = this.transform.position;
+
+        }
+
+        float alturaFelpudoEmPixel = Camera.main.WorldToScreenPoint(transform.position).y;
+
+        if(alturaFelpudoEmPixel > Screen.height || alturaFelpudoEmPixel< 0)
+        {
+            Destroy(this.gameObject);
+        }
+
+        //Enpinar porsonagem
+        transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y*3); 
+	}
+}
+
+
+//=======================================================================
+//ADD PARTICULA PENHINHA[ PARTICA SERVE PARA QUNADO]
+//=======================================================================
+//CRIAR GAME EMPTY
+//ADD PARTICULA
+//CRIAR MATERIAL
+//ADD IMAGEM AO MATERIAL [ALBEDO]
+//ADD MATERIAL A PARTICULA 
+//TORNAR OBJETO DA ÁRTICULA UM PREFABS [ ARRASTAR PARA PASTA ASSETS]
+//DELETAR OBJETO PARTICULA DA SENA
+//ADD OBJETO PARTICULA AO SCRIPT JOGADOR 
+//[CAMPO GAMEOBJECT PRECISAR SER DEFINIDO NO SCRIPT EX: PUBLIC GAMEOBJECT GAME]
+
+//=======================================================================
+//DESTROY PREFABS PARTICULA
+//ADD SCRIPT A PARTICUAL
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DestroyPeninhas : MonoBehaviour {
+
+    // Use this for initialization
+    void Start()
+    {
+        Invoke("ApagaObjeto", 1.5f);//INVOCA O METHODO APOS CRIAR A PARTICULA
+    }
+
+    //destroi o mesmo objeto[a particula]
+    void ApagaObjeto()
+    {
+        //DESTRY A PARTICULA
+        Destroy(this.gameObject);
+    }
+}
+
+
+//=======================================================================
+//CRIAR INIMIGO
+//=======================================================================
+//ADD SPRITES INIMIGO NA SENA
+//ADD CIRCLE1 COLIDER [REDIMENCIONAR PARA AREA DO BALAO]
+//ADD CIRCLE2 COLIDER [REDIMENCIONAR PARA AREA DO CORPO]
+//ADD BOX COLIDER [REDIMENCIONAR PARA AREA DO ARMA]
+//TORNAR INIMIGO MUM PREFABS
+//DELETAR INIMIGO DA CENA
+//ADD SCRIPT AO INIMIFGO PARA ELE SE MOVER PARA FRENTE
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class inimigo : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-2, 0);//empurrar o inimigo para frente
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
+}
+
+
+//=======================================================================
+//SCRIPT PARA INTERACAO COM A SENA
+//=======================================================================
+//ADD SCRIPT A CAMERA
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+//criar os inimigos na sena
+public class GameEngine_ : MonoBehaviour {
+
+    public GameObject inimigo;
+
+	// Use this for initialization
+	void Start () {
+
+        InvokeRepeating("criarInimigo", 1.0f, 1.5f);
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
+
+    void criarInimigo()
+    {
+        float altturaAleatioria = 10.0f * Random.value - 5;
+        GameObject novoInimigo = Instantiate(inimigo);
+        novoInimigo.transform.position = new Vector2(15.0f, altturaAleatioria);
+    }
+}
+
+//=======================================================================
+//DESTROI INIMIGO APS SAIR DA TELA
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class inimigo : MonoBehaviour {
+
+
+	// Use this for initialization
+	void Start () {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+		//destoi inimigo apos sair da tela
+        if(transform.position.x < -25)
+        {
+            Destroy(this.gameObject);
         }
 	}
 }
+
+//ADD INIMIGO AO SCRIPT DA CAMERA[ARRASTAR INIMIGO PARA DENTRO DO SCRIPT DA CAMERA]
+
+//=======================================================================
+//COLISAO DO JOIGADOR COM INIMIGO
+//ATUALIZAR SCRIPT JOGADOR
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ControlaJogador : MonoBehaviour {
+
+    bool comecou;
+    bool acabou;
+    Rigidbody2D corpoJoigador;
+    Vector2 forcaInpulso = new Vector2(0, 500); //x, y
+    public GameObject particulaPena;
+
+
+	// Use this for initialization
+	void Start () {
+
+        corpoJoigador = GetComponent<Rigidbody2D>();
+        corpoJoigador.gravityScale = 2.00f;
+    }
+	
+	// Update is called once per frame
+	void Update () {
+
+        if (!acabou)
+        {
+            //evento  touch ou click
+            if (Input.GetButtonDown("Fire1"))
+            {
+                if (!comecou)
+                {
+                    comecou = true;
+                    corpoJoigador.isKinematic = false; //habilita a graviudade
+
+                }
+
+                //zera avelocidade
+                corpoJoigador.velocity = new Vector2(0, 0);
+                corpoJoigador.AddForce(forcaInpulso);
+
+                //Instacia pena
+                GameObject peninhas = Instantiate(particulaPena);
+                Vector3 pocisaoFeupudo = this.transform.position + new Vector3(0, 10, 0);//posicionar particula ao centro
+                peninhas.transform.position = this.transform.position; //add posicao junto ao jogador
+
+            }
+
+            float alturaFelpudoEmPixel = Camera.main.WorldToScreenPoint(transform.position).y;
+            if (alturaFelpudoEmPixel > Screen.height || alturaFelpudoEmPixel < 0)
+            {
+                //Destroy(this.gameObject);
+                efeitColisao();
+            }
+
+            //Enpinar porsonagem
+            transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y * 3);
+        }
+        
+	}
+
+    //envto de colisao
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!acabou)
+        {
+            efeitColisao();
+
+        }
+    }
+
+    void efeitColisao()
+    {
+        acabou = true;
+        GetComponent<Collider2D>().enabled = false;//desliga colisor
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;//velocidade = 0 
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(-300, 0));//Girar 
+        GetComponent<Rigidbody2D>().AddTorque(300f);//Girar 
+
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.75f, 0.75f);//mudar a cor
+    }
+}
+
+//=======================================================================
+//MARCAR PONTO
+//=======================================================================
+//ATUALIZAR SCRIPT INIMIGO
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class inimigo : MonoBehaviour {
+    GameObject jogador;
+    bool marcouPonto;
+
+	// Use this for initialization
+	void Start () {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
+        jogador = GameObject.FindGameObjectWithTag("Player");
+
+    }
+	
+	// Update is called once per frame
+	void Update () {
+		
+        if(transform.position.x < -25)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+
+            //verifica se a pocisao do jogador e menor que a do inimigo
+            if(transform.position.x < jogador.transform.position.x)
+            {
+                if (!marcouPonto)
+                {
+                    marcouPonto = true;
+                    //velocidade aulmenta & inimigo spbe
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-7.5f, 5.0f);
+                    GetComponent<Rigidbody2D>().isKinematic=false;//girar o inimigo
+                    GetComponent<Rigidbody2D>().AddTorque(50f);
+                    GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.75f, 0.75f);//mudar a cor do inimigo
+                }
+                
+            }
+        }
+	}
+}
+
+
+//ADD TAG AO JOGADOR--> INPECTOR-->TAG-->PROPCURAR POR[Palyer]
+//OBS: O MESMO NOME DGAME OBJECT INSTANCIADO:
+//EX: jogador = GameObject.FindGameObjectWithTag("Player");
+
+//=======================================================================
+//CRIAR PONTUACAO
+//=======================================================================
+//CRIAR TEXT-->GAMEOBJECT -->UI-->TEXT
+//ADD FONT
+//ATUALIZAR SCRIPT JOGADOR
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ControlaJogador : MonoBehaviour {
+
+    bool comecou;
+    bool acabou;
+    Rigidbody2D corpoJoigador;
+    Vector2 forcaInpulso = new Vector2(0, 500); //x, y
+    public GameObject particulaPena;
+    public Text textScore;
+
+
+	// Use this for initialization
+	void Start () {
+        
+        //ADD NOVOS CODIGO
+        textScore.transform.position = new Vector2(Screen.width/ 2, Screen.height - 100);//POCISAO TITULO
+        textScore.text= "Toque para iniciar";
+        textScore.fontSize = 35;
+    }
+
+    // Update is called once per frame
+	void Update () {
+
+        if (!acabou)
+        {
+            //evento  touch ou click
+            if (Input.GetButtonDown("Fire1"))
+            {
+                if (!comecou)
+                {
+                    comecou = true;
+                    corpoJoigador.isKinematic = false; //habilita a graviudade
+
+                   //ADD LINHA DE CODIGO
+                    textScore.text = pontuacao.ToString();
+                   
+                }
+    }
+
+    //ADD FUNCAO
+    void MarcarPonto()
+    {
+        pontuacao++;
+        textScore.text = pontuacao.ToString();
+    }
+}
+
+//=======================================================================
+//EXECUTAR METODO DO JOGADOR DENTRO DENTRO DO SCRIPT INIMIGO 
+//=======================================================================
+//ATGUALIZAR SCRIPT IUNIMIGO
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class inimigo : MonoBehaviour {
+    GameObject jogador;
+    bool marcouPonto;
+
+
+	// Use this for initialization
+	void Start () {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
+        jogador = GameObject.FindGameObjectWithTag("Player");
+
+    }
+	
+	// Update is called once per frame
+	void Update () {
+		
+        if(transform.position.x < -25)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+
+            //verifica se a pocisao do jogador e menor que a do inimigo
+            if(transform.position.x < jogador.transform.position.x)
+            {
+                if (!marcouPonto)
+                {
+                    marcouPonto = true;
+                    //velocidade aulmenta & inimigo spbe
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-7.5f, 5.0f);
+                    GetComponent<Rigidbody2D>().isKinematic=false;//girar o inimigo
+                    GetComponent<Rigidbody2D>().AddTorque(50f);
+                    GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.75f, 0.75f);//mudar a cor do inimigo
+
+                    //-- ATUALIAR ESSA LINHA --//
+                    //CHMAR METODO DO SCRIPT JOGADOR
+                    jogador.SendMessage("MarcarPonto");
+                }
+                
+            }
+        }
+	}
+
+}
+
+//=======================================================================
+//----------------------- FIM JOGO AVIAO ------------------------------//
+//=======================================================================
