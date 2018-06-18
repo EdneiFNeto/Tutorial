@@ -120,24 +120,24 @@ using UnityEngine;
 
 public class Bolinha : MonoBehaviour {
 
-	private Rigidbody rb;
-	public float veloc=5;
-	// Use this for initialization
-	void Start () {
+    private Rigidbody rb;
+    public float veloc=5;
+    // Use this for initialization
+    void Start () {
 
-		rb = GetComponent<Rigidbody>();
-	}
+        rb = GetComponent<Rigidbody>();
+    }
 
-	//evento chamada antes do update
-	void FixedUpdate(){
+    //evento chamada antes do update
+    void FixedUpdate(){
 
-		Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-		rb.AddForce(move*veloc);
-	}
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        rb.AddForce(move*veloc);
+    }
 
-	// Update is called once per frame
-	void Update () {
-	}
+    // Update is called once per frame
+    void Update () {
+    }
 }
 //=======================================================================
 //MOVER BOLINHA E CAMNERA JUNTO
@@ -150,18 +150,18 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour {
 
-	public GameObject gameObject;
-	private Vector3 pocisaoInicial;
+    public GameObject gameObject;
+    private Vector3 pocisaoInicial;
 
-	void Start () {
+    void Start () {
 
-		pocisaoInicial = transform.position; 
+        pocisaoInicial = transform.position; 
          //pocisaoInicial = transform.position - gameObject.transform.position; 
-	}
-	
-	void LateUpdate() {
-		transform.position = gameObject.transform.position + pocisaoInicial;
-	}
+    }
+    
+    void LateUpdate() {
+        transform.position = gameObject.transform.position + pocisaoInicial;
+    }
 }
 
 
@@ -181,14 +181,14 @@ using UnityEngine;
 
 public class MoveItem : MonoBehaviour {
 
-	void Start () {
-		
-	}
-	
-	void Update () {
+    void Start () {
+        
+    }
+    
+    void Update () {
 
-		transform.Rotate(new Vector3(15, 30, 45) * Time.deltaTime);
-	}
+        transform.Rotate(new Vector3(15, 30, 45) * Time.deltaTime);
+    }
 }
 
 //=======================================================================
@@ -206,7 +206,7 @@ public class MoveItem : MonoBehaviour {
 //evento de colisao
 private void OnTriggerEnter(Collider outro)
 {
-	Destroy(outro.gameObject);
+    Destroy(outro.gameObject);
 }
 
 //=======================================================================
@@ -221,10 +221,10 @@ private void OnTriggerEnter(Collider outro)
 //=======================================================================
 private void OnTriggerEnter(Collider outro)
 {
-	if (outro.gameObject.CompareTag("Item"))
-	{
-		Destroy(outro.gameObject);
-	}
+    if (outro.gameObject.CompareTag("Item"))
+    {
+        Destroy(outro.gameObject);
+    }
 }
 
 //=======================================================================
@@ -234,8 +234,8 @@ private void OnTriggerEnter(Collider outro)
 //PRPOPERTY:
 //TRNASFORM : REST
 //SHAPE: 
-//	-SHAPE
-// 	-RADIUS: 0.01
+//  -SHAPE
+//  -RADIUS: 0.01
 //LOOPING : FALSE 
 //DURATION: 0.49
 //START LIFETIME: 0.86
@@ -255,31 +255,31 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveBolinha : MonoBehaviour {
-	private Rigidbody rb;
-	public float velocidade = 10;
+    private Rigidbody rb;
+    public float velocidade = 10;
     public GameObject particulaItem;//refenencia prefab párticula
 
     // Use this for initialization
 
     void Start()
     {
-    	rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-    	Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-    	rb.AddForce(move * velocidade);
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        rb.AddForce(move * velocidade);
     }
 
     //evento de colisao
     private void OnTriggerEnter(Collider outro)
     {
-    	if (outro.gameObject.CompareTag("Item"))
-    	{
-    		Destroy(outro.gameObject);
-    	}
+        if (outro.gameObject.CompareTag("Item"))
+        {
+            Destroy(outro.gameObject);
+        }
 
     }
 }
@@ -294,12 +294,12 @@ public class MoveBolinha : MonoBehaviour {
 //ATUALIZAR EVENTO DE COLISAO [SCRIPT MOVER BOLINHA]
 private void OnTriggerEnter(Collider outro)
 {
-	if (outro.gameObject.CompareTag("Item"))
-	{
+    if (outro.gameObject.CompareTag("Item"))
+    {
             //exiobe particula antres de destruir iobjet
-		Instantiate(particulaItem, outro.gameObject.transform.position, Quaternion.identity);
-		Destroy(outro.gameObject);
-	}
+        Instantiate(particulaItem, outro.gameObject.transform.position, Quaternion.identity);
+        Destroy(outro.gameObject);
+    }
 }
 
 //=======================================================================
@@ -311,15 +311,15 @@ using UnityEngine;
 
 public class DestroyObject : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         Invoke("ApagaObjeto", 1.5f);//INVOCA O METHODO APOS CRIAR A PARTICULA
-	}
-	
+    }
+    
     //destroi o mesmo objeto[a particula]
     void ApagaObjeto()
     {
-    	//DESTRY A PARTICULA
+        //DESTRY A PARTICULA
         Destroy(this.gameObject);
     }
 }
@@ -345,8 +345,8 @@ public class DestroyObject : MonoBehaviour {
 
 //ADD IMAGEM 
 //ADD PHISIC 2D:
-//	-ADD RIGIBODY
-//	-DENTRO DO RIGIBODY MARCAR KINEMATIC[CAMNPO NAO CAI COIM A GRAVIDADE]
+//  -ADD RIGIBODY
+//  -DENTRO DO RIGIBODY MARCAR KINEMATIC[CAMNPO NAO CAI COIM A GRAVIDADE]
 //RENOMEAR AIMAGEM [IMAGEMFUNDOA]
 //CRIAR OUTRA IMAGEM [IMAGEMFUNDOB]
 
@@ -387,15 +387,15 @@ public class MoveFundo : MonoBehaviour {
         //anima o fundo para esquerda
         GetComponent<Rigidbody2D>().velocity = new Vector2(-3, 0);
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
+    
+    // Update is called once per frame
+    void Update () {
+        
         if(transform.position.x <= -larguraTela)
         {
             transform.position = new Vector2(larguraTela, 0f);
         }
-	}
+    }
 }
 
  
@@ -420,15 +420,15 @@ public class ControlaJogador : MonoBehaviour {
     public GameObject particulaPena;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         corpoJoigador = GetComponent<Rigidbody2D>();
         corpoJoigador.gravityScale = 2.00f;
     }
-	
-	// Update is called once per frame
-	void Update () {
+    
+    // Update is called once per frame
+    void Update () {
 
         //evento  touch ou click
         if (Input.GetButtonDown("Fire1"))
@@ -460,7 +460,7 @@ public class ControlaJogador : MonoBehaviour {
 
         //Enpinar porsonagem
         transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y*3); 
-	}
+    }
 }
 
 
@@ -520,16 +520,16 @@ using UnityEngine;
 
 public class inimigo : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         GetComponent<Rigidbody2D>().velocity = new Vector2(-2, 0);//empurrar o inimigo para frente
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 }
 
 
@@ -547,16 +547,16 @@ public class GameEngine_ : MonoBehaviour {
 
     public GameObject inimigo;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         InvokeRepeating("criarInimigo", 1.0f, 1.5f);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+    }
 
     void criarInimigo()
     {
@@ -577,21 +577,21 @@ using UnityEngine;
 public class inimigo : MonoBehaviour {
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-		//destoi inimigo apos sair da tela
+    }
+    
+    // Update is called once per frame
+    void Update () {
+        
+        //destoi inimigo apos sair da tela
         if(transform.position.x < -25)
         {
             Destroy(this.gameObject);
         }
-	}
+    }
 }
 
 //ADD INIMIGO AO SCRIPT DA CAMERA[ARRASTAR INIMIGO PARA DENTRO DO SCRIPT DA CAMERA]
@@ -614,15 +614,15 @@ public class ControlaJogador : MonoBehaviour {
     public GameObject particulaPena;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         corpoJoigador = GetComponent<Rigidbody2D>();
         corpoJoigador.gravityScale = 2.00f;
     }
-	
-	// Update is called once per frame
-	void Update () {
+    
+    // Update is called once per frame
+    void Update () {
 
         if (!acabou)
         {
@@ -658,7 +658,7 @@ public class ControlaJogador : MonoBehaviour {
             transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y * 3);
         }
         
-	}
+    }
 
     //envto de colisao
     void OnCollisionEnter2D(Collision2D collision)
@@ -694,17 +694,17 @@ public class inimigo : MonoBehaviour {
     GameObject jogador;
     bool marcouPonto;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
         jogador = GameObject.FindGameObjectWithTag("Player");
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
+    
+    // Update is called once per frame
+    void Update () {
+        
         if(transform.position.x < -25)
         {
             Destroy(this.gameObject);
@@ -727,7 +727,7 @@ public class inimigo : MonoBehaviour {
                 
             }
         }
-	}
+    }
 }
 
 
@@ -756,8 +756,8 @@ public class ControlaJogador : MonoBehaviour {
     public Text textScore;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         
         //ADD NOVOS CODIGO
         textScore.transform.position = new Vector2(Screen.width/ 2, Screen.height - 100);//POCISAO TITULO
@@ -766,7 +766,7 @@ public class ControlaJogador : MonoBehaviour {
     }
 
     // Update is called once per frame
-	void Update () {
+    void Update () {
 
         if (!acabou)
         {
@@ -805,17 +805,17 @@ public class inimigo : MonoBehaviour {
     bool marcouPonto;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         GetComponent<Rigidbody2D>().velocity = new Vector2(-4, 0);//empurrar o inimigo para frente
         jogador = GameObject.FindGameObjectWithTag("Player");
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
+    
+    // Update is called once per frame
+    void Update () {
+        
         if(transform.position.x < -25)
         {
             Destroy(this.gameObject);
@@ -842,10 +842,1019 @@ public class inimigo : MonoBehaviour {
                 
             }
         }
-	}
+    }
 
 }
 
 //=======================================================================
+//CARREGAR SENA
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ControlaJogador : MonoBehaviour {
+
+    bool comecou;
+    bool acabou;
+    Rigidbody2D corpoJoigador;
+    Vector2 forcaInpulso = new Vector2(0, 500f); //x, y
+    public GameObject particulaPena;
+    public Text textScore;
+    int pontuacao;
+
+
+    // Use this for initialization
+    void Start () {
+
+        corpoJoigador = GetComponent<Rigidbody2D>();
+        corpoJoigador.gravityScale = 2.00f;
+
+        //textScore.transform.position = new Vector2(Screen.width/2, Screen.height - 200);
+        textScore.text= "Toque para iniciar";
+        textScore.fontSize = 35;
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        if (!acabou)
+        {
+            //evento  touch ou click
+            if (Input.GetButtonDown("Fire1"))
+            {
+                if (!comecou)
+                {
+                    comecou = true;
+                    corpoJoigador.isKinematic = false; //habilita a graviudade
+
+                    //add pontuacao
+                    textScore.text = pontuacao.ToString();
+                   
+
+                }
+
+                //zera avelocidade
+                corpoJoigador.velocity = new Vector2(0, 0);
+                corpoJoigador.AddForce(forcaInpulso);
+
+                //Instacia pena
+                GameObject peninhas = Instantiate(particulaPena);
+                Vector3 pocisaoFeupudo = this.transform.position + new Vector3(0, 10, 0);//posicionar particula ao centro
+                peninhas.transform.position = this.transform.position; //add posicao junto ao jogador
+            }
+
+            float alturaFelpudoEmPixel = Camera.main.WorldToScreenPoint(transform.position).y;
+            if (alturaFelpudoEmPixel > Screen.height || alturaFelpudoEmPixel < 0)
+            {
+                //Destroy(this.gameObject);
+                efeitColisao();
+                fimDeJogo();
+            }
+
+            //Enpinar porsonagem
+            transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y * 3);
+        }
+        
+    }
+
+    //envto de colisao
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!acabou)
+        {
+            efeitColisao();
+
+        }
+    }
+
+    //evento colisao dp jogad
+    void efeitColisao()
+    {
+        acabou = true;
+        GetComponent<Collider2D>().enabled = false;//desliga colisor
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;//velocidade = 0 
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(-300, 0));//Girar 
+        GetComponent<Rigidbody2D>().AddTorque(300f);//Girar 
+
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.75f, 0.75f);//mudar a cor
+
+        //---------------------------------------------------------------------------------------//
+        //ADD CODIGO
+        //---------------------------------------------------------------------------------------//
+        fimDeJogo();
+        //---------------------------------------------------------------------------------------//
+    }
+
+    void MarcarPonto()
+    {
+        pontuacao++;
+        textScore.text = pontuacao.ToString();
+    }
+
+
+    //---------------------------------------------------------------------------------------//
+    //ADD CODIGO
+    //---------------------------------------------------------------------------------------//
+    //Quando houver colisao recarrega o cena apos 2 segundos
+    void fimDeJogo()
+    {
+        Invoke("RecarregarCena", 2);
+    }
+
+    void RecarregarCena()
+    {
+        Application.LoadLevel("SampleScene"); //nome da sena
+    }
+}
+
+
+
+//=======================================================================
+//CARREGAR INIMIGO APOS CLICK
+//=======================================================================
+// 1- DENTRO DO SCRIPT ENGINE ADD NOVOS CODIGOS
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+//criar os inimigos na sena
+public class GameEngine_ : MonoBehaviour {
+
+    public GameObject inimigo;
+
+    // Use this for initialization
+    void Comecou() {
+
+        InvokeRepeating("criarInimigo", 0.0f/*atraso*/, 1.5f);//CHAMA O METODO CRIAR PERSONAGEM 
+    }
+    
+    void criarInimigo()
+    {
+        float altturaAleatioria = 10.0f * Random.value - 5;
+        GameObject novoInimigo = Instantiate(inimigo);
+        novoInimigo.transform.position = new Vector2(15.0f, altturaAleatioria);
+    }
+
+    void Acabou()
+    {
+        CancelInvoke("criarInimigo");
+    }
+}
+
+//=======================================================================
+// 2 - MODIFICAR SCRIPT JOGador
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ControlaJogador : MonoBehaviour {
+
+    bool comecou;
+    bool acabou;
+    Rigidbody2D corpoJoigador;
+    Vector2 forcaInpulso = new Vector2(0, 500f); //x, y
+    public GameObject particulaPena;
+    public Text textScore;
+    int pontuacao;
+
+    //instancia objeto
+    GameObject gameengine;
+
+
+    // Use this for initialization
+    void Start () {
+
+        //instancia de objeto pela Tag do objeto do script engine
+        //esta tag esta relacionada onde o inimigo comeca andar para frente
+        gameengine = GameObject.FindGameObjectWithTag("MainCamera");
+
+
+
+        corpoJoigador = GetComponent<Rigidbody2D>();
+        corpoJoigador.gravityScale = 2.00f;
+
+        //textScore.transform.position = new Vector2(Screen.width/2, Screen.height - 200);
+        textScore.text= "Toque para iniciar";
+        textScore.fontSize = 35;
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        if (!acabou)
+        {
+            //evento  touch ou click
+            if (Input.GetButtonDown("Fire1"))
+            {
+                if (!comecou)
+                {
+                    comecou = true;
+                    corpoJoigador.isKinematic = false; //habilita a graviudade
+
+                    //add pontuacao
+                    textScore.text = pontuacao.ToString();
+
+                    //chama metodo para mover os inimigos do scrip engine
+                    gameengine.SendMessage("Comecou");
+
+
+                }
+
+                //zera avelocidade
+                corpoJoigador.velocity = new Vector2(0, 0);
+                corpoJoigador.AddForce(forcaInpulso);
+
+                //Instacia pena
+                GameObject peninhas = Instantiate(particulaPena);
+                Vector3 pocisaoFeupudo = this.transform.position + new Vector3(0, 10, 0);//posicionar particula ao centro
+                peninhas.transform.position = this.transform.position; //add posicao junto ao jogador
+            }
+
+            float alturaFelpudoEmPixel = Camera.main.WorldToScreenPoint(transform.position).y;
+            if (alturaFelpudoEmPixel > Screen.height || alturaFelpudoEmPixel < 0)
+            {
+                //Destroy(this.gameObject);
+                efeitColisao();
+                fimDeJogo();
+            }
+
+            //Enpinar porsonagem
+            transform.rotation = Quaternion.Euler(0, 0, corpoJoigador.velocity.y * 3);
+        }
+        
+    }
+
+    //envto de colisao
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!acabou)
+        {
+            efeitColisao();
+
+        }
+    }
+
+    //evento colisao dp jogad
+    void efeitColisao()
+    {
+        acabou = true;
+        GetComponent<Collider2D>().enabled = false;//desliga colisor
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;//velocidade = 0 
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(-300, 0));//Girar 
+        GetComponent<Rigidbody2D>().AddTorque(300f);//Girar 
+
+        GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.75f, 0.75f);//mudar a cor
+
+        fimDeJogo();
+    }
+
+    void MarcarPonto()
+    {
+        pontuacao++;
+        textScore.text = pontuacao.ToString();
+    }
+
+    //Quando houver colisao recarrega o cena apos 2 segundos
+    void fimDeJogo()
+    {
+        //recebe o metodo do script game engine
+        gameengine.SendMessage("Acabou");
+        Invoke("RecarregarCena", 2);
+    }
+
+    void RecarregarCena()
+    {
+        Application.LoadLevel("SampleScene"); //nome da sena
+    }
+}
+
+
+//=======================================================================
+// EXECUTAR ANDROID NO UNITY
+//=======================================================================
+//1 - buILD sETINGS
+//2 - MUDA PARA ANDRID
+//3 - sWITCH PLATFORMS[DEMOREA UM POUCO]
+//4 - RESOLUTION AND PRESENTATION
+    //4.1 - ORIENTETION : LADSCAPE-RIGHT[HORIZONTAL]
+//5 - ORDER SETTINGS
+    //5.1 - packege name: com.nomeempresa
+
+//6 - BUILD [FIM]
+//=======================================================================
 //----------------------- FIM JOGO AVIAO ------------------------------//
 //=======================================================================
+
+
+
+
+
+//=======================================================================
+//--------------------------- JOGO TIMBER -----------------------------//
+//=======================================================================
+
+//CRIAR JOGO 2D
+//ARRASTAR FUNDO TELA
+//ARRASTAR PESSONAGENS
+//CRIAR GAME OBJECT EMPTY
+//ARRASTAR PERSONAGEM PARA DENTRO DO GAME OBJECT
+
+//=======================================================================
+//CRIAR SCRIPT PARA CAMERA
+//=======================================================================
+//CRIAR CONTROLE DO PESONAGEM
+//CLICAR NA CANTO DA TELA APARECE PESONAGEM BATENTE LADO DIREITO
+//NO OUTRO CANTO APARECER PERSONAGEM LADO ESQUERDO
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour {
+
+    //add os objetos a serem controlados
+    public GameObject jogadorBate;//atribuir a imagen[jogador] ao objeto camera
+    public GameObject jogadorIdle;//atribuir a imagen[jogadorIdle] ao objeto camera
+    public GameObject jogador;//atribuir a imagen[jogadorBate] ao objeto camera
+
+    float escalaJogadorHorzontal;
+
+    // Use this for initialization
+    void Start () {
+
+        escalaJogadorHorzontal = transform.localScale.x;
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //erifica a pociao do clik do mouse na direita
+            if(Input.mousePosition.x > Screen.width / 2)
+            {
+                bateDireita();
+            }
+            else
+            {
+                bateEsquerda();
+            }
+        }
+    }
+ 
+    void bateDireita()
+    {
+        jogador.transform.position = new Vector2(1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(escalaJogadorHorzontal, jogador.transform.localScale.y);
+    }
+
+    void bateEsquerda()
+    {
+        jogador.transform.position = new Vector2(-1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(-escalaJogadorHorzontal, jogador.transform.localScale.y);
+    }
+}
+
+//=======================================================================
+//ALTERAR PERSONAGEM
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour {
+
+    //add os objetos a serem controlados
+    public GameObject jogadorBate;
+    public GameObject jogadorIdle;
+    public GameObject jogador;
+
+    float escalaJogadorHorzontal;
+
+    // Use this for initialization
+    void Start () {
+
+        escalaJogadorHorzontal = transform.localScale.x;
+        
+        //esconde personagemcom martelo
+        jogadorBate.SetActive(false);
+
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        //evenyocick mouse
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //erifica a pociao do clik do mouse na direita
+            if(Input.mousePosition.x > Screen.width / 2)
+            {
+                bateDireita();
+            }
+            else
+            {
+                bateEsquerda();
+            }
+        }
+    }
+ 
+    void bateDireita()
+    {
+        //esconde personagemcom martelo
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(-escalaJogadorHorzontal, jogador.transform.localScale.y);
+
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+    }
+
+    void bateEsquerda()
+    {
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(-1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(escalaJogadorHorzontal, jogador.transform.localScale.y);
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+    }
+
+    void VoltarAnimacao()
+    {
+        jogadorIdle.SetActive(true);//jogador idle some
+        jogadorBate.SetActive(false);//jogador batendo aparece
+    }
+}
+
+//=======================================================================
+//CRIAR INIMIGO
+//=======================================================================
+//ADD BARRIL[NOTRAM, DIREITA, ESQUERDA] A CENA TOOS COM O MESMO TAMANHO
+//TRANSFORMAR AMBS EM UM PREFABS
+//ALTERAR SCRIPT CONTROLADOR
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour {
+
+    //add os objetos a serem controlados
+    public GameObject jogadorBate;
+    public GameObject jogadorIdle;
+    public GameObject jogador;
+
+    //INIMIGO
+    public GameObject barril;
+    public GameObject barrilEsq;
+    public GameObject barrilDir;
+
+    float escalaJogadorHorzontal;
+
+    // Use this for initialization
+    void Start () {
+
+        /*.....*/
+        GameObject barril = CriarNovoBarril(new Vector2(0, -2.0f));//criar novo barrial
+    }
+
+    //criar novo objeto automatico
+    GameObject CriarNovoBarril(Vector2 posicao)
+    {
+        GameObject novoBarril;
+        if (Random.value > 0.5f)
+        {
+            novoBarril = Instantiate(barril);
+        }
+        else
+        {
+            if (Random.value > 0.5f)
+                novoBarril = Instantiate(barrilDir);
+            else
+                novoBarril = Instantiate(barrilEsq);
+        }
+        //pociona o barril passado via parametro
+        novoBarril.transform.position = posicao;
+        return novoBarril;
+    }
+}
+
+//=======================================================================
+//POSICIONAR BARRIL UM EM CIMA DO OUTRO
+//=======================================================================
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Collections.Generic;
+
+public class CameraScript : MonoBehaviour {
+
+    //add os objetos a serem controlados
+    public GameObject jogadorBate;
+    public GameObject jogadorIdle;
+    public GameObject jogador;
+
+    //INIMIGO
+    public GameObject barril;
+    public GameObject barrilEsq;
+    public GameObject barrilDir;
+
+    float escalaJogadorHorzontal;
+
+    //CRIAR LISTA DE OBJECTOS
+    private List<GameObject> listaBlocos;
+
+
+    // Use this for initialization
+    void Start () {
+
+        escalaJogadorHorzontal = transform.localScale.x;
+        
+        //esconde personagemcom martelo
+        jogadorBate.SetActive(false);
+
+        //instancia lista
+        listaBlocos = new List<GameObject>();
+
+        //criar novo barril
+        CriarBArrilInicio();
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //erifica a pociao do clik do mouse na direita
+            if(Input.mousePosition.x > Screen.width / 2)
+            {
+                bateDireita();
+            }
+            else
+            {
+                bateEsquerda();
+            }
+        }
+    }
+ 
+    void bateDireita()
+    {
+        //esconde personagemcom martelo
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(-escalaJogadorHorzontal, jogador.transform.localScale.y);
+
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+    }
+
+    void bateEsquerda()
+    {
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(-1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(escalaJogadorHorzontal, jogador.transform.localScale.y);
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+    }
+
+    void VoltarAnimacao()
+    {
+        jogadorIdle.SetActive(true);//jogador idle some
+        jogadorBate.SetActive(false);//jogador batendo aparece
+    }
+
+    GameObject CriarNovoBarril(Vector2 posicao)
+    {
+        GameObject novoBarril;
+        
+        
+        if (Random.value > 0.5f || (listaBlocos.Count < 2)/*inicia os tres barris vazios*/)
+        {
+            novoBarril = Instantiate(barril);
+        }
+        else
+        {
+            if (Random.value > 0.5f)
+                novoBarril = Instantiate(barrilDir);
+            else
+                novoBarril = Instantiate(barrilEsq);
+        }
+        //pociona o barril passado via parametro
+        novoBarril.transform.position = posicao;
+        return novoBarril;
+    }
+
+    void CriarBArrilInicio()
+    {
+        for(int i = 0; i <=7; i++)
+        {
+            GameObject objBarril = CriarNovoBarril(new Vector2(0, -2.03f + (i*0.99f)));//poiciona onjeto um em cima do outro
+            listaBlocos.Add(objBarril);
+        }
+    }
+}
+
+
+//=======================================================================
+//DESTRUIR BARRIL
+//=======================================================================
+//ADD SCRIP PARA BARRIL
+//ADD SCRIPT A CADA PREFABS DO BARRAIL[BARRIL, BARRIL DIREITO, ESQUERDO]
+//ADD RIGIDYBODY PARA CADA BARRIL & MARCAR COMO KINEMAT
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Barril : MonoBehaviour {
+
+    //Remove barril pela direita
+    void BateDireita() {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(-10, 2);
+        GetComponent<Rigidbody2D>().isKinematic = false;
+        GetComponent<Rigidbody2D>().AddTorque(100.0f);//girar personagem
+
+        Invoke("ApagarObjeto", 2.0f);
+    }
+
+    ///Remove barril pela direita
+    void BateEsquerda() {
+
+        GetComponent<Rigidbody2D>().velocity = new Vector2(10, 2);
+        GetComponent<Rigidbody2D>().isKinematic = false;
+        GetComponent<Rigidbody2D>().AddTorque(-100.0f);//girar personagem
+
+        Invoke("ApagarObjeto", 2.0f);
+    }
+
+    //Destroi objeto
+    void ApagarObjeto()
+    {
+        Destroy(this.gameObject);
+    }
+}
+
+//=======================================================================
+//ATUALIZAR SCRIPT CONTROLLADOR
+//=======================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour {
+
+    //add os objetos a serem controlados
+    public GameObject jogadorBate;
+    public GameObject jogadorIdle;
+    public GameObject jogador;
+
+    //INIMIGO
+    public GameObject barril;
+    public GameObject barrilEsq;
+    public GameObject barrilDir;
+
+    float escalaJogadorHorzontal;
+
+    //CRIAR LISTA DE OBJECTOS
+    private List<GameObject> listaBlocos;
+
+
+    // Use this for initialization
+    void Start () {
+
+        escalaJogadorHorzontal = transform.localScale.x;
+
+        //esconde personagemcom martelo
+        jogadorBate.SetActive(false);
+
+        //instancia lista
+        listaBlocos = new List<GameObject>();
+
+        //criar novo barril
+        CriarBarrilInicio();
+    }
+    
+    // Update is called once per frame
+    void Update () {
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //erifica a pociao do clik do mouse na direita
+            if(Input.mousePosition.x > Screen.width / 2)
+            {
+                bateDireita();
+            }
+
+            else
+            {
+                bateEsquerda();
+            }
+
+            //remove item da lista
+            listaBlocos.RemoveAt(0);
+        }
+    }
+ 
+    //Mudar a opcao de jogador quando clicar no canto da tela
+    void bateDireita()
+    {
+        //esconde personagemcom martelo
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(-escalaJogadorHorzontal, jogador.transform.localScale.y);
+
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+
+        //remove o primeiro item da lista
+        listaBlocos[0].SendMessage("BateDireita");
+    }
+
+    //Mudar a opcao de jogador quando clicar no canto da tela
+    void bateEsquerda()
+    {
+        jogadorIdle.SetActive(false);//jogador idle some
+        jogadorBate.SetActive(true);//jogador batendo aparece
+        jogador.transform.position = new Vector2(-1.1f, jogador.transform.position.y);
+        jogador.transform.localScale = new Vector2(escalaJogadorHorzontal, jogador.transform.localScale.y);
+
+        //executa animacao apos x segundo
+        Invoke("VoltarAnimacao", 0.25f);
+
+        //remove o primeiro item da lista
+        listaBlocos[0].SendMessage("BateEsquerda");
+    }
+
+    void VoltarAnimacao()
+    {
+        jogadorIdle.SetActive(true);//jogador idle some
+        jogadorBate.SetActive(false);//jogador batendo aparece
+    }
+
+    void CriarBarrilInicio()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            GameObject objetoBarril = CriarNovoBarril(new Vector2(0, -2.03f+(i * 0.99f))); //pociona onjeto um em cima do outro
+            listaBlocos.Add(objetoBarril);
+        }
+    }
+
+    GameObject CriarNovoBarril(Vector2 posicao)
+    {
+        GameObject br;
+
+        if (listaBlocos.Count < 3)
+        {
+            br = Instantiate(barril);
+        }
+
+        else
+        {
+            if (Random.value > 0.5f)
+            {
+                br = Instantiate(barrilDir);
+            }
+
+            else
+            {
+                br = Instantiate(barrilEsq);
+            }
+        }
+
+        //pociona o barril passado via parametro
+        br.transform.position = posicao;
+        return br;
+    }    
+}
+
+//=======================================================================
+//REPOSICIONAR BARRIL
+//=======================================================================
+
+//ATUALIZAR SCRIPT JOGADOR
+
+// Update is called once per frame
+    void Update () {
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //erifica a pociao do clik do mouse na direita
+            if(Input.mousePosition.x > Screen.width / 2)
+            {
+                bateDireita();
+            }
+
+            else
+            {
+                bateEsquerda();
+            }
+
+            //remove item da lista
+            listaBlocos.RemoveAt(0);
+            ReposicionarBaril();
+        }
+    }
+
+void ReposicionarBaril()
+{
+    GameObject objetoBarril = CriarNovoBarril(new Vector2(0, -2.03f + (8/*ultima posicao*/ * 0.99f)));
+    listaBlocos.Add(objetoBarril);
+
+    //reposicionar Y
+    for (int i = 0; i < 7; i++)
+    {
+        listaBlocos[i].transform.position = new Vector2(listaBlocos[i].transform.position.x,
+            listaBlocos[i].transform.position.y-0.99f);
+    }
+
+}
+
+//=======================================================================
+//VERIFICAR SE PERSONAGEM FOI ACERTADO PELOI INIMIGO
+//=======================================================================
+//ADD TAG[Inimigo] AO PROFABS BARRIL
+//ATUALIZAR  SCRIPT JOGADOR
+
+
+void Update () {
+
+    if (Input.GetButtonDown("Fire1"))
+    {
+        //erifica a pociao do clik do mouse na direita
+        if(Input.mousePosition.x > Screen.width / 2)
+        {
+             bateDireita();
+        }
+
+        else
+        {
+             bateEsquerda();
+        }
+
+         //remove item da lista
+        listaBlocos.RemoveAt(0);
+        ConfereJogada();
+        ReposicionarBaril();
+    }
+}
+
+void ConfereJogada()
+{
+    //verifica se o item 1 esta na direita ou na esquerda
+    if (listaBlocos[0].gameObject.CompareTag("Inimigo"))
+    {
+
+        if ((listaBlocos[0].name == "inimigoEsq(Clone)" && !ladoPersonagem) || 
+                (listaBlocos[0].name == "inimigoDir(Clone)" && ladoPersonagem))
+        {
+             print("Errou");
+        }
+
+        else
+        {
+            print("Acertou");
+        }
+    }
+
+    else
+    {
+        print("Acertou");
+    }
+}
+
+
+//=======================================================================
+//CRIAR PONTUACAO
+//=======================================================================
+//ADD TEXT [REST TRANSFORMS]
+//ADD TEXT AO SCRIPT CAMERA
+
+void MarcarPonto()
+{
+    score++;
+    pontuacao.text ="SCRORE: "+ score.ToString();
+}
+
+//ATUALIZAR SCRIPT
+//verifica se o inimigo acertou jogador
+void ConfereJogada()
+{
+    //verifica se o item 1 esta na direita ou na esquerda
+    if (listaBlocos[0].gameObject.CompareTag("Inimigo"))
+    {
+
+        if ((listaBlocos[0].name == "inimigoEsq(Clone)" && !ladoPersonagem) || (listaBlocos[0].name == "inimigoDir(Clone)" && ladoPersonagem))
+        {
+            print("Errou");
+        }
+
+        else
+        {
+            print("Acertou");
+            MarcarPonto();
+            }
+        }
+        
+        else
+        {
+            print("Acertou");
+            MarcarPonto();
+        }
+    }
+}
+
+
+//=======================================================================
+//FIM DE JOGO
+//=======================================================================
+//ADD RIGIDYBODY NO JOGADOP & MARCAR ISKINOMAT 
+//ATUALIZAR SCRIPT COM FUNCAO FIMDOJOGO
+//verifica se o inimigo acertou jogador
+void ConfereJogada()
+{
+    //verifica se o item 1 esta na direita ou na esquerda
+    if (listaBlocos[0].gameObject.CompareTag("Inimigo"))
+    {
+
+        if ((listaBlocos[0].name == "inimigoEsq(Clone)" && !ladoPersonagem) ||  (listaBlocos[0].name == "inimigoDir(Clone)" && ladoPersonagem))
+        {
+            print("Errou Barril");
+            FimDeJogo();
+        }
+
+        else
+        {
+            print("Acertou Barril");
+            MarcarPonto();
+        }
+    }
+    
+    else
+    {
+        print("Acertou Barril");
+        MarcarPonto();
+    }
+}
+
+void FimDeJogo()
+{
+    acabou = true;
+    jogadorBate.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.35f, 0.35f);
+    jogadorIdle.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.35f, 0.35f);
+
+    jogador.GetComponent<Rigidbody2D>().isKinematic = false;
+        
+
+    //verifica o lado
+    if (ladoPersonagem)
+    {
+        jogador.GetComponent<Rigidbody2D>().AddTorque(100.0f);
+        jogador.GetComponent<Rigidbody2D>().velocity = new Vector2(-5.0f, 3.0f);
+    }
+    
+    else
+    {
+        jogador.GetComponent<Rigidbody2D>().AddTorque(-100.0f);
+        jogador.GetComponent<Rigidbody2D>().velocity = new Vector2(-5.0f, 3.0f);
+    }
+
+    Invoke("RecarregarCena", 2/*2 seg*/);
+}
+
+void RecarregarCena()
+{
+    Application.LoadLevel("SceneLevel1");        
+}
+
+//=======================================================================
+//--------------------------- FIM JOGO TIMBER -------------------------//
+//=======================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
