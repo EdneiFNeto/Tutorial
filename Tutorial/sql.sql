@@ -268,3 +268,48 @@ GROUP BY c.rota, c.codigo, c.nome
 HAVING  c.nome = 'Rede Aerea'
 ORDER BY c.codigo ASC
 
+
+
+------------------------------------------------
+--TTANSFORMAR INT EM DATA
+------------------------------------------------
+SELECT to_timestamp('15294081780')
+
+-------------------------------------------------
+--select data e hora
+-------------------------------------------------
+SELECT CURRENT_TIMESTAMP(0) - interval '4 hour';
+-------------------------------------------------
+
+--13:00 - 04:00 = 10hs
+--ler os dados de 13hs ate as 10hs
+-------------------------------------------------
+--SELCTR DADOS POR PERIODO DE 4 HORAS 
+-------------------------------------------------
+select 
+	to_timestamp(data) as data, 
+	valor from log_carac_3277 
+where  to_timestamp(data)
+between  CURRENT_TIMESTAMP(0) - interval '4 hour' and  CURRENT_TIMESTAMP(0) 
+order by data desc;
+
+--select todas as datas on sao maior que a data de hi
+SELECT 
+	to_timestamp(data) as data, 
+	valor 
+from log_carac_3277 
+where to_timestamp(data) >= current_date and 
+
+--select 
+SELECT 
+	to_timestamp(data) as data, 
+	valor 
+from log_carac_3277 
+where to_timestamp(data) between '2018-06-19 00:00:00' and '2018-06-19 13:00:00' 
+
+
+
+
+
+
+
