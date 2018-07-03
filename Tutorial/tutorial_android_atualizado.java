@@ -3691,4 +3691,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 }
 
+//===============================================
+//EVENTO PRESSIONAR BUTAN BACK
+//==============================================
+  @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("canal", canal);
+        intent.putExtra("user", user);
+        intent.putExtra("senha", senha);
+        Toast.makeText(this, "Canal: "+canal + "\nUser " + user + "\nSenha " + senha, Toast.LENGTH_LONG).show();
+        //startActivity(intent);
+    }
+
 
