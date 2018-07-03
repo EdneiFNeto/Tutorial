@@ -3705,4 +3705,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //startActivity(intent);
     }
 
+//===============================================
+//EXIBIR OLHO NO INPUT
+//==============================================
+ <android.support.design.widget.TextInputLayout
+            android:id="@+id/password_til"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/colorPrimary">
 
+        <EditText
+            android:id="@+id/editTSenha"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_input"
+            android:paddingBottom="12dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="12dp" />
+
+        </android.support.design.widget.TextInputLayout>
