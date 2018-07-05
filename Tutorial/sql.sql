@@ -308,6 +308,57 @@ from log_carac_3277
 where to_timestamp(data) between '2018-06-19 00:00:00' and '2018-06-19 13:00:00' 
 
 
+--select * from backup_fibras limit 1
+--SELECT DATE_PART('year', data) AS dia from backup_fibras ;
+
+select 
+	cod_cabo, 
+	data,
+	current_timestamp(0) - interval '1 hours' as intervalo,  
+	current_timestamp(0) as data_ini
+from backup_fibras 
+where data between  current_timestamp(0) - interval '1 hours' and CURRENT_TIMESTAMP(0) 
+order by data asc
+
+
+select 
+	cod_cabo, 
+	data
+from backup_fibras 
+where data between  current_timestamp(0) - interval '10 minute' and CURRENT_TIMESTAMP(0) 
+order by data asc
+
+
+--select todos os registro com intervalo de 4 horas
+select current_timestamp(0) - interval '4hours' as data
+
+--select todos os registro com intervalo de 12 horas
+select current_timestamp(0) - interval '12hours' as data
+
+--select todos os registro com intervalo de 1 dia
+select current_timestamp(0) - interval '1 day' as data
+
+--select data e hora atual
+select current_timestamp(0)
+
+--select os utoimos regiostro do banco
+select * from backup_fibras where data between '2018-07-04' and 
+
+--todos oa dados comm intervalo de um dia
+select cod_cabo, data as data from backup_fibras where data between current_timestamp(0) - interval '1 day' and current_timestamp(0)
+
+--select todos os registro do dia 4
+SELECT * from backup_fibras where date_part('day', data) <= 4
+
+--select todos os registro do dia 4
+SELECT * from backup_fibras where date_part('minute', data) <= 10
+
+--select todos os registro do data atual com o intervalo entre os tempos
+SELECT * from backup_fibras where data between current_timestamp(0) - interval '1 day' 
+
+SELECT DATE_PART('hour', data) AS minutio,  DATE_PART('minute', data) AS segundo from backup_fibras limit 1;
+
+
 
 
 
