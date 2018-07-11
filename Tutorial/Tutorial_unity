@@ -1849,6 +1849,52 @@ void RecarregarCena()
 
 
 
+//==================================================================================
+// JOGO AVENTURA PLATAFORMA
+//==================================================================================
+//IMPORTA ASSETS PARA DENTRO DA PASTA
+//EM INPECTOR texture default : sprite 2D UI [MARCAR AS IMAGENS [BOTAO, E VIDA[HUDS] COMO ] POR QUE AS IMAGENS SERA USADA COMO ITEFACE
+//add mash collider na plataforma e no piso
+
+//criar novo node [Gameobject : terreno, zerar os propertys] e add chao e plataforma ao terreno
+
+//================ OVO ============================================================
+//criar particulas para o ovinho
+//crear node [Gameobject: ItemOvo ]add ovo
+//Add Box collider, criar prefabs domovo e apagalo da cena
+
+//================== PENINHA ======================================================
+//criar novo node[Game object: ItemPena]
+//add peninha ao node, add box collider a peninha
+//add Script ao NODE [arrastando script ao nod]
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GirarObject : MonoBehaviour {
+	
+	// Update is called once per frame
+	void Update () {
+        transform.Rotate(new Vector3(0, 90, 0) * Time.deltaTime);
+	}
+}
+
+//criar pre fabs do item da peninha[ Afrastar para dentro dapasta assets]
+
+//================== ESTRELINHA ======================================================
+//criar object point light, arrastar para dentro da peninha
+//criar node[GameObject: itemEstrela], add estrela e ponti light para dentro do node, add Box Collider, 
+//colocar a estrela em cima da plataforma 
+
+//================== OBSTATUCO PARA NAO PEGAR ESTRELA ======================================================
+//ADD CUBO --> ADD MATERIAL AO CUBO[Render maretial : transparent, color colocar o alha em 0], add colisor 
+
+//==================CRIAR PERSONAGEM ======================================================
+//Na opcao read-->Anomation Type--> Legacy[desebilita hierarquia de animacao]
+//Na Aba Animation [Em player add nome[ido] start :0 ,end: 50, Wrap mode: loop]
+//add outro clip[ precione o botao de +]
+//criar node[Gameobject: Jogador], add caracter controller, add box collider
+
 
 
 
