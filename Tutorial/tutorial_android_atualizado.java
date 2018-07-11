@@ -3753,3 +3753,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+                   
+//============================================================
+//TELA LIGADA
+//============================================================
+ getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);                  
+                    
