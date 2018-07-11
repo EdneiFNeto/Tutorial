@@ -3726,3 +3726,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             android:paddingTop="12dp" />
 
         </android.support.design.widget.TextInputLayout>
+        
+//===============================================
+//ORIENTATION 
+//==============================================
+                
+                   @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            Log.e(TAG,"LANDSCAPE");
+        }
+        else{
+            Log.e(TAG,"PORTRAIT");
+        }
+    }
+
+//manifest 
+ <activity
+            android:name=".ActivityTeste"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
