@@ -1896,6 +1896,47 @@ public class GirarObject : MonoBehaviour {
 //criar node[Gameobject: Jogador], add caracter controller, add box collider
 
 
+//========================================================
+//JOYSTICK VRITUAL [MOVER JOGADOR]
+//========================================================
+//IMPORT JOYSTICKL PACKAGE
+//CRIAR CANVAS 
+//ADD PROPRIEDADE CANVAS SCALAR [SCALE WHIT SCREEN SIZE]
+//ADD JOYSTIK NO CANVAS
+//OBS: JOISTICK JA VEM COM JOYSTICK CONFIGURADO
+//========================================================
+//CRIAR PERSONAGEM
+//ADD RIGIDBODY, E SCRIPT AO PERSONAGEM
+//========================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+//SCRIPT PERSONAGEM
+public class MyScript : MonoBehaviour {
+
+    protected Joystick joystick;//INSTANCIA DA CLASS JOSYTICK[IMPORTADO NO PACOTE]
+
+	// Use this for initialization
+	void Start () {
+        joystick = FindObjectOfType<Joystick>();
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+        var rigidbody = GetComponent<Rigidbody>();
+        rigidbody.velocity = new Vector3(joystick.Horizontal * 50f + Input.GetAxis("Horizontal") * 50f, 
+            rigidbody.velocity.y, 
+            joystick.Vertical * 50f + Input.GetAxis("Vertical") * 50f);
+	}
+}
+
+
+
+
+
+
 
 
 
