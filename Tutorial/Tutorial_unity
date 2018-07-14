@@ -1935,6 +1935,251 @@ public class MyScript : MonoBehaviour {
 
 
 
+//==================================================================================
+// JOGO AVENTURA PLATAFORMA
+//==================================================================================
+//IMPORTA ASSETS PARA DENTRO DA PASTA
+//EM INPECTOR texture default : sprite 2D UI [MARCAR AS IMAGENS [BOTAO, E VIDA[HUDS] COMO ] POR QUE AS IMAGENS SERA USADA COMO ITEFACE
+//add mash collider na plataforma e no piso
+
+//criar novo node [Gameobject : terreno, zerar os propertys] e add chao e plataforma ao terreno
+
+//================ OVO ============================================================
+//criar particulas para o ovinho
+//crear node [Gameobject: ItemOvo ]add ovo
+//Add Box collider, criar prefabs domovo e apagalo da cena
+
+//================== PENINHA ======================================================
+//criar novo node[Game object: ItemPena]
+//add peninha ao node, add box collider a peninha
+//add Script ao NODE [arrastando script ao nod]
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GirarObject : MonoBehaviour {
+	
+	// Update is called once per frame
+	void Update () {
+        transform.Rotate(new Vector3(0, 90, 0) * Time.deltaTime);
+	}
+}
+
+//criar pre fabs do item da peninha[ Afrastar para dentro dapasta assets]
+
+//================== ESTRELINHA ======================================================
+//criar object point light, arrastar para dentro da peninha
+//criar node[GameObject: itemEstrela], add estrela e ponti light para dentro do node, add Box Collider, 
+//colocar a estrela em cima da plataforma 
+
+//================== OBSTATUCO PARA NAO PEGAR ESTRELA ======================================================
+//ADD CUBO --> ADD MATERIAL AO CUBO[Render maretial : transparent, color colocar o alha em 0], add colisor 
+
+//==================CRIAR PERSONAGEM ======================================================
+//Na opcao read-->Anomation Type--> Legacy[desebilita hierarquia de animacao]
+//Na Aba Animation [Em player add nome[ido] start :0 ,end: 50, Wrap mode: loop]
+//add outro clip[ precione o botao de +]
+//criar node[Gameobject: Jogador], add caracter controller, add box collider
+
+//========================================================================================
+//MOVENDO PERSONAGEM
+//========================================================================================
+//CRIAR NODE VAZIO
+//ADD PERSOGEM AO NODE[PREFABS]
+//ADD PHISIC[ CHARACTER CONTROLLER AO NODE]
+//ADD SCRIPT PARA MOVER PERSONAGEM
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ControleBasico : MonoBehaviour {
+
+    CharacterController jogador;
+    float velocidade = 5.0f;
+    float giro = 180.0f;
+    float gravidade = 3.5f;
+    float pulo= 5.0f;
+
+    Vector3 direcaoGravidade = new Vector3(0, 0, 0);
+	
+    // Use this for initialization
+	void Start () {
+        jogador = GetComponent<CharacterController>();
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+        //Anda com o personagem para frente e para tras
+        Vector3 movimento = Input.GetAxis("Vertical") * transform.TransformDirection(Vector3.forward)* velocidade;
+
+        //Girar o personagem
+        transform.Rotate(new Vector3(0, Input.GetAxis("Horizontal") * giro *Time.deltaTime) );
+
+        jogador.Move(movimento * Time.deltaTime);
+    }
+}
+
+
+
+//========================================================================================
+//THOUCH CAMERA CONTROLER
+//========================================================================================
+//IMPORT PACKEGE CHARACTER
+//ENTRAR NA PASTA CHARACTER/FIRSTPERSONCHARACTER/PREFABS/RIGIDBODYFPSCONTROLLER
+//IMPORTAT JOYSTICKE PACKAGE
+
+//=======ADD COMPONENTS=================================================================================
+//ADD RIGIDBODYFPSCONTROLLER AO CENARIO
+//ADD CANVAS AO CENARIO
+//ADD JOYSTICK AO CANVAS
+//ADD PAINEL AO CANVAS [NO PAINEL ADD SCRIPT FIXED TOUCH FIELD]
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class FixedTouchField : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+{
+    [HideInInspector]
+    public Vector2 TouchDist;
+    [HideInInspector]
+    public Vector2 PointerOld;
+    [HideInInspector]
+    protected int PointerId;
+    [HideInInspector]
+    public bool Pressed;
+
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Pressed)
+        {
+            if (PointerId >= 0 && PointerId < Input.touches.Length)
+            {
+                TouchDist = Input.touches[PointerId].position - PointerOld;
+                PointerOld = Input.touches[PointerId].position;
+            }
+            else
+            {
+                TouchDist = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - PointerOld;
+                PointerOld = Input.mousePosition;
+            }
+        }
+        else
+        {
+            TouchDist = new Vector2();
+        }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Pressed = true;
+        PointerId = eventData.pointerId;
+        PointerOld = eventData.position;
+    }
+
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Pressed = false;
+    }
+   
+}
+
+//=======EDITAR SCRIPT=================================================================================
+//EDITAR SCRIPTS RIGIDBODYFPSCONTROLLER
+//=====================================================================================================
+private Rigidbody m_RigidBody;
+private CapsuleCollider m_Capsule;
+private float m_YRotation;
+private Vector3 m_GroundContactNormal;
+private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+
+//Novos campos adicionado
+[HideInInspector] 
+public Vector2 RunAxis;
+[HideInInspector]
+public bool JumpAxis;
+
+ private void Update()
+{
+	RotateView();
+	//campo modificado
+	if (JumpAxis && !m_Jump)
+    {
+    	m_Jump = true;
+    }
+}
+
+private Vector2 GetInput()
+{
+	Vector2 input = new Vector2
+    {
+		x = RunAxis.x,//campo modificado
+		y = RunAxis.y//campo modificado
+    };
+	movementSettings.UpdateDesiredTargetSpeed(input);
+    return input;
+}
+
+//=============EDITAR SCRIPT MOUSELOOK=============================================================
+
+private Quaternion m_CharacterTargetRot;
+private Quaternion m_CameraTargetRot;
+private bool m_cursorIsLocked = true;
+
+[HideInInspector]
+public Vector2 LookAxis;
+
+public void LookRotation(Transform character, Transform camera)
+{
+float yRot = LookAxis.x  * XSensitivity;
+float xRot = LookAxis.y * YSensitivity;
+
+//=============EDITAR SCRIPT MYSCRIPT[ADD SCRIPT AO RIGIDBODYFPSCONTROLLER] =========================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityStandardAssets.Characters.FirstPerson;
+
+public class MyScrip : MonoBehaviour {
+
+	public FixedJoystick moveJoystick;
+	public FixedTouchField touchField;
+
+	// Use this for initialization
+	void Start () {
+		
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		var fps = GetComponent<RigidbodyFirstPersonController> ();
+		fps.RunAxis = moveJoystick.inputVector;
+		fps.mouseLook.LookAxis = touchField.TouchDust;
+
+	}
+}
+
+//======================================================================================================
+//OBS: AO CRIAR AS VARIAVEIS: 
+//	public FixedJoystick moveJoystick; 
+//	public FixedTouchField touchField; NO SCRIPT [MYSCRIPT]
+//TEMQUE SELECIONAR O RIGIDBODYFPSCONTROLLER E NO CAMPO ONDE APARECE AS VARIAVEL[INSPECOTR] 
+//ADICIONE OS SCRIPTS PARA CADA VARIAVEL CORREPONDENTE
+//======================================================================================================
+//=================================== FIM ==============================================================
+//======================================================================================================
+
+
+
+
 
 
 
