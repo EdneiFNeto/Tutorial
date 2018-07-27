@@ -342,8 +342,8 @@ bool retorno = false;
 
 //=====================================================
 //LED 
-//LED : ENTRADA MAIOR LIGA NO RESISTOR  NO JUMPER VERMELHO.
-//LED : ENTRADA menor LIGA NO JUNPER PRETO.
+//LED : ENTRADA MENOR LIGA NO RESISTOR  NO JUMPER VERMELHO.
+//LED : ENTRADA MAIOR LIGA NO JUNPER PRETO.
 //JUNPER: VERMELHO GND (POSITIVO)
 //JUNPER: PRETO PIN 10 (NEGATIVO)
 //=====================================================
