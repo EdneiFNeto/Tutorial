@@ -3495,6 +3495,16 @@ dependencies {
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        
+            <!-- my toolbar -->
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
     </LinearLayout>
 
     <!-- NAVGATION VIEW [ficar fora fo layout] -->
@@ -3529,167 +3539,70 @@ import android.widget.VideoView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private ProgressDialog progressDialog;
+   package com.minhacasa.appminhacasa;
 
-    private final String videoURL = "http://189.45.13.225/stream.php.m3u8?user=user&pass=passnb1&" +
-            "token=1530019742&s=stream50.m3u8";
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
-    private VideoView videoView;
-    private  ImageView imgImageView;
-    private ImageButton btn_play, btn_pause, btn_full;
-    private LinearLayout layout;
-    private boolean removeImagem  = false;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener{
+
+    private Toolbar toolbar;
+    private ActionBarDrawerToggle mToggle;
     public NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    public String canalAtual="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        toolbar.inflateMenu(R.menu.menu_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.draw_layer);
 
+        mToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.setDrawerListener(mToggle);
+        mToggle.syncState();
+
         navigationView.setNavigationItemSelectedListener(this);
-
-        layout = (LinearLayout) findViewById(R.id.relative_layout_video);
-        imgImageView = new ImageView(this);
-        imgImageView.setImageResource(R.drawable.fundo_player);
-        imgImageView.setBackgroundColor(getResources().getColor(R.color.colorBlack));
-
-        LinearLayout.LayoutParams  params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        videoView = new VideoView(this);
-        videoView.setPadding(0, 12, 0, 0);
-        videoView.setLayoutParams(params);
-
-        layout.addView(imgImageView);
-
-        btn_play  = (ImageButton) findViewById(R.id.btn_play) ;
-        btn_pause = (ImageButton) findViewById(R.id.btn_pause) ;
-        btn_full = (ImageButton) findViewById(R.id.btn_full) ;
-
-        btn_pause.setEnabled(false);
-        btn_full.setEnabled(false);
-
-        btn_play.setOnClickListener(this);
-        btn_pause.setOnClickListener(this);
-        btn_full.setOnClickListener(this);
-
-        canalAtual = "rede_globo";
-
     }
 
-
-
-    /* Play  video */
     @Override
-    public void onClick(View view) {
+    public boolean onNavigationItemSelected( MenuItem item) {
 
-        int id = view.getId();
-
-        switch (id){
-
-            case R.id.btn_play:
-                playerVideo();
-                break;
-            case R.id.btn_pause:
-                pauseVideo();
-                break;
-
-            case R.id.btn_full:
-                startActivitys("full");
-                break;
-        }
-
-    }
-
-    /*
-        Show videos click item list navigationView
-     */
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.nav_rede_globo:
-                //startActivitys("rede_globo");
-                canalAtual = "rede_globo";
-                playerVideo();
-                break;
-            case R.id.nav_sbt:
-
-                canalAtual = "sbt";
-
-                //startActivitys("sbt");
-                playerVideo();
+        switch(item.getItemId()){
+            case R.id.nav_casa:
+                Toast.makeText(MainActivity.this, "MInha casa", Toast.LENGTH_LONG).show();
                 break;
 
         }
-
         //close on click item
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void startActivitys(String extras){
-        Intent intent = new Intent(getApplicationContext(), VideoFullScreenActivity.class);
-        intent.putExtra("canais", extras );
-        startActivity(intent);
-    }
+    @Override
+    public void onClick(View view) {
 
-
-    private void pauseVideo() {
-        videoView.pause();
-        btn_play.setImageResource(R.drawable.ic_play);
-        btn_pause.setImageResource(R.drawable.ic_pause_circle_green);
-    }
-
-    public void playerVideo(){
-
-        if(!removeImagem){
-            layout.removeView(imgImageView);
-            removeImagem = true;
-        }
-
-        if(removeImagem)
-            layout.removeView(videoView);
-
-        layout.addView(videoView);
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Carregando...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        try{
-            videoView.setVideoURI(Uri.parse(videoURL));
-            videoView.requestFocus();//starta o video
-            videoView.start();
-
-        }
-        catch (Exception e){
-            Log.i("TestAppTv", e.getMessage());
-        }
-
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                progressDialog.dismiss();
-                btn_play.setImageResource(R.drawable.ic_play_circle_playng);
-                btn_pause.setImageResource(R.drawable.ic_pause);
-                btn_pause.setEnabled(true);
-                btn_full.setEnabled(true);
-
-                //define o canal atual
-                Toast.makeText(getApplicationContext(), "Canal Atual "+canalAtual, Toast.LENGTH_LONG).show();
-            }
-        });
     }
 }
+
 
 //===============================================
 //EVENTO PRESSIONAR BUTAN BACK
