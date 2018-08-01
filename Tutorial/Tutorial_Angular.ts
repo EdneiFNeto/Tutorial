@@ -787,7 +787,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 //criar pasta  do reiretorio: [C:\data\db\]
 //ACBARIR O SERVIDOR DO MONGO: mongod
 //[OBS:waiting for connections on port 27017]
-//[OBS: ABRIR OUTRA JANELA DE COMANDO]
+//[OBS: ABRIR OUTRA JANELA DE COMANDO: digite mongo]
 //================================================================
 //use school
 // db.student.insert({name:'endei', age:22} )
