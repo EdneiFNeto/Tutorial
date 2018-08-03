@@ -959,3 +959,9 @@ public class StudentContoller {
 //send
 //OBS:[PARA UTILIZAR OS SERVICOS BASTA ENVIAR A URL, PRECISA STARTADO E O MONGO DB ]
 //================================================================
+
+//================================================================
+//GIT VS CODE
+//================================================================
+//CTRL+SHIFT+P --> GIT CLONE
+//ADD URL--> [EX: https://github.com/EdneiFNeto/nbtelecom-tv-ionic]
