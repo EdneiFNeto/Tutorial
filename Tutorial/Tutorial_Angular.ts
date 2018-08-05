@@ -787,7 +787,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 //criar pasta  do reiretorio: [C:\data\db\]
 //ACBARIR O SERVIDOR DO MONGO: mongod
 //[OBS:waiting for connections on port 27017]
-//[OBS: ABRIR OUTRA JANELA DE COMANDO: digite mongo]
+//[OBS: ABRIR OUTRA JANELA DE COMANDO]
 //================================================================
 //use school
 // db.student.insert({name:'endei', age:22} )
@@ -965,3 +965,759 @@ public class StudentContoller {
 //================================================================
 //CTRL+SHIFT+P --> GIT CLONE
 //ADD URL--> [EX: https://github.com/EdneiFNeto/nbtelecom-tv-ionic]
+
+//================================================================
+//PROJETO [BACK-END]
+//================================================================
+//CRIAR PROJETO SPRING
+//dependencias : devtools, security, mongo db, rest reposotiries
+//================================================================
+
+//================================================================
+//CRIANDO ENTIDADES
+//================================================================
+//USER
+//================================================================
+package com.ednei.projeto_backend.entity;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
+public class User {
+
+  @Id
+  private String id;
+  
+  @Indexed(unique=true)
+  @NotBlank(message="Email required")
+  @Email(message="Email invalid")
+  private String email;
+
+  @NotBlank(message="password required")
+  @Size(min=6)
+  private String password;
+  
+}
+
+//================================================================
+
+package com.ednei.projeto_backend.entity;
+import java.util.Date;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.ednei.projeto_backend.enums.StatusEnum;
+
+@Document
+public class ChangeStatus {
+
+  @Id
+  private String id;
+  
+  @DBRef(lazy=true)//[referencia ao usuario]
+  private Ticket ticket;
+  
+  @DBRef(lazy=true)//[referencia ao usuario]
+  private User userChange;
+  
+  private Date dateChangeStatus;
+  
+  private StatusEnum status;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public Ticket getTicket() {
+    return ticket;
+  }
+
+  public void setTicket(Ticket ticket) {
+    this.ticket = ticket;
+  }
+
+  public User getUserChange() {
+    return userChange;
+  }
+
+  public void setUserChange(User userChange) {
+    this.userChange = userChange;
+  }
+
+  public Date getDateChangeStatus() {
+    return dateChangeStatus;
+  }
+
+  public void setDateChangeStatus(Date dateChangeStatus) {
+    this.dateChangeStatus = dateChangeStatus;
+  }
+
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
+  }
+}
+
+//================================================================
+package com.ednei.projeto_backend.entity;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.validator.constraints.Email;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.ednei.projeto_backend.enums.PriorityEnum;
+import com.ednei.projeto_backend.enums.StatusEnum;
+
+@Document
+public class Ticket {
+
+  @Id
+  private String id;
+  
+  
+  //usuar que criou ticket
+  @DBRef(lazy=true)//[referencia ao usuario
+  private User user;
+  
+  private Date date;
+  private String title;
+  private Integer number;
+  
+  private StatusEnum status;
+  private PriorityEnum priority;
+  
+  @DBRef(lazy=true)
+  private User assinedUser;
+  
+  private String description;
+  
+  private String image;
+  
+  @Transient //nao que q tenha representacao no banco
+  private List<ChangeStatus> changesStatus;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public Integer getNumber() {
+    return number;
+  }
+
+  public void setNumber(Integer number) {
+    this.number = number;
+  }
+
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
+  }
+
+  public PriorityEnum getPriority() {
+    return priority;
+  }
+
+  public void setPriority(PriorityEnum priority) {
+    this.priority = priority;
+  }
+
+  public User getAssinedUser() {
+    return assinedUser;
+  }
+
+  public void setAssinedUser(User assinedUser) {
+    this.assinedUser = assinedUser;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
+
+  public List<ChangeStatus> getChanges() {
+    return changesStatus;
+  }
+
+  public void setChanges(List<ChangeStatus> changesStatus) {
+    this.changesStatus = changesStatus;
+  }
+  
+  
+}
+
+
+
+//================================================================
+//ENUM
+//================================================================
+
+package com.ednei.projeto_backend.enums;
+
+public enum ProfileEnum {
+  
+  ROLE_ADIMIN,
+  ROLE_CUSTOMER,
+  ROLE_TECHINICIN
+}
+
+//================================================================
+package com.ednei.projeto_backend.enums;
+
+public enum StatusEnum {
+
+  New,
+  Assigned, 
+  Resolved,
+  Approved,
+  Disaproved,
+  Closed;
+  
+  //metodos 
+  public static StatusEnum getStatus(String status) {
+    
+    switch(status) {
+      case "New": return New;
+      case "Assigned": return Assigned;
+      case "Resolved": return Resolved;
+      case "Approved": return Approved;
+      case "Disaproved": return Disaproved;
+      case "Closed": return Closed;
+      default: return New;
+    }
+  }
+}
+
+//================================================================
+package com.ednei.projeto_backend.enums;
+
+public enum PriorityEnum {
+
+  High,//alto
+  Normal,
+  Low;//baixo
+  
+}
+
+//================================================================
+//REPOSITORIOS [INTERFACES]
+//================================================================
+package com.ednei.projeto_backend.api.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.ednei.projeto_backend.entity.User;
+
+public interface UserRepository extends MongoRepository<User, String> {
+
+  //OBS[ FINDBY SEGUIDO DO ATRIBUTO DA CLASS]
+  User findByEmail(String  email);
+}
+
+//================================================================
+
+  package com.ednei.projeto_backend.api.repository;
+  
+  import java.awt.print.Pageable;
+  
+  import org.springframework.data.domain.Page;
+  import org.springframework.data.mongodb.repository.MongoRepository;
+  import com.ednei.projeto_backend.entity.Ticket;
+  
+  public interface TicketRepository extends MongoRepository<Ticket, String>{
+  
+    //IgnoreCase: ignora texto em maiusculo
+    //Containing: Equivalnete ao like
+    //Pesquisa ID do usuario[apenas usar logado]
+    Page<Ticket> findByUserIdOrderByDateDesc(Pageable pages, String id);
+    
+    //Search window [filter]
+    Page<Ticket> 
+    findByTitleIgnoreCaseContainingAndStatusAndPriorityOrderByDateDesc
+    (String title, String status, String priority, Pageable pages);
+    
+    
+    //Filter all parameter[list ticket clients]
+    Page<Ticket> 
+    findByTitleIgnoreCaseContainingAndStatusAndPriorityAndUserIdOrderByDateDesc
+    (String title, String status, String priority, Pageable pages);
+    
+    Page<Ticket> 
+    findByTitleIgnoreCaseContainingAndStatusAndPriorityAndAssinedUserOrderByDateDesc
+    (String title, String status, String priority, Pageable pages);
+    
+    Page<Ticket> findByNumber(Integer number, Pageable pages);
+  }
+
+
+//================================================================
+package com.ednei.projeto_backend.api.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.ednei.projeto_backend.entity.ChangeStatus;
+
+public interface ChangesStatusRepository extends MongoRepository<ChangeStatus, String>{
+
+  Iterable<ChangeStatus> findByTicketIdOrderByDateChangeStatusDesc(String ticketId);
+  
+}
+
+
+//================================================================
+//CRIAR SERVICOS DE USUARIO
+//================================================================
+package com.ednei.projeto_backend.api.service;
+
+import org.springframework.data.domain.Page;
+import com.ednei.projeto_backend.entity.User;
+
+public interface UserService {
+  
+  User findByEmail(String email); 
+  User createOrUpdate(User user);
+  User findById(String id);
+  void delete(String id);
+  Page<User> findAll(int page, int count);//pages & counts
+
+}
+
+//================================================================
+//CRIAR IMPLEMENTACAO DOS SERVICOS
+//================================================================
+package com.ednei.projeto_backend.api.service.impl;
+
+import java.awt.print.Pageable;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import com.ednei.projeto_backend.api.repository.UserRepository;
+import com.ednei.projeto_backend.api.service.UserService;
+import com.ednei.projeto_backend.entity.User;
+
+@Service
+public class UserServiceImpl implements UserService{
+
+  //dependencia
+  @Autowired //diz que foi ijetado uma dependencia
+  private UserRepository userrepository;
+  
+  @Override
+  public User findByEmail(String email) {
+    return this.userrepository.findByEmail(email);
+  }
+
+  @Override
+  public User createOrUpdate(User user) {
+    return this.userrepository.save(user);
+  }
+
+  @Override
+  public User findById(String id) {
+    return null;
+  }
+
+  @Override
+  public void delete(String id) {
+    this.userrepository.deleteById(id);
+    
+  }
+
+  @Override
+  public Page<User> findAll(int page, int count) {
+    Pageable pages = (Pageable) new PageRequest(page, count);
+    //return this.userrepository.findAll(pages);
+    return null;
+  }
+}
+
+//================================================================
+//JWT - AUTENTICACAO SEM TOKEM [FORMATO DE TOKEN SEGURO, 
+//APLICACAO VALIDA ACESSA A REUISICAO]
+//INFORM: DADOS DO USUARIO[PERFIL E ETC..]
+//================================================================
+//1- ADD DEPENDENCIA JWT AO PROJETO
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.ednei</groupId>
+  <artifactId>projeto_backend</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>projeto_backend</name>
+  <description>Demo project for Spring Boot</description>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.4.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+
+    <!-- ADD-->
+    <jjwt.version>0.7.0</jjwt.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- ADD-->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>${jjwt.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+//================================================================
+//2-ARQUIVO APLICATION.PROPERTIES[MAIN/RESOURCES]
+#acesso banco
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=helpdesk
+
+jwt.secret=helpDesl_key
+# expiration 7 day
+jwt.expiration=604800
+
+//================================================================
+//3-CRIAR CLASS PARA MANIPULAR TOKEN
+//================================================================
+package com.ednei.projeto_backend.security.jwt;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.ednei.projeto_backend.entity.JwtUser;
+import com.ednei.projeto_backend.entity.UserDatails;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+public class JwtTokenUtil implements Serializable{
+
+  private static final long SerialVersionUID=1;
+  
+  private final String CLAIM_KEY_USERNAME="sub";
+  private final String CLAIM_KEY_CREATED="created";
+  private final String CLAIM_KEY_EXPIRED="exp";
+  
+  @Value("${jwt.secret}")//referencia no arquivo [application.propertie]
+  private String secret;
+  
+  @Value("${jwt.expiration}")//referencia no arquivo [application.propertie]
+  private Long expiration;
+  
+  public String getUserNameFromToken(String token) {
+    String username;
+    try {
+      final Claims claims = getClaimsFromToken(token);
+      username = claims.getSubject();
+    }catch(Exception e) {
+      username = null;
+    }
+    
+    return username;
+  }
+
+  public Date getExpirationDateFromToken(String token) {
+    Date expiration;
+    try {
+      final Claims claims = getClaimsFromToken(token);
+      expiration = claims.getExpiration();
+    }catch(Exception e) {
+      expiration=null;
+    }
+    
+    return expiration;
+  }
+  
+  
+  private Claims getClaimsFromToken(String token) {
+    
+    Claims claims;
+    try {
+      claims = Jwts.parser()
+          .setSigningKey(secret)
+          .parseClaimsJws(token)
+          .getBody();
+    }catch(Exception e) {
+      claims=null;
+    }
+    
+    return claims;
+  }
+  
+  //verify token expired
+  private Boolean isTokenExpired(String token) {
+    final Date expiration = getExpirationDateFromToken(token);
+    return expiration.before(new Date());
+  }
+  
+  //create Token
+  public String generateToken(UserDetails userDatails) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put(CLAIM_KEY_USERNAME, userDatails.getUsername());
+    
+    final Date createdDate = new Date();
+    claims.put(CLAIM_KEY_CREATED, createdDate);
+    
+    return doGeneratedToken(claims);
+    
+  }
+
+  private String doGeneratedToken(Map<String, Object> claims) {
+    final Date createdDate = (Date)claims.get(CLAIM_KEY_CREATED);
+    final Date expirationDate = new Date(createdDate.getTime()+expiration*1000);
+    return Jwts.builder()
+        .setClaims(claims)
+        .setExpiration(expirationDate)
+        .signWith(SignatureAlgorithm.HS512, secret)
+        .compact();
+  }
+  
+  public Boolean canTokenBeRefresh(String token) {
+    return(!isTokenExpired(token));
+  }
+  
+  //update token
+  public String refreshToken(String token) {
+    String refreshStoken;
+    
+    try {
+      final Claims claims = getClaimsFromToken(token);
+      claims.put(CLAIM_KEY_CREATED, new Date());
+      refreshStoken = doGeneratedToken(claims);
+    }catch(Exception e) {
+      refreshStoken=null;
+    }
+    return refreshStoken;
+  }
+  
+  //verify valid token
+  public Boolean validadeToken(String token, UserDetails userDetails) {
+    JwtUser user = (JwtUser) userDetails;
+    final String username = getUserNameFromToken(token);
+    return (username.equals(user.getUsername())&& !isTokenExpired(token));
+  }
+}
+
+//================================================================
+//4-CRIAR JWTUSER
+//================================================================
+package com.ednei.projeto_backend.entity;
+import java.util.Collection;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class JwtUser implements UserDetails{
+
+  
+  private static final long serialVersionUID = -19608005357942819L;
+
+  private final String id;
+  private final String username;
+  private final String password;
+  private final Collection<? extends GrantedAuthority> authorities;
+  
+  
+  
+  public JwtUser(String id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    this.id = id;
+    this.username = username;
+    this.password = password;
+    this.authorities = authorities;
+  }
+  
+  @JsonIgnore
+  public String getId() {
+    return id;
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    
+    return authorities;
+  }
+
+  @JsonIgnore
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @JsonIgnore
+  @Override
+  public String getUsername() {
+    return username;
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
+
+}
+
+//================================================================
+//4-CRIAR JWTUSERFACTORY [REPONSALVE POR SPRING RECONHECELA]
+//================================================================
+
+package com.ednei.projeto_backend.security.jwt;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.ednei.projeto_backend.entity.User;
+import com.ednei.projeto_backend.enums.ProfileEnum;
+
+public class JwtUserFactory {
+  
+  private JwtUserFactory() {}
+  
+  //CONVERTE COM BASE NO USUARIO
+  public static JwtUser create(User user) {
+    return new JwtUser(user.getId(), user.getEmail(), user.getPassword(), mapToGranteAuthoritities(user.getProfile()));
+  }
+  
+  //CONVERTE PARA USER SECURITY
+  public static List<GrantedAuthority> mapToGranteAuthoritities(ProfileEnum profileEnum){
+     List<GrantedAuthority> authority = new ArrayList<GrantedAuthority>();
+     authority.add(new SimpleGrantedAuthority(profileEnum.toString()));
+     return authority;
+     
+  }
+}
