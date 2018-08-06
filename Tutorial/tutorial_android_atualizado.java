@@ -3671,5 +3671,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //============================================================
 //TELA LIGADA
 //============================================================
- getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);                  
+ getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);     
+    
+    
+//============================================================
+//ABRIAR OUTRO APLICATIVOS DENTRO DE UMA INTENT
+//============================================================
+private void showSiteNb(String url){
+
+    Uri uri = Uri.parse(url);
+    Intent intent = new Intent(Intent.ACTION_SEND, uri);
+    startActivity(intent);
+}
+
+//options aplicativos
+public void showOprionApp(){
+    Intent intent = new Intent(Intent.ACTION_CALL);
+    intent.setData(Uri.parse("tel:02137220100" ));
+    startActivity(intent);
+}            
+                    
+Uri uriVideo = Uri.parse("http://www.youtube.com/watch?v=skCNLsrrtUw&feature=related");
+Intent intent = new Intent(Intent.ACTION_VIEW, uriVideo);
+startActivity(intent);
                     
