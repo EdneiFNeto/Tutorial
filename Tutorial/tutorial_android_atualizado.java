@@ -3694,4 +3694,263 @@ public void showOprionApp(){
 Uri uriVideo = Uri.parse("http://www.youtube.com/watch?v=skCNLsrrtUw&feature=related");
 Intent intent = new Intent(Intent.ACTION_VIEW, uriVideo);
 startActivity(intent);
+    
+    //======================================================================
+    //READ HTML 
+    //====================================================================
+    package com.example.ednei.teste;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import factory.ConnectionFactory;
+
+public class LedActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Button btn_led1, btn_led2, btn_led3;
+    private TextView textView;
+
+    ConnectivityManager manager;
+    NetworkInfo info;
+    private String url = "http://192.168.0.16:8090";
+    private final String TAG="LedActivity";
+    private ProgressDialog progressDialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_led);
+
+
+        btn_led1 = (Button) findViewById(R.id.btn_led1);
+        btn_led2 = (Button) findViewById(R.id.btn_led2);
+        btn_led3 = (Button) findViewById(R.id.btn_led3);
+
+        btn_led1.setOnClickListener(this);
+        btn_led2.setOnClickListener(this);
+
+        solicita(url);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        int id = view.getId();
+        switch (id) {
+
+            case R.id.btn_led1:
+                solicita(url + "/led1");
+                break;
+
+            case R.id.btn_led2:
+                solicita(url + "/led2");
+                break;
+
+            case R.id.btn_led3:
+                solicita(url + "/led3");
+                break;
+        }
+    }
+
+    public void solicita(String url) {
+
+        manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        info = manager.getActiveNetworkInfo();
+
+        if (info != null && info.isConnected()) {
+            new DownloadWebPageTask().execute(url);
+            Log.i("Result", "Sucesso!");
+        } else {
+            Log.i("Result", "Sem conexao");
+        }
+
+        Log.i("Solicita", url);
+
+    }
+
+    private class DownloadWebPageTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LedActivity.this);
+            progressDialog.setMessage("Carregando...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            ConnectionFactory conexao = new ConnectionFactory();
+            return conexao.GetArduino(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if (result != null) {
+                if (result.contains("Led 1 - Ligado")){
+                    btn_led1.setBackgroundResource(R.drawable.toogle_on);
+                }
+
+                if (result.contains("Led 1 - Desligado")){
+                    btn_led1.setBackgroundResource(R.drawable.toogle_off);
+                }
+
+                if (result.contains("Led 2 - Ligado")){
+                    btn_led2.setBackgroundResource(R.drawable.toogle_on);
+                }
+
+                if (result.contains("Led 2 - Desligado")){
+                    btn_led2.setBackgroundResource(R.drawable.toogle_off);
+                }
+
+                if (result.contains("Led 3 - Ligado")){
+                    btn_led3.setBackgroundResource(R.drawable.toogle_on);
+                }
+
+                if (result.contains("Led 3 - Desligado")){
+                    btn_led3.setBackgroundResource(R.drawable.toogle_off);
+                }
+
+                Log.i("Result", result);
+                progressDialog.dismiss();
+
+            } else
+                Log.e("LedActivity", "onPostExecute Erro !");
+
+        }
+    }
+}
+//=========================================================
+//CODIGO ARDUINO
+//=========================================================
+    #include <SPI.h>
+//#include <String.h>
+#include <Ethernet.h>
+
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x9B, 0x36 };
+byte ip[] = { 192, 168, 0, 16 };
+EthernetServer server(8090);
+
+int led1 = 5;
+int led2 = 6;
+int led3 = 8;
+
+String readString = String(30);
+
+String statusLed;
+
+void setup() {
+  Ethernet.begin(mac, ip);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+}
+
+void loop() {
+  
+  EthernetClient client = server.available();
+  
+  if(client) 
+  {
+    while(client.connected())
+    {
+      if(client.available()) 
+      {
+        char c = client.read();
+        
+        if(readString.length() < 30) {
+          readString += (c);
+        }
+        
+        if(c == '\n')
+        {
+          
+          if(readString.indexOf("led1") >= 0) {
+            digitalWrite(led1, !digitalRead(led1));
+          }
+          
+          if(readString.indexOf("led2") >= 0) {
+            digitalWrite(led2, !digitalRead(led2));
+          }
+          
+          if(readString.indexOf("led3") >= 0) {
+            digitalWrite(led3, !digitalRead(led3));
+          }
+          
+          // cabeçalho http padrão
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: text/html");
+          client.println();
+         
+          client.println("<!doctype html>");
+          client.println("<html>");
+          client.println("<head>");
+          client.println("<title>Tutorial</title>");
+          client.println("<meta name=\"viewport\" content=\"width=320\">");
+          client.println("<meta name=\"viewport\" content=\"width=device-width\">");
+          client.println("<meta charset=\"utf-8\">");
+          client.println("<meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
+          client.println("</head>");
+          client.println("<body>");
+          client.println("<center>");
+          
+          client.println("<font size=\"5\" face=\"verdana\" color=\"green\">Android</font>");
+          client.println("<font size=\"3\" face=\"verdana\" color=\"red\"> & </font>");
+          client.println("<font size=\"5\" face=\"verdana\" color=\"blue\">Arduino</font><br />");
+          
+          if(digitalRead(led1)) {
+            statusLed = "Ligado";
+          } else {
+            statusLed = "Desligado";
+          }
+          client.println("<form action=\"led1\" method=\"get\">");
+          client.println("<button type=submit style=\"width:200px;\">Led 1 - "+statusLed+"</button>");
+          client.println("</form> <br />");
+          
+          if(digitalRead(led2)) {
+            statusLed = "Ligado";
+          } else {
+            statusLed = "Desligado";
+          }
+          client.println("<form action=\"led2\" method=\"get\">");
+          client.println("<button type=submit style=\"width:200px;\">Led 2 - "+statusLed+"</button>");
+          client.println("</form> <br />");
+          
+          if(digitalRead(led3)) {
+            statusLed = "Ligado";
+          } else {
+            statusLed = "Desligado";
+          }
+          client.println("<form action=\"led3\" method=\"get\">");
+          client.println("<button type=submit style=\"width:200px;\">Led 3 - "+statusLed+"</button>");
+          client.println("</form> <br />");
+          
+          client.println("</center>");
+          client.println("</body>");
+          client.println("</html>");
+          
+          readString = "";
+          
+          client.stop();
+        }
+      }
+      
+    }
+  }
+  
+}
+
                     
