@@ -1721,3 +1721,40 @@ public class JwtUserFactory {
      
   }
 }
+
+
+//=======================================================
+//NAVEGACAO DE TELAS
+//======================================================
+import { Component } from '@angular/core';
+import { NavController, NavParams } from 'ionic-angular';
+
+import { AlertController } from 'ionic-angular';
+import { RedeGloboComponent } from '../rede-globo/rede-globo';
+
+@Component({
+  selector: 'page-login',
+  templateUrl: 'login.html',
+})
+export class LoginPage {
+
+  private login: string;
+  private senha: string;
+
+
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    public alertCtrl: AlertController) {
+
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad LoginPage');
+    this.startPage();
+  }
+
+  
+  private startPage():void{
+    //seta o usuario coimo Root
+    this.navCtrl.setRoot(RedeGloboComponent);
+  }
+}
