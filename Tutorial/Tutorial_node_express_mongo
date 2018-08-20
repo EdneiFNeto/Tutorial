@@ -322,3 +322,140 @@ module.exports = routes;
 //=======================================================================
 // ------------------------------- FIM ----------------------------------
 //=======================================================================
+
+
+
+//=======================================================================
+// ------------ PRODUTO USANDO CONTROLLER -------------------------------
+//=======================================================================
+//IMPLEMENTA OS METHODOS DA CLASS CONTROLLER
+//=======================================================================
+
+var router = require('express').Router();
+var Produto = require('./../models/produto');
+
+//IMPORT CLASS CONTRLLER
+var ctrProduto = require('./../controller/produtoController');
+
+//A cada get ou post exobe essa menssage
+router.use(function (req, res, next) {
+    console.log("Notivficacao do produto....");
+    next();//permite que aplicacao continue
+});
+
+//1 methodo [INSERT], 
+//Acessar[POST] : http://localhost:8000/api/produtos/:id]
+router.route('/').post(ctrProduto.ProdutoControllerSalvar);
+
+//2 methodo [SELECT], 
+//Acessar[GET] : http://localhost:8000/api/produtos/:id]
+router.route('/').get(ctrProduto.ProdutoControllerSelect);
+
+//3 methodo [SELECT produto POR id], 
+//Acessar[GET] : http://localhost:8000/api/produtos/:id]
+router.route('/:id').get(ctrProduto.ProdutoControllerSelectPorId);
+
+//4 methodo [UPDATE produto POR id], 
+//Acessar[PUT] : http://localhost:8000/api/produtos/:produto_id]
+router.route('/:id').put(ctrProduto.ProdutoControllerUpdate);
+
+//5 methodo [DELETE produto POR id], 
+//Acessar[DELETE] : http://localhost:8000/api/produtos/:produto_id]
+//ID: 5b78fd098f8369258c057cff
+router.route('/:id').delete(ctrProduto.ProdutoControllerDelete);
+
+//6 LIMOAR TABLEA
+//http://localhost:8000/api/produtos
+router.route('/').delete(ctrProduto.ProdutoControllerDeleteAll);
+
+module.exports = router;
+
+//=======================================================================
+// ------------------------------- FIM ----------------------------------
+//=======================================================================
+
+
+//=======================================================================
+// ------------- CONTRLLER/PRODUTOCONTROLER.JS --------------------------
+//=======================================================================
+//REPONSALVEL PARA CRIAR SO METHODOS :INSERT, UPDATE, DELELE DA CLASS PRODUTO
+//=======================================================================
+
+var Produto = require('./../models/produto');
+
+module.exports.ProdutoControllerSalvar = function (req, res) {
+
+    var produto = new Produto();
+    //seta os produtos
+    produto.nome = req.body.nome;
+    produto.preco = req.body.preco;
+    produto.descricao = req.body.descricao;
+
+    //salavar no banco
+    produto.save(function (error) {
+        if (error)
+            res.send('Erro ao salvar produto: ' + error);
+        res.json({ message: "Produto cadastrado com sucesso!" });
+    })
+}
+
+module.exports.ProdutoControllerSelect = function (req, res) {
+
+    Produto.find(function (error, produtos) {
+        if (error)
+            res.send('Error ao selecionar produtos ' + error);
+        res.json({ produtos });
+    });
+}
+
+module.exports.ProdutoControllerSelectPorId = function (req, res) {
+
+    Produto.findById(req.params.id, function (error, produto) {
+        if (error)
+            res.send('Produto nao encontrado ' + error);
+        res.json(produto);
+    });
+}
+
+module.exports.ProdutoControllerUpdate = function (req, res) {
+
+    Produto.findById(req.params.id, function (error, produto) {
+        if (error)
+            res.send('Erro ao encontrar produto ' + error);
+
+        //passo 2 - alterar dadosdo produto
+        produto.nome = req.body.nome;
+        produto.preco = req.body.preco;
+        produto.descricao = req.body.descricao;
+
+        //passo 3 - salvar os dados
+        produto.save(function (error) {
+            if (error)
+                res.send('Erro ao atualizar ' + error);
+            res.json({ message: 'Produto autlizado com sucesso!' });
+        })
+    });
+}
+
+module.exports.ProdutoControllerDelete = function (req, res) {
+
+    Produto.remove({
+        _id: req.params.id
+    }, function (error) {
+        if (error)
+            res.send('Produto nao enontrado ');
+        res.json({ message: 'Produto excluido com sucesso' });
+    });
+}
+
+module.exports.ProdutoControllerDeleteAll = function (req, res) {
+    Produto.remove(function (error) {
+        if (error)
+            res.send('Erroa ao deletar os dados');
+        res.json({ message: 'Todos os dados excluidos' })
+    })
+ }
+
+//=======================================================================
+// ------------------------------- FIM ----------------------------------
+//=======================================================================
