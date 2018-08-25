@@ -1,0 +1,189 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+/**
+ *
+ * @author edgardleal
+ */
+public class ChatCliente extends JFrame {
+
+    JTextField textFielEnviar;
+    JTextArea textoRecebido;
+    PrintWriter escritor;
+    Socket socket;
+    String nome;
+    Scanner leitor;
+
+    public ChatCliente(String nome) {
+        super("Chat - " + nome);
+        this.nome = nome;
+        textFielEnviar = new JTextField();
+        textoRecebido = new JTextArea();
+        JButton botao = new JButton("Enviar");
+
+        JScrollPane scroll = new JScrollPane(textoRecebido);
+
+        //eventio button
+        botao.addActionListener(new EnviarListener());
+        Container envio = new JPanel();
+        envio.setLayout(new BorderLayout());
+        envio.add(BorderLayout.CENTER, textFielEnviar);
+        envio.add(BorderLayout.EAST, botao);
+        getContentPane().add(BorderLayout.CENTER, textoRecebido);
+        getContentPane().add(BorderLayout.SOUTH, envio);
+
+        try {
+            //chamr config rede
+            confiRede();
+        } catch (IOException ex) {
+            System.err.println("Error " + ex.getMessage());
+        }
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 300);
+        setVisible(true);
+    }
+
+    private void confiRede() throws IOException {
+        //habilitar a o porta
+        socket = new Socket("127.0.0.1", 5000);
+        escritor = new PrintWriter(socket.getOutputStream());
+        leitor = new Scanner(socket.getInputStream());
+
+        new Thread(new EscutaServidor()).start();
+    }
+
+    public static void main(String[] args) {
+        new ChatCliente("Ednei");
+        new ChatCliente("Jose");
+        System.err.println("Chat aberto");
+    }
+
+    //escuta servidor 
+    public class EscutaServidor implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                String texto;
+                while ((texto = leitor.nextLine()) != null) {
+                    textoRecebido.append(texto + "\n");
+                }
+            } catch (Exception e) {
+                System.err.println("Error EscutaServidor " + e.getMessage());
+            }
+        }
+    }
+
+    private class EnviarListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //enviar as menssagens para server
+            escritor.println(nome + ": " + textFielEnviar.getText());
+            escritor.flush();//garante a entrega
+            textFielEnviar.setText("");
+            textFielEnviar.requestFocus();//da focus no campo
+        }
+    }
+}
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package view;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ *
+ * @author edgardleal
+ */
+public class ChatServer {
+
+    List<PrintWriter> escritores = new ArrayList<>();
+    ServerSocket server;
+    Scanner scanner;
+    
+
+    private void encaminarParaTodos(String texto) {
+        for (PrintWriter w : escritores) {
+            try {
+                w.println(texto);
+                w.flush();
+            } catch (Exception e) {
+                System.err.println("Error " + e.getMessage());
+            }
+        }
+    }
+
+    public ChatServer() {
+
+        try {
+            server = new ServerSocket(5000);
+            System.err.println("Servido rodando...");
+            //monitorado cinstantment
+            while (true) {
+                Socket socket = server.accept();
+                new Thread(new EscutaCliente(socket)).start();
+                PrintWriter p = new PrintWriter(socket.getOutputStream());
+                escritores.add(p);
+            }
+        } catch (IOException ex) {
+            System.err.println("Error de conexao " + ex.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        new ChatServer();
+    }
+
+    public  class EscutaCliente implements Runnable {
+
+        Scanner leitor; 
+        public EscutaCliente(Socket socket) throws IOException {
+            leitor = new Scanner(socket.getInputStream());
+        }
+
+        @Override
+        public void run() {
+            try {
+                String texto;
+                //escuta as linhas em q os clientes digits
+                while ((texto = leitor.nextLine()) != null) {
+                    System.err.println("Rrcebou " + texto);
+                    encaminarParaTodos(texto);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro EscutaCliente " + e.getMessage());
+            }
+        }
+    }
+
+}
