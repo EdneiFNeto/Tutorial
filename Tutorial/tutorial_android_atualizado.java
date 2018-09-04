@@ -3952,5 +3952,16 @@ void loop() {
   }
   
 }
+    
+// TAMANHO DA TELA
+    //MUDAR TAMNHO DO VIDEO
+Display display = windowManager.getDefaultDisplay();
+      DisplayMetrics metrics = new DisplayMetrics();
+      display.getMetrics(metrics);
+      screenWidht = metrics.widthPixels;
+      screenHeight = metrics.heightPixels;
 
+      videoView.getLayoutParams().width  = screenWidht/2;
+      videoView.getLayoutParams().height = screenHeight;
+      videoView.requestLayout();
                     
