@@ -3954,7 +3954,7 @@ void loop() {
 }
     
 // TAMANHO DA TELA
-    //MUDAR TAMNHO DO VIDEO
+//MUDAR TAMNHO DO VIDEO
 Display display = windowManager.getDefaultDisplay();
       DisplayMetrics metrics = new DisplayMetrics();
       display.getMetrics(metrics);
@@ -3965,3 +3965,17 @@ Display display = windowManager.getDefaultDisplay();
       videoView.getLayoutParams().height = screenHeight;
       videoView.requestLayout();
                     
+if(count <= 6){
+            if (navigationView.getChildCount() > 0) {
+               View childView = navigationView.getChildAt(0);
+               try {
+                  Method scroll = childView.getClass().getMethod("smoothScrollToPosition", int.class);
+                  scroll.invoke(childView, 0);
+               } catch (NoSuchMethodException |
+                       SecurityException |
+                       IllegalAccessException |
+                       InvocationTargetException e) {
+                  Log.d(TAG, "smoothScrollToPosition", e);
+               }
+            }
+         }
