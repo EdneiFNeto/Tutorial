@@ -3979,3 +3979,15 @@ if(count <= 6){
                }
             }
          }
+    
+    
+    //exibe navigation view
+   
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+      if(mToggle.onOptionsItemSelected(item)){
+         return true;
+      }
+      return super.onOptionsItemSelected(item);
+   }
+
