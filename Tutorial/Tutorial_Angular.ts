@@ -1758,3 +1758,119 @@ export class LoginPage {
     this.navCtrl.setRoot(RedeGloboComponent);
   }
 }
+
+//=======================================================================
+//ANGULAR + FIREBASE + ANDROID
+//=======================================================================
+// npm install firebase --save
+//=======================================================================
+//npm install angularfire2 --save
+//=======================================================================
+//ARUIVO environment.TS
+//=======================================================================
+
+export const environment = {
+  production: false,
+  firebase:{
+    apiKey: "AIzaSyAew3hDDbaglGOhVVWm80DO6lKysSglbUo",
+    authDomain: "chat-android-323db.firebaseapp.com",
+    databaseURL: "https://chat-android-323db.firebaseio.com",
+    projectId: "chat-android-323db",
+    storageBucket: "chat-android-323db.appspot.com",
+    messagingSenderId: "985196595714"
+  }
+};
+
+
+//=======================================================================
+//ARUIVO APP.MODULE.T
+//=======================================================================
+import { environment } from './../environments/environment';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+import{AngularFireModule} from 'angularfire2/index'//add
+import { AngularFireDatabase } from 'angularfire2/database';//add
+
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+
+  imports: [
+    BrowserModule,
+    AngularFireModule.initializeApp(environment.firebase),//add
+    
+  ],
+
+  providers: [
+    AngularFireDatabase//add[DATABASE]
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+//=======================================================================
+//ARUIVO APP.COMPONENT.TS
+//=======================================================================
+import { Component, OnInit } from '@angular/core';
+import { AngularFireDatabase } from 'angularfire2/database';//ADD
+import { Observable } from 'rxjs';//ADD
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+})
+export class AppComponent {
+
+  items: Observable<any[]>;
+  dados: any[] = [];
+
+  constructor(private angularFire: AngularFireDatabase) {
+    this.listar();
+  }
+
+  listar(): void {
+
+    this.items = this.angularFire.list('/users').valueChanges();
+
+    this.items.subscribe(data => {
+
+      let nome = data.map(item => item.nome);
+      let email = data.map(item => item.email);
+      if(this.dados.length>0){
+        this.dados = [];
+      }
+
+      for (var i = 0; i < data.length; i++) {
+        
+        if (nome[i] != undefined){
+          this.dados.push({ nome: nome[i], email: email[i] });
+        }
+      }
+
+      console.log(this.dados);
+    });
+  }
+
+  cadastrar(nome: String, email: String): void {
+    this.angularFire.list('/users/' + nome).push({
+      nome: nome,
+      email: email
+    }).then(() => {
+      console.log('Sucesso')
+    })
+  }
+}
+
+//=======================================================================
+//ARUIVO APP.HTML
+//=======================================================================
+<ul>
+  <li *ngFor="let dado of dados">
+   Nome {{ dado.nome }} - {{dado.email}}
+  </li>
+</ul>
