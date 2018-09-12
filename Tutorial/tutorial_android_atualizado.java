@@ -3991,3 +3991,29 @@ if(count <= 6){
       return super.onOptionsItemSelected(item);
    }
 
+//full
+    public void fullScreen(){
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(uiOptions);
+         }
+      }, 300);
+
+   }
+    
+    //hide teclado automatic
+    <activity
+            android:name=".adapter.LoginActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="landscape" />
+    
+    
+    
+    
+    
