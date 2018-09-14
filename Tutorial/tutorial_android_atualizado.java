@@ -4014,10 +4014,14 @@ if(count <= 6){
             android:screenOrientation="landscape" />
                 
                 
-    //block navigation view
+    //
+        navigation view
                 
-         //BLOCK DRAWLAYER
-         //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+         //lock DRAWLAYER
+         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+         
+         //unlock
+         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     
    //full screen
       public void fullScreen() {
