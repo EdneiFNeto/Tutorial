@@ -4012,7 +4012,12 @@ if(count <= 6){
             android:name=".adapter.LoginActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="landscape" />
-    
+                
+                
+    //block navigation view
+                
+         //BLOCK DRAWLAYER
+         //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     
     
     
