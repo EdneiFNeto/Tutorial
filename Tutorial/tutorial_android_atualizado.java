@@ -4064,6 +4064,10 @@ if(count <= 6){
    }
     
     //change orientation
+    
+    //manisfest
+    android:configChanges="orientation|screenSize|keyboardHidden"
+    // java
     @Override
    public void onConfigurationChanged(Configuration newConfig) {
       super.onConfigurationChanged(newConfig);
