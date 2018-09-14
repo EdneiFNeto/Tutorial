@@ -4019,6 +4019,96 @@ if(count <= 6){
          //BLOCK DRAWLAYER
          //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     
+   //full screen
+      public void fullScreen() {
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            int uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(uiOptions);
+         }
+      }, 300);
+
+   }
+
+   private void hideSystemUI() {
+
+      if (!ishideSystemUI) {
+         View decorView = getWindow().getDecorView();
+         decorView.setSystemUiVisibility(
+                 View.SYSTEM_UI_FLAG_IMMERSIVE
+                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                         | SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                         | SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                         // Hide the nav bar and status bar
+                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
+         ishideSystemUI = true;
+      }
+   }
+
+   private void showSystemUI() {
+
+      View decorView = getWindow().getDecorView();
+      if (ishideSystemUI) {
+         decorView.setSystemUiVisibility(
+                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+         ishideSystemUI = false;
+      }
+   }
+    
+    //change orientation
+    @Override
+   public void onConfigurationChanged(Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+
+      if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+         new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               actionBar.hide();
+               isladscape = true;
+               ajustScreenVideo(screenWidth, screenHeight);
+               displayFullScreen();
+               hideNavigationBar();
+
+            }
+         }, 300);
+
+      } else {
+         new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               actionBar.show();
+               isladscape = false;
+               ajustScreenVideo(screenWidth / 2, screenHeight / 2);
+               displayFullScreen();
+            }
+         }, 400);
+      }
+   }
+    
+    //change size video
+   
+    Display display = windowManager.getDefaultDisplay();
+    DisplayMetrics metrics = new DisplayMetrics();
+    display.getMetrics(metrics);
+    screenWidth = metrics.widthPixels;
+    screenHeight = metrics.heightPixels;
+
+    public void ajustScreenVideo(final int width, final int height) {
+        
+      videoView.getLayoutParams().width = width;
+      videoView.getLayoutParams().height = height;
+      videoView.requestLayout();
+   }
     
     
     
