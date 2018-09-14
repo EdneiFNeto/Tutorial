@@ -4110,5 +4110,9 @@ if(count <= 6){
       videoView.requestLayout();
    }
     
+   //size view [RelativeLayout.Layoutparams]
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
+         params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+         params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
     
     
