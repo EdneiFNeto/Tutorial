@@ -793,6 +793,72 @@ public class MainActivity extends AppCompatActivity {
 }
 
 //====================================================================
+//          VERIFICAR INTERNET
+//====================================================================
+//DECLRAR NO ON RESUME
+//====================================================================
+
+IntentFilter intentFilter = new IntentFilter();
+ intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+ registerReceiver(networkChangeReceiver, intentFilter);
+   
+//====================================================================
+//FORA DO ONRESUME
+//====================================================================
+   private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+         Log.d(TAG, "Network connectivity change");
+
+         if (ConnectionManager.checkInternetConnection(getApplicationContext()) == ConnectionManager.NETWORK_STATUS_NOT_CONNECTED) {
+
+            Dialogs.showDialogConnectionNetwork(MainTestActivity.this, "Erro de Conexão",
+                    "Sem conexão, ative sua internet");
+            videoView.pause();
+         }
+      }
+   };
+//====================================================================
+//CLASS DE CONNECTION
+//====================================================================
+public class ConnectionManager {
+
+   public static int NETWORK_STATUS_NOT_CONNECTED = 0;
+   public static int NETWORK_STATUS_CONNECTED = 1;
+
+   public static int checkInternetConnection(Context context) {
+      ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+      if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+              && cm.getActiveNetworkInfo().isConnected()) {
+         return NETWORK_STATUS_CONNECTED;
+
+      } else {
+         return NETWORK_STATUS_NOT_CONNECTED;
+      }
+   }
+}
+//====================================================================
+//CLASS DE DIALOG [ACESS WI FI SETTINGS]
+//====================================================================
+public static void showDialogConnectionNetwork(final Context ctx, String title, String msg){
+
+      AlertDialog.Builder alertDialog  = new AlertDialog.Builder(ctx);
+      alertDialog.setTitle(title);
+      alertDialog.setMessage(msg);
+
+      alertDialog.setPositiveButton("Ativar internet", new DialogInterface.OnClickListener() {
+
+         public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+            ctx.startActivity(intent);
+         }
+      });
+
+      AlertDialog alert = alertDialog.create();
+      alert.show();
+   }
+//====================================================================
 //          FRAGMENTS
 //====================================================================
 //1 - MAINACTIVITY -- EXTENDAR A FRAGMENTACTIVITY
