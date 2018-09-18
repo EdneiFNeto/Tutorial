@@ -4189,4 +4189,90 @@ if(count <= 6){
          params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
          params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
     
+//===========================================================================
+//CLASS PRINCIPAL
+//===========================================================================
+package broadcast.com.br.broadcastproject;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+public class BroadcastServices extends BroadcastReceiver {
+
+   @Override
+   public void onReceive(Context context, Intent intent) {
+      Toast.makeText(context, "Broadicast", Toast.LENGTH_SHORT).show();
+   }
+}
+//===========================================================================
+//CLASS RECEIVER
+//===========================================================================    
+package broadcast.com.br.broadcastproject;
+
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+   private Button btn;
+   private static final String TAG="MainActivityLog";
+   BroadcastServices receiver;
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+
+      btn = (Button) findViewById(R.id.btn);
+      btn.setOnClickListener(this);
+
+   }
+
+
+   @Override
+   public void onClick(View v) {
+
+      Intent intent = new Intent(this, BroadcastServices.class);
+      sendBroadcast(intent);
+   }
+
+
+}
+    
+//===========================================================================
+//MANIFEST
+//===========================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="broadcast.com.br.broadcastproject">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".BroadcastServices"/>
+    </application>
+
+</manifest>
+
     
