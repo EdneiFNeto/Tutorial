@@ -120,6 +120,105 @@
 
 
 
+//=============================================================================================
+//TUTORIAL GIT
+//=============================================================================================
+//GITIGNORE
+//CRIAR UM ARQUIVO .gitingore inserir dentro do 
+//arquivo os arquivos a serem ignorados
+//ex: nome_arquivo.txt
+//=============================================================================================
+//commit e add os dados ao mesmo tempo
+$ git commit -a -m "Inteirindo titulo"
+//=============================================================================================
+//LOG dos Commits
+$ git log
+//=============================================================================================
+//Se quisermos mostrar apenas os dois últimos commits devemos utilizar a opção -n:
+$ git log -n 2
+//=============================================================================================
+//Se quisermos um resumo bem conciso dos commits do nosso projeto
+$ git log --oneline
+//=============================================================================================
+//Podemos mostrar um resumo dos arquivos alterados, com o número de 
+//linhas adicionadas e removidas.
+$ git log --stat
+
+//=============================================================================================
+//Para sairmos do resultados do git log ou diff, devemos apertar a tecla 'Q'
+//=============================================================================================
+//Verificando mudanças ainda não rastreadas
+//Se quisermos revisar a modificação efetuada, verificando as diferenças entre
+//o arquivo alterado e o que foi comitado anteriormente, podemos usar o comando:
+$ git diff
+//=============================================================================================
+//É possível mostrar as diferenças entre os arquivos na área de stage e a
+//última versão que foi comitada utilizando a opção:
+//primeiro precisa add o arquivo ao estaio:
+//ex: git add index.html
+//logo apos executar o diff --staged
+$ git diff --staged
+//=============================================================================================
+//Verificando mudanças rastreadas e não rastreadas ao mesmo tempo
+//verificar o codigo do ultimo commit
+//faz a alteracao --> git status
+$ git log -n 1 --oneline
+//vai aparecer um id
+//$ git diff id_do_log
+//=============================================================================================
+//Verificando mudanças já comitadas
+//=============================================================================================
+//1- add e commitar os arquivos: git commit -a -m "texto"
+//Então, vamos mostrar os três últimos commits de maneira concisa através
+//do comando
+$ git log -n 3 --oneline.
+//vai aparecer o ID
+$ git diff ID ~ 2 // número depois do ~ indica quantos
+//=============================================================================================
+//número depois do ~ indica quantos
+//=============================================================================================
+//Removendo arquivos do repositório
+//=============================================================================================
+//apos fazer o commit :
+//1- git add produto.html
+//2- git commit -m "produto"
+//3- git rm produto.html
+//=============================================================================================
+//Renomeando e movendo arquivos
+//=============================================================================================
+$ git mv estilos.css principal.css
+//=============================================================================================
+// Desfazendo mudanças
+//=============================================================================================
+//git chechout -- nome do arquivo[Nao pode fazer o commit]
+//=============================================================================================
+//Desfazendo mudanças já rastreadas[cimmitadas]
+//1- git status
+//2- git add nome_arquvo
+//3- git commit -m "commit"
+//4- git log -n -2 --oneline [ultimos dois commit]
+//5- git reset --hard id_gerado_log
+//=============================================================================================
+// git log --oneline [ pega todos os logs]
+$ git reset --hard f4bd2e8//[id_log]
+
+//=============================================================================================
+//REPOSITORIO REMOTO
+//=============================================================================================
+ git init --bare nome_repo.git
+//=============================================================================================
+//Adicionando o repositório remoto
+//=============================================================================================
+/*
+	Agora que o repositório remoto já foi criado no servidor, é possível enviar os
+commits efetuados no nosso repositório local para o repositório remoto. Mas
+antes disso precisamos, de alguma maneira, indicar ao Git onde está localizado
+o repositório remoto.
+*/
+
+
+
+
 
 
 
