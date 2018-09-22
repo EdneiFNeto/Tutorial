@@ -1,5 +1,38 @@
 
 //=============================================
+//BUffer video
+//=============================================
+public static String getDataSource(String path) throws IOException {
+      if (!URLUtil.isNetworkUrl(path)) {
+            return path;
+        } else {
+           URL url = new URL(path);
+           URLConnection cn = url.openConnection();
+           cn.connect();
+            InputStream stream = cn.getInputStream();
+            if (stream == null)
+                throw new RuntimeException("stream is null");
+            File temp = File.createTempFile("mediaplayertmp", "dat");
+            temp.deleteOnExit();
+            String tempPath = temp.getAbsolutePath();
+            FileOutputStream out = new FileOutputStream(temp);
+            byte buf[] = new byte[128];
+            do {
+                int numread = stream.read(buf);
+                if (numread <= 0)
+                    break;
+                out.write(buf, 0, numread);
+            } while (true);
+            try {
+                stream.close();
+                out.close();
+            } catch (IOException ex) {
+              //  Log.e(TAG, "error: " + ex.getMessage(), ex);
+            }
+            return tempPath;
+        }
+    }
+//=============================================
 //STREAM VIDEO GT
 //=============================================
 package videoplayer;
