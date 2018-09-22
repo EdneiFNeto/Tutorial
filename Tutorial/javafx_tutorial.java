@@ -1,4 +1,56 @@
 
+//=============================================
+//STREAM VIDEO GT
+//=============================================
+package videoplayer;
+
+import java.net.URI;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.stage.Stage;
+
+/**
+ *
+ * @author 20142101351
+ */
+public class VideoPlayer extends Application {
+
+     private String videoURL = "http://189.45.13.225/stream.php.m3u8?"+
+        "user=user&pass=passnb1&token=1530019742&s=stream10.m3u8";
+     
+    private String VIDEO_URL = getClass().getResource(
+            "/video/video.mp4").toString();
+
+    @Override
+    public void start(Stage palco) {
+
+        
+        Media media = new Media(String.valueOf(URI.create(videoURL))); // 1
+        MediaPlayer mediaPlayer = new MediaPlayer(media); // 2
+        MediaView mediaView = new MediaView(mediaPlayer); // 3
+        mediaView.setFitWidth(600);
+        mediaView.setFitHeight(400);
+        StackPane raiz = new StackPane();
+        raiz.getChildren().add(mediaView); // 4
+        Scene cena = new Scene(raiz, 600, 400);
+        palco.setTitle("Tocando Video em JavaFX");
+        palco.setScene(cena);
+        palco.show();
+        mediaPlayer.play(); // 4
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+}
 
 //=============================================
 //FILECHOOSER
