@@ -51,10 +51,7 @@ import javafx.stage.Stage;
  * @author 20142101351
  */
 public class VideoPlayer extends Application {
-
-     private String videoURL = "http://189.45.13.225/stream.php.m3u8?"+
-        "user=user&pass=passnb1&token=1530019742&s=stream10.m3u8";
-     
+	
     private String VIDEO_URL = getClass().getResource(
             "/video/video.mp4").toString();
 
