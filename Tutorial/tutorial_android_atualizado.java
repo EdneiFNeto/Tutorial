@@ -4275,4 +4275,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 </manifest>
 
+
+            
+//BUFFER VIDEO VIEW
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.model;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.util.Log;
+import android.widget.VideoView;
+
+
+public class Video {
+
+
+   private static Context ctx;
+   private static  ProgressDialog progressDialog, dialog;
+   private static  String TAG = "VideoLog";
+
+
+   public Video(Context ctx){
+      this.ctx = ctx;
+   }
+
+   public static void loaderVideo(final Context ctx){
+      dialog = new ProgressDialog(ctx);
+      dialog.setMessage("Carregando video...");
+      dialog.setCancelable(true);
+      dialog.show();
+   }
+
+
+   public static void prepareVideo(final String url, final VideoView videoView) {
+
+      //trhead para atualizar
+      progressDialog = new ProgressDialog(ctx);
+      progressDialog.setMessage("Carregando video...");
+      progressDialog.setCancelable(false);
+
+      progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+
+         @Override
+         public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+         }
+      });
+
+      progressDialog.show();
+      playVideo(url, videoView);
+   }
+
+    
+   public static void playVideo(final String url, final VideoView videoView) {
+
+      try {
+
+         videoView.setBackground(null);
+         videoView.setVideoURI(Uri.parse(url));
+         videoView.requestFocus();//starta o video
+         videoView.start();
+
+      } catch (Exception e) {
+         Log.i(TAG, e.getMessage());
+      }
+
+      videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+         @Override
+         public void onPrepared(MediaPlayer mp) {
+            progressDialog.dismiss();
+            Log.e(TAG, "Prepare video");
+
+            mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+               @Override
+               public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                  if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START){
+                     Log.e(TAG, "MEDIA_INFO_BUFFERING_START");
+                     loaderVideo(ctx);
+                  }
+
+
+                  if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END){
+                     Log.e(TAG, "MEDIA_INFO_BUFFERING_END");
+                     dialog.dismiss();
+                  }
+
+                  return false;
+               }
+            });
+
+            mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+               @Override
+               public boolean onError(MediaPlayer mp, int what, int extra) {
+                  return false;
+               }
+            });
+         }
+      });
+   }
+}
+
     
