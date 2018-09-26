@@ -1874,3 +1874,7 @@ export class AppComponent {
    Nome {{ dado.nome }} - {{dado.email}}
   </li>
 </ul>
+
+ionic generate provider message
+
+
