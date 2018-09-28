@@ -1898,3 +1898,24 @@ contacts:Array<Object> =[];
       <p>{{ contact.message }}</p>
     </ion-item>
   </ion-list>
+
+
+//=======================================================================
+//EVENT CLICK LISTA[[MUDAR DE PAGINA]
+//=======================================================================
+
+openContact(event , contact){
+    console.log(event);
+    console.log(contact);
+    this.navCtrl.push(UsersContactsPage, { contact: contact });
+  }
+<ion-list>
+
+    <ion-item *ngFor="let contact of contacts" (click)="openContact($event, contact)">
+      <ion-avatar item-start>
+        <img src="assets/imgs/{{contact.icon}}">
+      </ion-avatar>
+      <h2>{{ contact.name }}</h2>
+      <p>{{ contact.message }}</p>
+    </ion-item>
+  </ion-list>
