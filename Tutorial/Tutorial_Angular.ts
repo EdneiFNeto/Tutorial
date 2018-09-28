@@ -1878,3 +1878,23 @@ export class AppComponent {
 ionic generate provider message
 
 
+//=======================================================================
+//ARRAY OBJECT
+//=======================================================================
+
+contacts:Array<Object> =[];
+
+  constructor(public navCtrl: NavController) {
+    this.contacts =  [
+      { "name":"Ednei Freitas", "icon":"ic_rosto.png", "message":"Menssagem enviada"}
+    ]
+  }
+
+<ion-item *ngFor="let contact of contacts" (click)="openContact($event, contact)">
+      <ion-avatar item-start>
+        <img src="assets/imgs/{{contact.icon}}">
+      </ion-avatar>
+      <h2>{{ contact.name }}</h2>
+      <p>{{ contact.message }}</p>
+    </ion-item>
+  </ion-list>
