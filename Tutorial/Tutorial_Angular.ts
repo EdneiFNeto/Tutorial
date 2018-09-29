@@ -1919,3 +1919,42 @@ openContact(event , contact){
       <p>{{ contact.message }}</p>
     </ion-item>
   </ion-list>
+
+//=======================================================================
+//ADD ELEMETO O HTML
+//=======================================================================
+  createMessageHtml(msg: any) {
+
+    let node = document.createElement('p');
+    node.setAttribute('class', 'my_message');
+    let text = document.createTextNode(msg);
+    node.appendChild(text);
+    document.querySelector('.message').appendChild(node);
+    this.srcrollBottom();
+	  
+	  
+//=======================================================================
+//SCROLL BOTTOM
+//=======================================================================	  
+import { ChamadasPage } from './../chamadas/chamadas';
+import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
+import { ViewChild } from '@angular/core';
+
+
+@IonicPage()
+@Component({
+  selector: 'page-users-contacts',
+  templateUrl: 'users-contacts.html',
+})
+export class UsersContactsPage {
+
+  @ViewChild(Content) content: Content;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  }
+    
+  srcrollBottom(){
+    this.content.scrollToBottom();
+  }
+}
