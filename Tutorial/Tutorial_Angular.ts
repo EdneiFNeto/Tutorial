@@ -1958,3 +1958,84 @@ export class UsersContactsPage {
     this.content.scrollToBottom();
   }
 }
+
+	  
+	  
+//=======================================================================
+//FIREBASE SEND MESSAGE, GET MESSAGE 
+//=======================================================================	  
+import { Injectable } from '@angular/core';
+import firebase from 'firebase';
+import { Observable } from 'rxjs';//ADD
+
+@Injectable()
+export class FirebaseProvider {
+
+  items: Observable<any[]>;
+  private userDB = 'users/';
+  private chatDB = 'chat/';
+  public message = [];
+
+  constructor() {
+    console.log('Hello FirebaseProvider Provider');
+  }
+
+  //salva contato no banco
+  save(name: String, tel: any) {
+
+    firebase.database().ref(this.userDB + tel).set({
+      name: name,
+      tel: tel
+    }).then(() => {
+      console.log('Sucesso');
+    });
+  }
+
+  list(): any[] {
+
+    var database = firebase.database().ref(this.userDB);
+    var arr: any = [];
+    var name: any;
+    var tel: any;
+
+    database.on('child_added', function (data) {
+      name = data.val().name;
+      tel = data.val().tel;
+      arr.push({ name: name, tel: tel });
+    });
+
+    return arr;
+  }
+
+  //enviar menssagem para o usiaroo
+  setMessageUser(tel, message, user): void {
+    
+    var database = firebase.database().ref(this.chatDB);
+    
+    database.push({
+      tel:tel,
+      message:message,
+      user:user
+    }).then(()=>{
+      console.log("Sucesso"); 
+    });
+  }
+
+  getMessageUser(tel):any[] {
+   
+    var database = firebase.database().ref(this.chatDB);
+    var arr: any = [];
+    
+    database.on('child_added', function (data) {
+     
+      if(tel == data.val().tel){
+        arr.push({ 
+          message:  data.val().message, 
+          tel: data.val().tel,
+        });
+      }
+    });
+
+    return arr;
+  }
+}
