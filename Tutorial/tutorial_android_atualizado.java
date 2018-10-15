@@ -4640,5 +4640,67 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnKey
 //                  FIM
 //====================================================================
     
+//====================================================================
+// NAVIGATION REMOTE CONTROL [RIGHT-LEFT-TOP-BOTTOM]
+//====================================================================
 
+@Override
+public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+        if (event.getAction() == event.ACTION_DOWN) {
+            //Right
+            if (event.getKeyCode() == 22) {
+
+                if (count >= 13)
+                    return false;
+
+                ++count;
+                positionItemBottom = count;
+                UtilKey.keyDownEvent(gridView, count);
+                Log.e(TAG, "[RIGHT] Count: " + count);
+            }
+
+            //Bottom
+            if(event.getKeyCode() == 20){
+
+                if(positionItemBottom >=12)
+                    return false;
+
+                positionItemBottom += 4;
+                count = positionItemBottom;
+                UtilKey.keyDownEvent(gridView, positionItemBottom);
+                Log.e(TAG, "[BOTTOM] positionItemBottom: " + positionItemBottom+" Count: "+count);
+            }
+        }
+
+        if (event.getAction() == event.ACTION_UP) {
+
+            if (event.getKeyCode() == 21) {
+                if (count <= 0)
+                    return false;
+
+                --count;
+                positionItemBottom = count;
+                UtilKey.keyDownEvent(gridView, count);
+                Log.e(TAG, "[UP] Count: " + count);
+            }
+
+            if(event.getKeyCode() == 19){
+
+                if(positionItemBottom <=0)
+                    return false;
+
+                positionItemBottom -= 4;
+                count = positionItemBottom;
+                UtilKey.keyDownEvent(gridView, positionItemBottom);
+                Log.e(TAG, "[BOTTOM] positionItemBottom: " + positionItemBottom+ " Count "+count);
+            }
+        }
+
+        return false;
+}
+
+//====================================================================
+//                  FIM
+//====================================================================
     
