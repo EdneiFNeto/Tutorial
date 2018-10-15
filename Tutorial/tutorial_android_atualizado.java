@@ -4377,5 +4377,268 @@ public class Video {
       });
    }
 }
+//====================================================================
+//                          LAUNCHER ANDROID
+//====================================================================
+//MANIFEST
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
+    package="broadcast.com.br.lausherprojectsv2">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_nb"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:icon="@mipmap/ic_launcher_nb"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:name=".MainActivity"
+            android:banner="@mipmap/ic_launcher_nb"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+//====================================================================
+//MAIN_ACTIVITY
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:padding="12dp"
+    tools:context=".MainActivity">
+
+    <GridView
+        android:choiceMode="singleChoice"
+        android:layout_centerInParent="true"
+        android:horizontalSpacing="12dp"
+        android:verticalSpacing="12dp"
+        android:numColumns="4"
+        android:id="@+id/gridview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</RelativeLayout>
+
+//====================================================================
+//MY_SELECT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+
+    <item android:state_activated="false">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorBlack2" />
+            <corners android:radius="5dp" />
+            <stroke android:width="2dp" android:color="@color/colorWhite" />
+        </shape>
+    </item>
+
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorBlack2" />
+            <corners android:radius="5dp" />
+            <stroke android:width="2dp" android:color="#949494" />
+        </shape>
+    </item>
+
+    <item android:state_activated="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorSelected" />
+            <corners android:radius="5dp" />
+            <stroke android:width="2dp" android:color="#949494" />
+        </shape>
+    </item>
+</selector>
+
+
+//====================================================================
+//MAINACTIVITY
+//====================================================================
+
+package broadcast.com.br.lausherprojectsv2;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements AdapterView.OnKeyListener {
+
+    private PackageManager manager;
+    private List<AppDetail> apps;
+    private GridView gridView;
+    private int count = 0;
+    private static String TAG = "MainActivityLog";
+    private int[] chanels;
+    private int positionItemBottom = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        gridView = (GridView) findViewById(R.id.gridview);
+        gridView.setOnKeyListener(this);
+
+        apps = new ArrayList<AppDetail>();
+
+        loadApps();
+        loadListView();
+        addClickListener();
+    }
+
+    private void loadApps() {
+        manager = getPackageManager();
+        Intent i = new Intent(Intent.ACTION_MAIN, null);
+        i.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> availableActivities = manager.queryIntentActivities(i, 0);
+        for (ResolveInfo ri : availableActivities) {
+            AppDetail app = new AppDetail();
+            app.label = ri.loadLabel(manager);
+            app.name = ri.activityInfo.packageName;
+            app.icon = ri.activityInfo.loadIcon(manager);
+            apps.add(app);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        chanels = new int[apps.size()];
+    }
+
+    private void loadListView() {
+
+        ArrayAdapter<AppDetail> adapter = new ArrayAdapter<AppDetail>(this, R.layout.item_list, apps) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                if (convertView == null) {
+                    convertView = getLayoutInflater().inflate(R.layout.item_list, null);
+                }
+
+                ImageView appIcon = (ImageView) convertView.findViewById(R.id.item_app_icon);
+                appIcon.setImageDrawable(apps.get(position).icon);
+
+                TextView appLabel = (TextView) convertView.findViewById(R.id.item_app_label);
+                appLabel.setText(apps.get(position).label);
+
+                return convertView;
+            }
+        };
+
+        gridView.setAdapter(adapter);
+        gridView.setItemChecked(0, true);
+    }
+
+    private void addClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> av, View v, int pos, long id) {
+                Intent i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString());
+                startActivity(i);
+            }
+        });
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+        if (event.getAction() == event.ACTION_DOWN) {
+            //Right
+            if (event.getKeyCode() == 22) {
+
+                if (count >= 13)
+                    return false;
+
+                ++count;
+                positionItemBottom = count;
+                UtilKey.keyDownEvent(gridView, count);
+                Log.e(TAG, "[RIGHT] Count: " + count);
+            }
+
+            //Bottom
+            if(event.getKeyCode() == 20){
+
+                if(positionItemBottom >=12)
+                    return false;
+
+                positionItemBottom += 4;
+                count = positionItemBottom;
+                UtilKey.keyDownEvent(gridView, positionItemBottom);
+                Log.e(TAG, "[BOTTOM] positionItemBottom: " + positionItemBottom+" Count: "+count);
+            }
+        }
+
+        if (event.getAction() == event.ACTION_UP) {
+
+            if (event.getKeyCode() == 21) {
+                if (count <= 0)
+                    return false;
+
+                --count;
+                positionItemBottom = count;
+                UtilKey.keyDownEvent(gridView, count);
+                Log.e(TAG, "[UP] Count: " + count);
+            }
+
+            if(event.getKeyCode() == 19){
+
+                if(positionItemBottom <=0)
+                    return false;
+
+                positionItemBottom -= 4;
+                count = positionItemBottom;
+                UtilKey.keyDownEvent(gridView, positionItemBottom);
+                Log.e(TAG, "[BOTTOM] positionItemBottom: " + positionItemBottom+ " Count "+count);
+            }
+        }
+
+        return false;
+    }
+}
+
+//====================================================================
+//                  FIM
+//====================================================================
+    
 
     
