@@ -4703,4 +4703,425 @@ public boolean onKey(View v, int keyCode, KeyEvent event) {
 //====================================================================
 //                  FIM
 //====================================================================
+  
+//====================================================================
+//     VIDEO VIEW + LIST VIEW _ PROGRRESS BAR USING REMOTE CONTROL
+//====================================================================
+//====================================================================
+//MAIN ACTIVITY XML
+//==================================================================== 
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/draw_layer"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:background="@color/colorBlack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorGreen2"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <VideoView
+            android:layout_centerInParent="true"
+            android:id="@+id/videoView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ListView
+            android:choiceMode="singleChoice"
+            android:background="@color/colorBlack2"
+            android:id="@+id/listview_"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:id="@+id/progressBar"
+            android:theme="@style/AppTheme.Spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</LinearLayout>
+//====================================================================
+//ADAPTER_LIST
+//====================================================================  
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="@drawable/my_selector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="1dp">
+
+
+        <LinearLayout
+
+            android:id="@+id/layout_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="1dp">
+
+            <ImageView
+                android:background="@color/colorWhite"
+                android:id="@+id/ic_chanel"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_band" />
+
+            <TextView
+                android:layout_marginTop="4dp"
+                android:id="@+id/text_chanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="Band"
+                android:textColor="@color/colorWhite"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>                
+                
+
+                    
+//====================================================================
+//MAIN ACTIVITY JAVA
+//====================================================================                    
+                    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main_test_using_listview);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //============================================================================================
+        listView = (ListView) findViewById(R.id.listview);
+        chanels = Chanel.getPlanetas();
+        listView.setAdapter(new ChanelAdapter(this));
+        listView.setOnItemClickListener(this);
+        listView.setSelection(0);
+        //============================================================================================
+        videoView = (VideoView) findViewById(R.id.videoView);
+
+        //============================================================================================
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.draw_layer);
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        toolbar.inflateMenu(R.menu.toolbar);
+        setSupportActionBar(toolbar);
+        //============================================================================================
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.draw_layer);
+        drawerLayout.setOnTouchListener(this);
+
+        mToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.setDrawerListener(mToggle);
+        mToggle.syncState();
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (isladscape) {
+                    UtilConfigVideo.configSizeVideoLadscape(videoView);
+                    ajustSiseVideo(screenWidth, screenHeight);
+                }
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
+        //============================================================================================
+        spinner = (ProgressBar) findViewById(R.id.progressBar);
+    }
     
+//====================================================================
+//CLASS ADPTER
+//==================================================================== 
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import nbtelecomtv.com.br.nbtelecom_allversion.R;
+
+public class ChanelAdapterTest extends BaseAdapter {
+
+   private final String[] chanels;
+   private final Context ctx;
+   int[]imagens = {
+           R.drawable.ic_person,
+           R.mipmap.ic_logo_list,
+           R.mipmap.ic_cnt_list,
+           R.mipmap.ic_rede_tv,
+           R.mipmap.ic_nbr,
+           R.mipmap.ic_tv_saude,
+           R.mipmap.ic_sbt,
+           R.mipmap.ic_tv_brasil,
+           R.mipmap.ic_tv_escola,
+           R.mipmap.ic_record_news,
+           R.mipmap.ic_globo_list,
+           R.mipmap.ic_record2_list,
+           R.mipmap.ic_band_list,
+           R.mipmap.ic_cine_brasil,
+           R.mipmap.ic_blender,
+           R.mipmap.ic_sempre_um_papo,
+           R.mipmap.ic_vasco_tv,
+   };
+
+   public ChanelAdapterTest(Context ctx){
+      this.ctx = ctx;
+       //ARRAY DEFINIDO NO XML
+      this.chanels = ctx.getResources().getStringArray(R.array.chanels);
+   }
+
+   @Override
+   public int getCount() {
+
+      return chanels !=null ? chanels.length:  0;
+   }
+
+   @Override
+   public Object getItem(int position) {
+      return chanels[position];
+   }
+
+   @Override
+   public long getItemId(int position) {
+      return position;
+   }
+
+   @Override
+   public View getView(int position, View convertView, ViewGroup parent) {
+
+      View view = null;
+      if(view == null){
+
+         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+         view = inflater.inflate(R.layout.main_adapter_listview,parent, false);
+
+      }else{
+         view = convertView;
+      }
+
+      //update values
+
+      TextView textView = (TextView) view.findViewById(R.id.text_chanel);
+      ImageView img = (ImageView) view.findViewById(R.id.ic_chanel);
+      textView.setText(chanels[position]);
+      img.setImageResource(imagens[position]);
+
+      return view;
+   }
+}
+//====================================================================    
+    //KEY EVENT
+//====================================================================    
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+
+        //control right[show navigation view]
+        if (event.getKeyCode() == 22) {
+            listView.setVisibility(View.VISIBLE);
+        }
+
+        //control left [hide navigation view]
+        if (event.getKeyCode() == 21) {
+            listView.setVisibility(View.GONE);
+        }
+
+        //control down
+        if (event.getKeyCode() == 20) {
+
+            //para instrucao
+            if (count >= 16)
+                return false;
+            else
+                UtilHandler.handlerDwoChanel(this, listView, count);
+            ++count;
+        }
+
+        if (event.getKeyCode() == 19) {
+
+            //para instrucao
+            if (count <= 0)
+                return false;
+            else
+                UtilHandler.handlerUpChanel(this, listView, count);
+            --count;
+            Log.e(TAG, "[UP]Chanel Selecionado "+UtilHandler.getChanel()+"-"+count);
+        }
+
+        //control enter
+        if (event.getKeyCode() == 66 || event.getKeyCode() == 23) {
+
+            if (!UtilHandler.getChanel().equals("user")) {
+
+               listView.setVisibility(View.GONE);
+                if (!isladscape) {
+                    UtilConfigVideo.configSizeVideoPortrait(videoView);
+                    ajustSiseVideo(screenWidth, screenHeight);
+                }
+
+                new Video(this).prepareVideo(URl + "user=user&pass=passnb1&token=1530019742&s=stream" +
+                        UtilHandler.getChanel() + ".m3u8", videoView, spinner);
+
+                fullScreen();
+            } else {
+                Intent intent = new Intent(getApplicationContext(), UsuarioActivity.class);
+                startActivity(intent);
+            }
+        }
+
+        if(event.getKeyCode() == 67 || event.getKeyCode()== 4){
+            finishAffinity();
+        }
+
+        return false;
+    }
+    
+//ARRAY XML
+ <string-array name="chanels">
+        <item>Usuário</item>
+        <item>NB Telecom</item>
+        <item>Rede CNT</item>
+        <item>Rede TV</item>
+        <item>NBR</item>
+        <item>TV Saúde</item>
+        <item>SBT</item>
+        <item>TV Brasil</item>
+        <item>TV Escola</item>
+        <item>Record News</item>
+        <item>Globo</item>
+        <item>Record</item>
+        <item>BAND</item>
+        <item>Cine Brasil</item>
+        <item>Blender</item>
+        <item>Sempre um Papo</item>
+        <item>Vasco TV</item>
+    </string-array>
+     
+ //CLASS CONTROL CHANGE SELECT ITEM LIST
+ package nbtelecomtv.com.br.nbtelecom_allversion.adapter.utils;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import nbtelecomtv.com.br.nbtelecom_allversion.R;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.model.Video;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.test.UsuarioActivity;
+
+public class UtilHandler {
+
+
+   private static int delay = 100;
+   public static String itemChecado;
+   public static int positionChanel;
+   private static final String TAG = "UtilHandler";
+   private static String chanel;
+
+   //==========================================================================================
+   //ListView
+   //==========================================================================================
+
+   public static void handlerDwoChanel(final Context context, final ListView listView, final int position) {
+
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+
+            listView.setItemChecked(position+1, true);//position 1
+            listView.setSelection(position+1);//position 1
+
+            itemChecado = listView.getSelectedItem().toString();
+
+            //insertChanel(itemChecado);
+             insertChanel2(position+1);
+            Log.e(TAG, "Item [Down]: " + listView.getSelectedItem() + " Item checado "+getChanel());
+         }
+      }, delay);
+   }
+
+   public static void handlerUpChanel(final Context context, final ListView listView, final int position) {
+
+      final View view = new View(context);
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+            listView.setItemChecked(position-1, true);//position 1
+            listView.setSelection(position-1);//position 1
+
+            if (position <= 8) {
+               listView.setSelection(2);
+               listView.smoothScrollToPosition(2);
+
+               if(position<=4){
+                  listView.setSelection(0);
+                  listView.smoothScrollToPosition(0);
+               }
+            }
+
+            itemChecado = listView.getSelectedItem().toString();
+            String p = String.valueOf(position-1);
+             insertChanel2(position-1);
+            //insertChanel(itemChecado);
+            Log.e(TAG, "Item [Down]: " + listView.getSelectedItem() + " Position: " +p+ " Item checado: "+getChanel());
+         }
+      }, delay);
+   }    
+}
+    
+     
+     
+
