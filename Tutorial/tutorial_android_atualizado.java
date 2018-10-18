@@ -2,6 +2,120 @@
 //====================================================================
 //                          ANDROID
 //====================================================================
+
+//====================================================================
+//WEBSERVICE
+//====================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.services;
+
+import android.os.AsyncTask;
+import android.util.Log;
+
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class WebServices extends AsyncTask<String, String, String> {
+
+   private String url="http://www.XXXXX";
+   private String TAG="WebServiceLog";
+   
+   @Override
+   protected void onPreExecute() {
+      super.onPreExecute();
+
+      Log.e(TAG, "Carregando...");
+   }
+
+   //ensere os dados
+   @Override
+   protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+
+      Log.e(TAG, "Sucesso!");
+   }
+
+   @Override
+   protected String doInBackground(String... strings) {
+
+      JSONParser parser = new JSONParser();
+
+      try{
+         URL url = new URL(strings[0]);
+         URLConnection connection = url.openConnection();
+
+         if(connection.getURL()!=null){
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputline;
+
+            while((inputline= in.readLine())!=null){
+
+               JSONArray arrayJson = (JSONArray) parser.parse(inputline);
+
+               for (int i=0;i<arrayJson.size();i++){
+                  Log.e(TAG, arrayJson.get(i).toString());
+               }
+            }
+         }
+
+      }catch (Exception e){
+
+      }
+      return null;
+   }
+
+   @Override
+   protected void onProgressUpdate(String... values) {
+      super.onProgressUpdate(values);
+   }
+}
+//====================================================================
+//GREDLE
+//====================================================================
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        applicationId "nbtelecomtv.com.br.dev.tv"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 5
+        versionName "1.1.3"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:leanback-v17:26.+'
+    implementation 'com.android.support:appcompat-v7:26.+'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    //noinspection GradleCompatible
+    implementation 'com.android.support:cardview-v7:26.+'
+
+    //design
+    implementation 'com.android.support:design:26.+'
+
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'//ADD LIBS
+}
+//====================================================================
+// FIM
+//====================================================================
+
 //OBS: intent-filter e responsavel por  iniciar a activity
 //====================================================================
 //                          BUTTON
