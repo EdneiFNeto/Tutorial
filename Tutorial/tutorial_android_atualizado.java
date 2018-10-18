@@ -6,29 +6,33 @@
 //====================================================================
 //WEBSERVICE
 //====================================================================
-package nbtelecomtv.com.br.nbtelecom_allversion.adapter.services;
+package broadcast.com.br.lausherprojectsv2;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebServices extends AsyncTask<String, String, String> {
 
-   private String url="http://www.XXXXX";
+
    private String TAG="WebServiceLog";
-   
+   private List lista;
+
    @Override
    protected void onPreExecute() {
       super.onPreExecute();
 
-      Log.e(TAG, "Carregando...");
+      Log.e(TAG, "Loading...");
    }
 
    //ensere os dados
@@ -36,34 +40,48 @@ public class WebServices extends AsyncTask<String, String, String> {
    protected void onPostExecute(String s) {
       super.onPostExecute(s);
 
-      Log.e(TAG, "Sucesso!");
+      if(lista.size()>0){
+         for(int i=0;i<lista.size(); i++)
+            Log.e(TAG, "List "+lista.get(i).toString());
+      }else{
+         Log.e(TAG, "Empty list ");
+      }
    }
 
    @Override
    protected String doInBackground(String... strings) {
 
       JSONParser parser = new JSONParser();
+      lista = new ArrayList();
 
       try{
+
          URL url = new URL(strings[0]);
-         URLConnection connection = url.openConnection();
+         URLConnection urlConnection = url.openConnection();
 
-         if(connection.getURL()!=null){
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputline;
+         if(urlConnection.getURL()!= null){
 
-            while((inputline= in.readLine())!=null){
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String inputLine;
 
-               JSONArray arrayJson = (JSONArray) parser.parse(inputline);
+            //read json get url
+            while((inputLine = in.readLine()) != null) {
 
-               for (int i=0;i<arrayJson.size();i++){
-                  Log.e(TAG, arrayJson.get(i).toString());
+               Log.e(TAG, "Entrou no while" );
+
+               JSONArray arrayJson = (JSONArray) parser.parse(inputLine);
+
+               for(int i= 0;i < arrayJson.size(); i++) {
+
+                  JSONObject jsonObject = (JSONObject) arrayJson.get(i);
+                  String name  = (String) jsonObject.get("name");
+                  lista.add(name);
                }
             }
          }
 
       }catch (Exception e){
-
+         Log.e(TAG, "Error "+e.getMessage());
       }
       return null;
    }
@@ -73,6 +91,7 @@ public class WebServices extends AsyncTask<String, String, String> {
       super.onProgressUpdate(values);
    }
 }
+
 //====================================================================
 //GREDLE
 //====================================================================
