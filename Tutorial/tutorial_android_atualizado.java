@@ -4,6 +4,366 @@
 //====================================================================
 
 //====================================================================
+//SQLITE
+//====================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.sqlite;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DataBase extends SQLiteOpenHelper {
+
+   public static final String NOME_BANCO = "nbtelecom.db";
+   public static final String TABELA = " users";
+   public static final String ID     = " id ";
+   public static final String NAME   = " name ";
+   public static final String SENHA  = " senha ";
+   public static final String STATUS = " status ";
+   public static final int VERSAO    = 13;00
+
+   public DataBase(Context context){
+      super(context, NOME_BANCO,null, VERSAO);
+   }
+
+   @Override
+   public void onCreate(SQLiteDatabase db) {
+
+      String sql = "CREATE TABLE "+TABELA+"("
+              + ID + " integer primary key autoincrement, "
+              + NAME + " text, "
+              + SENHA + " text, "
+              + STATUS + " text "
+              +")";
+
+      db.execSQL(sql);
+   }
+
+   @Override
+   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+      db.execSQL("DROP TABLE IF EXISTS " + TABELA);
+      onCreate(db);
+   }
+}
+//====================================================================
+//DAO
+//====================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.dao;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.interfaces.GenericDomain;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.model.User;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.sqlite.DataBase;
+
+public class UserDao implements GenericDomain<User> {
+
+   private SQLiteDatabase db;
+   private DataBase dataBase;
+   private ContentValues contentValues;
+   private Long result;
+   private static final String TAG = "UserDao";
+   public static boolean statusUser = false;
+
+   public UserDao(Context ctx) {
+      this.dataBase = new DataBase(ctx);
+   }
+
+   //connection db
+   @Override
+   public void save(User user) {
+
+      try {
+         db = dataBase.getWritableDatabase();
+         contentValues = new ContentValues();
+         contentValues.put(DataBase.NAME, user.getNome());
+         contentValues.put(DataBase.SENHA, user.getSenha());
+         contentValues.put(DataBase.STATUS, user.getStatus());
+
+         result = db.insert(DataBase.TABELA, null, contentValues);
+         db.close();
+
+         Log.e(TAG, "Sucesso ");
+
+      } catch (Exception e) {
+         Log.e(TAG, "Erro ao inserir", e);
+      }
+   }
+
+   @Override
+   public void update(User user) {
+   }
+
+   @Override
+   public void delete(String name) {
+
+      String where = DataBase.NAME + " = " + name;
+      db = dataBase.getReadableDatabase();
+      db.delete(DataBase.TABELA, where, null);
+      db.close();
+   }
+
+   @Override
+   public Cursor carregaDados() {
+      Cursor cursor;
+      String[] campos = {dataBase.ID};
+      db = dataBase.getReadableDatabase();
+      cursor = db.query(dataBase.TABELA, campos, null, null, null, null, null, null);
+
+      if (cursor != null) {
+         cursor.moveToFirst();
+      }
+
+      db.close();
+
+      return cursor;
+   }
+
+   @Override
+   public void EnterAppAutomatically() {
+
+      try{
+         db = dataBase.getWritableDatabase();
+         String[] columns = {DataBase.NAME, DataBase.STATUS};
+         Cursor cursor = db.query(DataBase.TABELA, columns, null, null, null, null, null);
+
+         String nome;
+         String status;
+         User user = null;
+
+         while (cursor.moveToNext()) {
+            nome = cursor.getString(0);
+            status = cursor.getString(1);
+
+            user = new User();
+            user.setNome(nome);
+            user.setStatus(status);
+         }
+
+         if (user.getNome().equals("user") && user.getStatus().equals("1")) {
+            statusUser = true;
+            Log.e(TAG, user.getNome() + "-" + user.getStatus() + " statua user " + statusUser);
+         } else {
+            statusUser = false;
+            Log.e(TAG, "Error ");
+         }
+      }catch (NullPointerException e){
+         Log.e(TAG, "Error "+e.getMessage());
+      }
+   }
+
+   public void logStatus() {
+
+      db = dataBase.getWritableDatabase();
+      String[] columns = {DataBase.NAME, DataBase.STATUS};
+      Cursor cursor = db.query(DataBase.TABELA, columns, null, null, null, null, null);
+      String nome = "";
+      String status = "";
+      User user = null;
+
+      while (cursor.moveToNext()) {
+         nome = cursor.getString(0);
+         status = cursor.getString(1);
+      }
+
+      Log.e(TAG, nome + "-" + status);
+   }
+
+   public static boolean isExistuser(Context context) {
+
+      try{
+
+         DataBase dataBase = new DataBase(context);
+         SQLiteDatabase db = dataBase.getWritableDatabase();
+         String[] columns = {DataBase.NAME, DataBase.STATUS};
+         Cursor cursor = db.query(DataBase.TABELA, columns, null, null, null, null, null);
+
+         String nome;
+         String status;
+         User user = null;
+
+         while (cursor.moveToNext()) {
+            nome = cursor.getString(0);
+            status = cursor.getString(1);
+
+            user = new User();
+            user.setNome(nome);
+            user.setStatus(status);
+         }
+
+         if (user.getNome().equals("user") && user.getStatus().equals("1")) {
+            return  true;
+         }
+      }catch (NullPointerException e){
+         Log.e(TAG, "Error "+e.getMessage());
+      }
+      return false;
+   }
+
+
+}
+
+//====================================================================
+//GENERIC
+//====================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.interfaces;
+
+import android.database.Cursor;
+
+import java.util.List;
+
+public interface GenericDomain<T> {
+
+   public void save(T t);
+   public void update(T t);
+   public void delete(String t);
+   public Cursor carregaDados();
+   public void EnterAppAutomatically();
+
+}
+//====================================================================
+//CLASS LOGIN : [INSERT, UPDATE, DELETE]
+//====================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nbtelecomtv.com.br.nbtelecom_allversion.R;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.dao.UserDao;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.model.User;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.sqlite.DataBase;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.test.MainTestActivity;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.test.MainTestNavListView;
+import nbtelecomtv.com.br.nbtelecom_allversion.adapter.test.MainTestUsingListViewAcitvity;
+
+
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+   private static final String TAG = "LoginActivityLog";
+   private Button btn_entrar;
+   private EditText editTextLogin, editTextsenha;
+
+   private UserDao userDao;
+   private User user;
+   private Cursor cursor;
+   private List itemIds;
+
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.login_activity);
+
+      btn_entrar = (Button) findViewById(R.id.btn_entrar);
+      btn_entrar.setOnClickListener(this);
+
+      editTextLogin = (EditText) findViewById(R.id.editLogin);
+      editTextsenha = (EditText) findViewById(R.id.editTSenha);
+
+      user = new User();
+      userDao = new UserDao(this);
+
+   }
+
+   @Override
+   protected void onResume() {
+      super.onResume();
+      //read users DB
+      userDao.EnterAppAutomatically();
+
+      //Start app automatically
+      if(userDao.statusUser){
+         Intent intent = new Intent(getApplicationContext(), MainTestNavListView.class);
+         startActivity(intent);
+      }
+   }
+
+   @Override
+   public void onClick(View v) {
+
+      switch (v.getId()) {
+         case R.id.btn_entrar:
+            btn_entrar.setBackgroundColor(getResources().getColor(R.color.colorGreen2));
+            new Handler().postDelayed(new Runnable() {
+               @Override
+               public void run() {
+                  logar(editTextLogin.getText().toString(), editTextsenha.getText().toString(), "0");
+               }
+            }, 400);
+
+            break;
+      }
+   }
+
+   private void logar(String nome, String senha, String status) {
+
+      String str_nome = nome.toLowerCase();
+      String str_senha = senha.toLowerCase();
+
+      if (str_nome.trim().equals("user") && str_senha.trim().equals("passnb1")) {
+
+         //grava no banco
+         user.setNome(str_nome);
+         user.setSenha(str_senha);
+         user.setStatus(status);//false
+         userDao.save(user);
+
+         Intent intent = new Intent(this, MainTestNavListView.class);
+         startActivity(intent);
+
+      } else {
+
+         Toast.makeText(this, "Usario ou senha invalida", Toast.LENGTH_LONG).show();
+
+         new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+               btn_entrar.setBackgroundColor(getResources().getColor(R.color.colorBlack2));
+            }
+         }, 900);
+      }
+   }
+
+   public void fullScreen(){
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(uiOptions);
+         }
+      }, 300);
+
+   }
+}
+//====================================================================
+//FIM SQLITE
+//====================================================================
+//====================================================================
 //WEBSERVICE
 //====================================================================
 package broadcast.com.br.lausherprojectsv2;
