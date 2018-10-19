@@ -2,6 +2,128 @@
 //=======================================================================
 //JAVA 8
 //=======================================================================
+
+//=======================================================================
+//IO
+//=======================================================================
+package io;
+
+import java.io.*;
+
+public class InputStreams {
+
+    /*
+    * Para ler um byte de um arquivo, vamos usar o leitor de arquivo, o FileInputStream.
+    * Para um FileInputStream conseguir ler um byte, ele precisa saber de onde ele deverá ler.
+    * Essa informação é tão importante que quem escreveu essa
+    * classe obriga você a passar o nome do arquivo pelo construtor: sem isso o objeto não pode ser construído.
+    * */
+    public static void ReadFile(String path) throws IOException {
+
+        InputStream in = new FileInputStream(path);
+        int b = in.read();
+    }
+
+    /*
+    * Para recuperar um caractere, precisamos traduzir os bytes com o encoding dado para o respectivo código unicode,
+    * isso pode usar um ou mais bytes.
+    * Escrever esse decodificador é muito complicado, quem faz isso por você é a classe InputStreamReader.
+    * */
+    public static int  readCharacter(String path) throws IOException {
+
+        InputStream in = new FileInputStream(path);
+        InputStreamReader inputStreamReader = new InputStreamReader(in);
+        int c = inputStreamReader.read();
+        return c;
+
+    }
+
+    /*
+    * Apesar da classe abstrata Reader já ajudar no trabalho de manipulação de caracteres, ainda seria difícil pegar uma String.
+    * A classe BufferedReader é um Reader que recebe outro
+    * Reader pelo construtor e concatena os diversos chars para formar uma String através do método readLine:
+    * */
+
+    public static String bufferReades(String path) throws IOException {
+
+        InputStream in = new FileInputStream(path);
+        InputStreamReader reader = new InputStreamReader(in);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        String s = bufferedReader.readLine();
+
+        while (s != null) {
+            System.out.println(s);
+            s = bufferedReader.readLine();
+        }
+
+        bufferedReader.close();
+        return s;
+    }
+
+    /*
+    *  Ler arquivo e bytes
+    *
+    * */
+    public int readFileBytes(String path) throws IOException {
+
+        int total_byte = 0;
+
+        FileInputStream fileInputStream = new FileInputStream(path);
+
+        boolean final_ar = false;
+        int  byte_entrada = 0;
+
+        File file = new File(path);
+
+        //ler arquivo
+        while(!final_ar){
+
+            if(byte_entrada== -1){
+                final_ar = true;//fim while
+            };
+
+            total_byte++;
+        }
+
+        System.out.println("Total bytes "+total_byte);
+        fileInputStream.close();
+        return byte_entrada;
+    }
+
+    public static byte[] read(File file) throws IOException {
+
+        ByteArrayOutputStream ous = null;
+        InputStream ios = null;
+
+        try {
+            byte[] buffer = new byte[1024*2];
+            ous = new ByteArrayOutputStream();
+            ios = new FileInputStream(file);
+            int read = 0;
+            while ((read = ios.read(buffer)) != -1) {
+                ous.write(buffer, 0, read);
+            }
+        }finally {
+            try {
+                if (ous != null)
+                    ous.close();
+            } catch (IOException e) {
+            }
+
+            try {
+                if (ios != null)
+                    ios.close();
+            } catch (IOException e) {
+            }
+        }
+        return ous.toByteArray();
+    }
+}
+//=======================================================================
+//FIM IO
+//=======================================================================
+
+
 //NOVAS FIORMAS DE LISTA
 //=======================================================================
 package model;
