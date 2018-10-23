@@ -2,6 +2,74 @@
 //=======================================================================
 //JAVA 8
 //=======================================================================
+//=======================================================================
+//ENUM
+//=======================================================================
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.enums;
+
+import nbtelecomtv.com.br.nbtelecom_allversion.R;
+
+public enum Chanels {
+
+   NB_TELECOM("NB Telecom"),
+   CNT("Rede CNT"),
+   REDE_TV("Rede TV"),
+   NBR("NBR"),
+   TV_SAUDE("TV Saúde"),
+   SBT("SBT"),
+   TV_BRASIL("TV Brasil"),
+   TV_ESCOLA("TV Escola"),
+   RECORD_NEWS("Record News"),
+   GLOBO("Globo"),
+   RECORD("Record"),
+   BAND("BAND"),
+   CINE_BRASIL("Cine Brasil"),
+   BLENDER("Blender"),
+   SEMPRE_UM_PAPO("Sempre um Papo"),
+   VASCO_TV("vasco TV"),
+
+   NUM_NB_TELECOM("50"),
+   NUM_CNT("01"),
+   NUM_REDE_TV("02"),
+   NUM_NBR("03"),
+   NUM_TV_SAUDE("04"),
+   NUM_SBT("05"),
+   NUM_TV_BRASIL("06"),
+   NUM_TV_ESCOLA("08"),
+   NUM_RECORD_NEWS("09"),
+   NUM_GLOBO("10"),
+   NUM_RECORD("11"),
+   NUM_BAND("12"),
+   NUM_CINE_BRASIL("55"),
+   NUM_BLENDER("20"),
+   NUM_SEMPRE_UM_PAPO("22"),
+   NUM_VASCO_TV("23");
+
+   private String chanel;
+
+   Chanels(String chanel) {
+      this.chanel = chanel;
+   }
+
+   public String getChanel() {
+      return chanel;
+   }
+
+   public void setChanel(String chanel) {
+      this.chanel = chanel;
+   }
+}
+
+//USAR 
+private Chanels chanels;
+private String chanel;
+chanels = Chanels.NUM_NB_TELECOM;
+chanel = chanels.getChanel();
+
+//=======================================================================
+//FIM ENUM
+//=======================================================================
+
 
 //=======================================================================
 //IO
