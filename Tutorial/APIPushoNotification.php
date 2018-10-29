@@ -162,3 +162,13 @@ class PushNotifications
 	}
 }
 ?>
+
+<?php
+
+require_once('PushNotifications.php');
+// Message payload
+
+$token = '<85afc3d0 be937cf2 f3637824 01886f4b ccbeef74 a524873c 315e3b82 aeebd47e>';
+PushNotifications::iOS($token, "Teste de Menssagem");
+
+?>
