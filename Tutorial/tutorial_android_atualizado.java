@@ -2,6 +2,194 @@
 //====================================================================
 //                          ANDROID
 //====================================================================
+//====================================================================
+//DOWNLOAD USING PROGRESSDIAOLIG + THREAD
+//====================================================================
+package store.nbtelecom.com.br.nbtelecomstore;
+
+import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+   private ImageView imageView;
+   private String nameFile = "app-debug.apk";
+   private String url = "http://www.divertenet.com.br/apps/" + nameFile;
+   private String url2 = "http://livroandroid.com.br/imgs/livro_android.png";
+   ProgressDialog progressDialog;
+   private String TAG = "DownloadAppLOG";
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_main);
+      imageView = (ImageView) findViewById(R.id.icon_app);
+      imageView.setOnClickListener(this);
+   }
+
+   @Override
+   protected void onResume() {
+      super.onResume();
+
+      if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+              PackageManager.PERMISSION_DENIED) {
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+         }
+      }
+   }
+
+   @Override
+   public void onClick(View v) {
+
+      switch (v.getId()) {
+         case R.id.icon_app:
+            new DownloadApp().execute(url2);
+            break;
+      }
+   }
+
+   @Override
+   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+      if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+         Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
+         //resume tasks needing this permission
+      }
+   }
+
+
+   class DownloadApp extends AsyncTask<String, Integer, Boolean> {
+
+
+      Context context;
+
+      private String strFile = "teste_goku.jpg";
+
+
+      @Override
+      protected void onPreExecute() {
+         super.onPreExecute();
+
+         progressDialog = new ProgressDialog(MainActivity.this);
+         progressDialog.setMessage("Download...");
+         progressDialog.setIndeterminate(false);
+         progressDialog.setMax(100);
+         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+         progressDialog.show();
+
+      }
+
+      @Override
+      protected void onProgressUpdate(Integer... progress) {
+         super.onProgressUpdate(progress);
+         progressDialog.setProgress(progress[0]);
+
+      }
+
+      @Override
+      protected void onPostExecute(Boolean aBoolean) {
+         super.onPostExecute(aBoolean);
+         progressDialog.dismiss();
+
+         //install app
+      }
+
+      @Override
+      protected Boolean doInBackground(String... strings) {
+
+         Boolean flag = false;
+         String newFile = "app-debug.apk";
+
+         try {
+
+            URL url = new URL(strings[0]);
+            URLConnection urlConnection = url.openConnection();
+            int fileLenght = urlConnection.getContentLength();
+            urlConnection.connect();
+
+
+            String PATH = Environment.getExternalStorageDirectory().getPath();
+            InputStream in = new BufferedInputStream(url.openStream());
+            OutputStream out = new FileOutputStream(PATH+ "/" +newFile);
+
+
+            byte[] buffer = new byte[1024];
+            long total = 0;
+            int count;
+            int per;
+
+            while ((count = in.read(buffer)) != -1) {
+
+               total += count;
+               per = (int) (total * 100 / fileLenght);
+               publishProgress(per);
+               out.write(buffer, 0, count);
+            }
+
+            out.flush();
+            out.close();
+            in.close();
+
+            //OpenNewVersion(PATH);
+
+            flag = true;
+         } catch (Exception e) {
+            Log.e(TAG, "Update Error: " + e.getMessage());
+            flag = false;
+         }
+         return flag;
+      }
+
+      private void OpenNewVersion(String location) {
+
+         Intent intent = new Intent(Intent.ACTION_VIEW);
+         intent.setDataAndType(Uri.fromFile(new File(location + "app-debug.apk")),
+                 "application/vnd.android.package-archive");
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         startActivity(intent);
+      }
+
+
+   }
+}
+//====================================================================
+//FIM
+//====================================================================
+
 
 //====================================================================
 //SQLITE
