@@ -5614,7 +5614,22 @@ public class UtilHandler {
       }, delay);
    }    
 }
-    
+//===================================================   
+//PERMISSOA EM TEMPO DE EXECUSSAO
+//===================================================   
+ 
+ @Override
+   protected void onResume() {
+      super.onResume();
+
+      if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)==
+              PackageManager.PERMISSION_DENIED){
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+         }
+      }
+   }   
      
      
 
