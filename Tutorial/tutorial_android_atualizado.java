@@ -3,6 +3,234 @@
 //                          ANDROID
 //====================================================================
 
+//=======================================================================
+//INSTALL APP USING INTENT
+//=======================================================================
+public static void installApp(Context context, String ...str) {
+      try{
+         File toInstall = new File(str[0], str[1]);
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri apkUri = FileProvider.getUriForFile(context,
+                    BuildConfig.APPLICATION_ID + ".provider", toInstall);
+            Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+            intent.setData(apkUri);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.startActivity(intent);
+         } else {
+            Uri apkUri = Uri.fromFile(toInstall);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+         }
+      }catch (ActivityNotFoundException e){
+         Log.e(TAG, "Erro Activity "+e.getMessage());
+      }
+   }
+//=======================================================================
+//CHANGE MANIFEST
+//=======================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="store.nbtelecom.com.br.nbtelecomstore">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.INSTALL_PACKAGES"
+        tools:ignore="ProtectedPermissions" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+        <activity android:name=".InstallActivity"></activity>
+    </application>
+</manifest>
+
+//=======================================================================
+//CREATE XML [RES/XML/provider_paths.xml
+//=======================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="external_download" path="Download"/>
+</paths>
+
+//=======================================================================
+//DONWLOAD
+//=======================================================================
+class DownloadApp extends AsyncTask<String, Integer, Boolean> {
+
+      @Override
+      protected void onPreExecute() {
+         super.onPreExecute();
+
+         bar = new ProgressDialog(MainActivity.this);
+         bar.setCancelable(false);
+         bar.setTitle("Downloading...");
+         bar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+         bar.setIndeterminate(true);
+         bar.setCanceledOnTouchOutside(false);
+         bar.show();
+
+      }
+
+      @Override
+      protected void onProgressUpdate(Integer... progress) {
+         super.onProgressUpdate(progress);
+         bar.setIndeterminate(false);
+         bar.setMax(100);
+         bar.setProgress(progress[0]);
+         String msg = "";
+
+         if (progress[0] > 99) {
+            msg = "Finishing... ";
+         } else {
+            msg = "Downloading... " + progress[0] + "%";
+         }
+
+         bar.setMessage(msg);
+      }
+
+      @Override
+      protected void onPostExecute(Boolean result) {
+         super.onPostExecute(result);
+
+         //install app
+         bar.dismiss();
+
+         if (result) {
+            startActivity(new Intent(MainActivity.this, InstallActivity.class));
+
+         } else {
+            Toast.makeText(getApplicationContext(), "Error: Try Again", Toast.LENGTH_SHORT).show();
+         }
+      }
+
+      @Override
+      protected Boolean doInBackground(String... strings) {
+
+         Boolean flag = false;
+
+         try {
+
+            URL url = new URL(strings[0]);
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
+            c.setRequestMethod("GET");
+            c.setDoOutput(true);
+            int total_size = c.getContentLength();
+            c.connect();
+
+
+            File file = new File(PATH);
+            file.mkdirs();
+            File outputFile = new File(file, nameAPK);
+
+            if (outputFile.exists()) {
+               outputFile.delete();
+            }
+
+            FileOutputStream fos = new FileOutputStream(outputFile);
+            InputStream is = c.getInputStream();
+
+            byte[] buffer = new byte[1024];
+            int len1 = 0;
+            int per = 0;
+            int downloaded = 0;
+
+            while ((len1 = is.read(buffer)) != -1) {
+               fos.write(buffer, 0, len1);
+               downloaded += len1;
+               per = (int) (downloaded * 100 / total_size);
+               publishProgress(per);
+            }
+
+            fos.close();
+            is.close();
+
+            flag = true;
+         } catch (Exception e) {
+            Log.e(TAG, "Update Error: " + e.getMessage());
+            flag = false;
+         }
+
+         return flag;
+      }
+
+
+      private void openFile(){
+
+         File file = new File(PATH,nameAPK);
+         Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",
+                 file);
+         Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+         pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+         pdfOpenintent.setDataAndType(uri, "application/.text");
+
+         try {
+            startActivity(pdfOpenintent);
+         }
+         catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Error "+e.getMessage());
+         }
+      }
+
+      private void openIntentInstall() {
+
+         Log.e(TAG, "PATH: "+PATH);
+         File file = new File(PATH, nameAPK);
+         String strPath ="/storage/emulated/0/Download/";
+         Intent promptInstall = new Intent(Intent.ACTION_VIEW);
+         promptInstall.setDataAndType(Uri.parse("file://"+strPath+""+nameAPK),"application/vnd.android.package-archive");
+         startActivity(promptInstall);
+      }
+
+      private void openIntentInstall(String location) {
+
+         File toInstall = new File(location, nameAPK);
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri apkUri = FileProvider.getUriForFile(getApplicationContext(),
+                    BuildConfig.APPLICATION_ID + ".provider", toInstall);
+            Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+            intent.setData(apkUri);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+         } else {
+            Uri apkUri = Uri.fromFile(toInstall);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+         }
+      }
+   }
+   
+//====================================================================
+//READ FILE DIRECTORY 
+//====================================================================
+File file = new File(PATH);
+      File afile[] = file.listFiles();
+      Log.e(TAG, "Files "+afile.length);
 //====================================================================
 //OPEN GOOGLE PLAY INTENT
 //====================================================================
