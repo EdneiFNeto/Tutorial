@@ -70,6 +70,97 @@ chanel = chanels.getChanel();
 //FIM ENUM
 //=======================================================================
 
+//=======================================================================
+//CONSUMO MEMORIA
+//=======================================================================
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package consumojava;
+
+import com.sun.management.OperatingSystemMXBean;
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.text.DecimalFormat;
+
+/**
+ *
+ * @author Ednei
+ */
+public class Consumo {
+
+    private static long memoryDisc = new File("/").getTotalSpace();
+    private static long memoryDiscUsed = new File("/").getFreeSpace();
+    private static String userName = System.getProperty("user.name");
+    private static long memoryRam = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
+    private static long memoryRamFree = ((com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getFreePhysicalMemorySize();
+    private static long memoryRamUsed = (memoryRam - memoryRamFree);
+
+    public static void calc() {
+
+        System.out.println("User Name: " + userName);
+        System.out.println("Size C: " + convertBystes(memoryDisc));
+        System.out.println("Size C[Used]: " + convertBystes(memoryDiscUsed));
+        System.out.println("RAM: " + convertBystes(memoryRam));
+        System.out.println("RAM Free[Disponivel]: " + convertBystes(memoryRamFree));
+        System.out.println("RAM used[Usada]: " + convertBystes(memoryRamUsed));
+    }
+
+    public static String getNameUser(){
+        return userName;
+    }
+    
+    public static String sizeMemoryDisk() {
+        return convertBystes(memoryDisc);
+    }
+    
+    public static String sizeMemoryDiskUsed() {
+        return convertBystes(memoryDiscUsed);
+    }
+
+    public static String sizeMemoryRam() {
+        return convertBystes(memoryRam);
+    }
+
+    public static String sizeMemoryRamFree() {
+        return convertBystes(memoryRamFree);
+    }
+
+    public static String sizeMemoryRamUsed() {
+        return convertBystes(memoryRamUsed);
+    }
+
+    public static String convertBystes(long size) {
+        String hrSize = null;
+        double b = size;
+        double k = size / 1024.0;
+        double m = ((size / 1024.0) / 1024.0);
+        double g = (((size / 1024.0) / 1024.0) / 1024.0);
+        double t = ((((size / 1024.0) / 1024.0) / 1024.0) / 1024.0);
+
+        DecimalFormat dec = new DecimalFormat("0.00");
+        if (t > 1) {
+            hrSize = dec.format(t).concat(" TB");
+        } else if (g > 1) {
+            hrSize = dec.format(g).concat(" GB");
+        } else if (m > 1) {
+            hrSize = dec.format(m).concat(" MB");
+        } else if (k > 1) {
+            hrSize = dec.format(k).concat(" KB");
+        } else {
+            hrSize = dec.format(b).concat(" Bytes");
+        }
+
+        return hrSize;
+    }
+
+}
+
+//=======================================================================
+//FIM CONSUMO MEMORIA
+//=======================================================================
 
 //=======================================================================
 //IO
