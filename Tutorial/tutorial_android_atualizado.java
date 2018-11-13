@@ -5,6 +5,87 @@
 
 
 //====================================================================
+//ATUALIZAR DADOS A CADA X SEGUNDO [SERVICE]
+//====================================================================
+package broadcast.com.br.lausherprojectsv2.services;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.view.View;
+import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import broadcast.com.br.lausherprojectsv2.model.Consumo;
+
+public class UpdateCpuAndMemoryService extends Service {
+
+   public static final int notify = 10000;  //interval between two services(Here Service run every 5 seconds)
+   int count = 0;  //number of times service is display
+   private Handler mHandler = new Handler();   //run on another Thread to avoid crash
+   private Timer mTimer = null;    //timer handling
+
+   @Override
+   public IBinder onBind(Intent intent) {
+      return null;
+   }
+
+   @Override
+   public void onCreate() {
+      if (mTimer != null) // Cancel if already existed
+         mTimer.cancel();
+      else
+         mTimer = new Timer();   //recreate new
+      mTimer.scheduleAtFixedRate(new TimeDisplay(), 10, notify);   //Schedule task
+   }
+
+   @Override
+   public void onDestroy() {
+      super.onDestroy();
+      mTimer.cancel();    //For Cancel Timer
+      Toast.makeText(this, "Service is Destroyed", Toast.LENGTH_SHORT).show();
+   }
+
+   //class TimeDisplay for handling task
+   class TimeDisplay extends TimerTask {
+      @Override
+      public void run() {
+         // run on another thread
+         mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+               // display toast
+               
+               Toast.makeText(UpdateCpuAndMemoryService.this,
+                       "CPU "+ Consumo.readCPUinfo(), Toast.LENGTH_LONG).show();
+            }
+         });
+
+      }
+
+   }
+}
+//====================================================================
+//MAINCATIVUTY
+//====================================================================
+//start service
+startService(new Intent(this, UpdateCpuAndMemoryService.class));
+//====================================================================
+//MANIFEST
+//====================================================================
+</application>
+        .........
+  <service android:name=".services.UpdateCpuAndMemoryService" android:enabled="true" android:exported="true"></service>
+</application>
+
+//====================================================================
+//FIM
+//====================================================================
+
+//====================================================================
 //SwipeRefreshLayout
 //====================================================================
 <android.support.v4.widget.SwipeRefreshLayout
@@ -34,6 +115,9 @@ swipeRefreshLayout.setColorSchemeResources(R.color.colorSelected, R.color.coloGr
          }
       }, 3000);
    }
+
+
+
 //====================================================================
 //SwipeRefreshLayout - FIM
 //====================================================================
