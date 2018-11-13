@@ -2,7 +2,42 @@
 //====================================================================
 //                          ANDROID
 //====================================================================
-   
+
+
+//====================================================================
+//SwipeRefreshLayout
+//====================================================================
+<android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@style/AppTheme.Spinner"
+        android:id="@+id/swipRefresh">
+
+    Component......
+</android.support.v4.widget.SwipeRefreshLayout>
+
+
+//implemtns instercafe
+public class MainActivityTest extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener 
+//instancia
+swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipRefresh);
+swipeRefreshLayout.setOnRefreshListener(this);
+swipeRefreshLayout.setColorSchemeResources(R.color.colorSelected, R.color.coloGreen, R.color.colorBlack2);
+
+ @Override
+   public void onRefresh() {
+      new HttpConnectionService().execute(url);
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+            swipeRefreshLayout.setRefreshing(false);//finish
+         }
+      }, 3000);
+   }
+//====================================================================
+//SwipeRefreshLayout - FIM
+//====================================================================
+
 //====================================================================
 //PERMISSAO
 //====================================================================
