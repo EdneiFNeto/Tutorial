@@ -3,7 +3,23 @@
 //                          ANDROID
 //====================================================================
 
+//====================================================================
+//EXECUTAR TAKS A CADA X SEGUNDOS
+//====================================================================
+private ScheduledExecutorService scheduleTaskExecutor;
+scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+         public void run() {
 
+            Log.e(TAG, "TAKS: "+ Task.getTaks());
+            textCPU.setText(Task.getTaks());
+            //new HttpSendData().execute("http://wiki.moebius.com.br/fibra_externo/monitorar_tvbox/insert.php");
+         }
+      }, 0, 3, TimeUnit.SECONDS);
+
+//====================================================================
+//ScheduledExecutorService FIM
+//====================================================================
 //====================================================================
 //ATUALIZAR DADOS A CADA X SEGUNDO [SERVICE]
 //====================================================================
