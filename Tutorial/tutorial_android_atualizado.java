@@ -2,7 +2,154 @@
 //====================================================================
 //                          ANDROID
 //====================================================================
+//====================================================================
+//CARROUSSEL 
+//====================================================================
+//IMPLEMENT GRADLE
+//====================================================================
+implementation 'com.github.devlight:infinitecycleviewpager:1.0.2'
+//====================================================================         
+ //MAIN XML
+ <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/fundo_divertenet3"
+    android:layout_height="match_parent">
 
+
+    <com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:icvp_interpolator="@android:anim/accelerate_decelerate_interpolator"
+        app:icvp_center_page_scale_offset="30dp"
+        app:icvp_max_page_scale="0.8"
+        app:icvp_medium_scaled="true"
+        app:icvp_min_page_scale="0.5"
+        app:icvp_min_page_scale_offset="5dp"
+        android:id="@+id/infiniteHorizontalCycle"
+        app:icvp_scroll_duration="500"/>
+</RelativeLayout>
+//====================================================================
+//ADAPTER_XML
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_looke"
+        android:id="@+id/imageViewCard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>
+
+//====================================================================
+//CALSS ADAPTER
+//====================================================================
+package broadcast.com.br.lausherprojectsv2.adapter;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import java.util.List;
+
+import broadcast.com.br.lausherprojectsv2.R;
+
+public class MyAdapterCardTest extends PagerAdapter {
+
+   List<Integer> listImage;
+   Context context;
+   LayoutInflater layoutInflater;
+
+
+   public MyAdapterCardTest(List<Integer> listImage, Context context){
+
+      this.listImage = listImage;
+      this.context = context;
+      this.layoutInflater = LayoutInflater.from(context);
+   }
+
+
+   @Override
+   public int getCount() {
+      return listImage.size();
+   }
+
+   @Override
+   public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+      return view.equals(object);
+   }
+
+   @Override
+   public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+      container.removeView((View)object);
+   }
+
+   @NonNull
+   @Override
+   public Object instantiateItem(@NonNull ViewGroup container, int position) {
+
+      View view = layoutInflater.inflate(R.layout.card_layout, container, false);
+      ImageView imageView = (ImageView) view.findViewById(R.id.imageViewCard);
+      imageView.setImageResource(listImage.get(position));
+      container.addView(view);
+      return view;
+   }
+}
+
+//====================================================================
+//CLASS PRINCIPAL
+//====================================================================
+package broadcast.com.br.lausherprojectsv2;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
+import java.util.ArrayList;
+import java.util.List;
+import broadcast.com.br.lausherprojectsv2.adapter.MyAdapterCardTest;
+
+public class MainCarrousselActivity extends AppCompatActivity {
+
+   MyAdapterCardTest myAdapter;
+   List<Integer>lisImage = new ArrayList<>();
+
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_mai_carroussel);
+
+      initData();
+
+      HorizontalInfiniteCycleViewPager pager = (HorizontalInfiniteCycleViewPager)
+              findViewById(R.id.infiniteHorizontalCycle);
+
+      myAdapter = new MyAdapterCardTest(lisImage, getBaseContext());
+      pager.setAdapter(myAdapter);
+   }
+
+
+   private void initData() {
+      lisImage.add(R.drawable.ic_nb_telecom_tv);
+      lisImage.add(R.drawable.ic_looke);
+      lisImage.add(R.drawable.ic_watch_espn);
+   }
+}
+
+//====================================================================
+//FIM
+//====================================================================
 //====================================================================
 //EXECUTAR TAKS A CADA X SEGUNDOS
 //====================================================================
