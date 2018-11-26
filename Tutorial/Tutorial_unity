@@ -1,5 +1,50 @@
 
+//==========================================================================================
+//=========================== MOVE CAMERA ======================================
+//==========================================================================================
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+public class MoveCamera : MonoBehaviour {
+
+    private float speed = 10;
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+        move();
+    }
+
+    private void move()
+    {
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            transform.Translate(0, 0, Time.deltaTime * (-speed));
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            transform.Translate(0, 0, Time.deltaTime * (1));
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            transform.Translate(Time.deltaTime * (-1), 0, 0);
+            Debug.Log("Left: " + transform.position.x);
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            transform.Translate(Time.deltaTime * (1), 0, 0);
+        }
+    }
+}
+//=======================================================================
+//FIM MOVE CAMERA
+//=======================================================================
 
 //=======================================================================
 //GAME OBJECT
