@@ -1,5 +1,250 @@
 
 //=============================================
+//MONITORAMENTO DE VIDEO
+//=============================================
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package monitoramento;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import model.PlayVideo;
+import util.DialogUtil;
+
+/**
+ *
+ * @author edgardleal
+ */
+public class Monitoramento extends Application {
+
+    private String URL = "http://189.45.13.225/stream.php.m3u8?user=user&pass=passnb1&token=546&s=";
+    FlowPane flw;
+    String[] chanels = new String[]{"01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "12", "55",
+        "20", "22", "23"};
+
+    String[] chanelsName = new String[]{"CNT", "REDE TV", "NBR", "TV SAUDE", "SBT", "TV BRASIL",
+        "TV ESCOLA", "RECORD NEWS", "GLOBO", "RECORD", "BAND", "CINE BRASIL",
+        "BLENDER", "SEMPRE UM PAPO", "VASCO TV"};
+
+    PlayVideo[] playVideos;
+    VBox[] vb;
+    Button[] btn;
+    List<PlayVideo> listvideos;
+    private int time = 30000;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        double height = screenSize.getHeight();
+        //Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        flw = new FlowPane();
+
+        Scene cena = new Scene(flw, width, height);
+        flw.setAlignment(Pos.CENTER);
+        stage.setTitle("Monitoramento TV");
+        stage.setResizable(false);
+
+        stage.setScene(cena);
+
+        playVideos = new PlayVideo[6];
+        vb = new VBox[playVideos.length];
+        btn = new Button[playVideos.length];
+        listvideos = new ArrayList<>();
+
+        for (int i = 0; i < playVideos.length; i++) {
+            playVideos[i] = new PlayVideo();
+            playVideos[i].setUrl(URL + "stream" + chanels[i] + ".m3u8");
+            playVideos[i].createPlayer();
+            playVideos[i].config(flw, 3);
+            listvideos.add(playVideos[i]);
+        }
+
+        //add oa compoentes
+        for (int i = 0; i < listvideos.size(); i++) {
+            vb[i] = new VBox();
+            btn[i] = new Button(chanelsName[i]);
+            btn[i].setPrefSize(flw.getWidth() / 3, 30);
+            vb[i].getChildren().addAll(listvideos.get(i), btn[i]);
+            flw.getChildren().add(i, vb[i]);
+            playVideos[i].play();
+        }
+
+        stage.show();
+        randomPlayers();
+
+    }
+
+    public void randomPlayers() {
+
+        Runnable r = new Runnable() {
+            int op = 0;
+            boolean isRun = true;
+            String[] chanels2 = new String[]{"08", "09", "10", "11", "12", "55"};
+            String[] chanels3 = new String[]{"20", "22", "23", "01", "02", "03"};
+            String[] chanels1 = new String[]{"01", "02", "03", "04", "05", "06"};
+
+            String[] chanelsName1 = new String[]{"CNT", "REDE TV", "NBR", "TV SAUDE", "SBT", "TV BRASIL"};
+            String[] chanelsName2 = new String[]{"TV ESCOLA", "RECORD NEWS", "GLOBO", "RECORD", "BAND", "CINE BRASIL"};
+            String[] chanelsName3 = new String[]{"BLENDER", "SEMPRE UM PAPO", "VASCO TV", "CNT", "REDE TV", "NBR"};
+
+            @Override
+            public void run() {
+                try {
+
+                    while (isRun) {
+                        Thread.sleep(time);
+
+                        Platform.runLater(() -> {
+
+                            switch (op) {
+                                case 1:
+                                    for (int i = 0; i < chanels2.length; i++) {
+                                        updateChanel(playVideos[i], URL + "stream" + chanels2[i] + ".m3u8");
+                                        btn[i].setText(chanelsName2[i]);
+                                    }
+                                    break;
+
+                                case 2:
+                                    for (int i = 0; i < chanels3.length; i++) {
+                                        updateChanel(playVideos[i], URL + "stream" + chanels3[i] + ".m3u8");
+                                        btn[i].setText(chanelsName3[i]);
+                                    }
+
+                                    break;
+
+                                case 3:
+                                    for (int i = 0; i < chanels1.length; i++) {
+                                        updateChanel(playVideos[i], URL + "stream" + chanels1[i] + ".m3u8");
+                                        btn[i].setText(chanelsName1[i]);
+                                    }
+                                    break;
+                            }
+                        });
+
+                        if (op >= 3) {
+                            op = 0;
+                        }
+
+                        op++;
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Monitoramento.class.getName()).log(Level.SEVERE, null, ex);
+                    isRun = false;
+                    DialogUtil.showDialog(Alert.AlertType.ERROR, "Error", ex.getMessage());
+                }
+            }
+        };
+
+        new Thread(r).start();
+    }
+
+    public void updateChanel(PlayVideo playVideo, String URL) {
+        
+        playVideo.pause();
+        playVideo.getMediaPlayer().setOnPaused(new Runnable() {
+            @Override
+            public void run() {
+
+                playVideo.getMediaPlayer().dispose();//stop video
+                playVideo.setUrl(URL);
+                playVideo.createPlayer();
+                playVideo.config(flw, 3);
+                playVideo.play();
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+import java.net.URI;
+import javafx.scene.Node;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+
+/**
+ *
+ * @author edgardleal
+ */
+public class PlayVideo extends MediaView {
+
+    private Media media;
+    private MediaPlayer mediaPlayer;
+    private String url;
+
+    public PlayVideo() {
+        
+    }
+    
+    public void createPlayer(){
+        media = new Media(String.valueOf(URI.create(getUrl()))); // 1
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setMute(true);
+        this.setMediaPlayer(mediaPlayer);
+    }
+    
+    public void setUrl(String url) {
+      this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+    
+    public void config(FlowPane layout, int colum) {
+        this.setFitWidth(layout.getWidth() / colum);
+        this.setFitHeight(layout.getHeight() / colum);
+    }
+
+    public void play() {
+        mediaPlayer.play(); // 4
+    }
+
+    public void pause() {
+        mediaPlayer.pause();
+    }
+
+    public boolean isPlaying() {
+        
+        if (isPlaying()) 
+            return true;
+        else 
+            return false;
+    }
+}
+
+//=============================================
+//FIM 
+//=============================================
+//=============================================
 //BUffer video
 //=============================================
 public static String getDataSource(String path) throws IOException {
