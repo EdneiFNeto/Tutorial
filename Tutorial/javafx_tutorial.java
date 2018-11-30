@@ -1,4 +1,277 @@
+//=================================================================
+//MONITORAMENTO DE VIDEO -2 [USANDO PRIORIDADE DE THREADS
+//================================================================
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package monitoramento;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.lang.Thread.State;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import threads.CreateNewNode;
+import threads.RemoveNodes;
+import threads.TesteThread;
+
+public class Monitoramento extends Application {
+
+    FlowPane root;
+    Video[] videos;
+    VBox[] vb;
+    String[] chanels = new String[]{"01", "02", "03", "04", "05", "06", "08", "09"};
+    List<Video> list;
+    String URL = "http://189.45.13.225/stream.php.m3u8?";
+    String pathVideo = getClass().getResource("Matrioska.mp4").toString();
+    int colum = 5;
+    int time = 10000;
+
+    @Override
+    public void start(Stage primaryStage) throws InterruptedException {
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        double height = screenSize.getHeight();
+
+        root = new FlowPane();
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(10, 10, 10, 10));
+        Scene scene = new Scene(root, width / 2, height / 2);
+
+        //create players
+        videos = new Video[chanels.length];
+        vb = new VBox[videos.length];
+        list = new ArrayList<>();
+
+        //add video 
+        addAll();
+        primaryStage.setTitle("Monitoramento - TV");
+        primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(event -> System.exit(0));
+        primaryStage.show();
+
+        RemoveNodes removeNodes = new RemoveNodes("Thread-1", time, root, list, vb);
+        Thread t1 = new Thread(removeNodes);
+        
+        CreateNewNode createNewNode = new CreateNewNode("Thread-2", time, root, list, videos,  colum);
+        Thread t2 = new Thread(createNewNode);
+        
+        t1.start();//remove
+        if(t1.getState() == State.TERMINATED){
+            t2.wait();//T1 ESPERA
+        }
+        t2.start();//inicia
+    }
+
+    //add videos a lista
+    public void addAll() {
+
+        addVideoist();
+
+        //verify exists video list
+        if (list.size() > 0) {
+
+            for (int i = 0; i < list.size(); i++) {
+                vb[i] = new VBox();
+                Button btn = new Button("B-" + i);
+                btn.setPrefSize(root.getWidth() / colum, 30);
+                vb[i].getChildren().addAll(list.get(i), btn);
+                root.getChildren().add(i, vb[i]);
+            }
+        } else {
+            System.err.println("Empty list");
+        }
+    }
+
+    public void addVideoist() {
+
+        for (int i = 0; i < videos.length; i++) {
+            videos[i] = new Video();
+            videos[i].setUrl(pathVideo);
+            videos[i].createMediaPlayer();
+            videos[i].config(root, colum);
+            list.add(videos[i]);
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+//============================================
+//THREAD PARA ADD ELEMDNTOS
+//============================================
+
+package threads;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import monitoramento.Video;
+
+/**
+ *
+ * @author Ednei
+ */
+public class CreateNewNode implements Runnable {
+
+    private String[] chanels = new String[]{"01", "02", "03", "04", "05", "06", "08", "09"};
+    private List<Video> list;
+    private Video[] videos;
+    private String URL = "http://189.45.13.225/stream.php.m3u8?";
+    private String pathVideo = getClass().getResource("/videos/Matrioska.mp4").toString();
+    int time;
+    private FlowPane root;
+    private VBox[] vb;
+    int colum;
+    String name;
+
+    public CreateNewNode(String name, int time, FlowPane root, List<Video> list, Video[] videos, int colum) {
+        this.name = name;
+        this.time = time;
+        this.root = root;
+        this.list = list;
+        this.videos = videos;
+        this.colum = colum;
+    }
+
+    @Override
+    public void run() {
+
+        try {
+            Thread.sleep(time);
+            Platform.runLater(() -> {
+                addAll(root, colum);
+            });
+            System.err.println("Thread " + name + " terminou");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RemoveNodes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    //add videos a lista
+    public void addAll(FlowPane root,  int colum) {
+
+        addVideolist(videos, root, colum);
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                VBox vb = new VBox();
+                Button btn = new Button("B-" + i);
+                btn.setPrefSize(root.getWidth() / colum, 30);
+                vb.getChildren().add(list.get(i));
+                vb.getChildren().add(btn);//add btn ao vbox
+                root.getChildren().add(i, vb);//add vb ao root
+            }
+        } else {
+            System.err.println("Empty");
+        }
+      
+    }
+
+    public void addVideolist(Video[] videos, FlowPane root, int colum) {
+        //clear list
+        if(list.size()>0)
+            list.clear();
+        
+        for (int i = 0; i < videos.length; i++) {
+            videos[i] = new Video();
+            videos[i].setUrl(pathVideo);
+            videos[i].createMediaPlayer();
+            videos[i].config(root, colum);
+            list.add(videos[i]);
+            System.err.println(list.get(i));
+        }
+    }
+
+}
+
+//=============================================
+//THREAD PARA REMOVER ELEMTNOS
+//=============================================
+
+package threads;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.layout.FlowPane;
+import monitoramento.Video;
+
+/**
+ *
+ * @author Ednei
+ */
+public class RemoveNodes implements Runnable {
+    
+    private Node[] node;
+    private int time;
+    private FlowPane pane;
+    private List<Video> list;
+    private String name;
+    
+    public RemoveNodes(String name, int time, FlowPane pane, List<Video> list, Node[] node) {
+        this.name = name;
+        this.time = time;
+        this.pane = pane;
+        this.list = list;
+        this.node = node;
+    }
+    
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(time);
+            Platform.runLater(() -> {
+                removeAll(list, node);
+            });
+            System.err.println("Thread "+name+" terminou");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RemoveNodes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void removeAll(List<Video> list, Node[] node) {
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                pane.getChildren().removeAll(node[i]);
+            }
+        }
+    }
+}
+//=============================================
+//FIM
+//=============================================
 //=============================================
 //MONITORAMENTO DE VIDEO
 //=============================================
