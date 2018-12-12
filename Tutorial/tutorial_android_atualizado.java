@@ -3,6 +3,85 @@
 //                          ANDROID
 //====================================================================
 
+
+//====================================================================
+//==================== EXECUTAR SCRIPT LINUX ========================= 
+//====================================================================
+//1-CRIAR ARQUVO .SH NO LINUX
+//====================================================================
+#!/bin/bash
+echo "Contando as linhas ..."
+sleep 5
+grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}'
+echo "Existem $LINHAS no arquivo."
+//====================================================================
+//2 - TORNAR O ARQUIVO EXECUTAVEL
+//====================================================================
+chmod 777 NOME_ARQUIVO.sh        
+//====================================================================
+//3 - CODIGO JAVA[EXECUTAR ARQUIVO]
+//====================================================================
+import com.sun.management.OperatingSystemMXBean;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import com.sun.management.OperatingSystemMXBean;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.management.MBeanServerConnection;
+
+public class Teste {
+
+    public static void main(String[] args) throws UnknownHostException, SocketException, IOException {
+        String userHome = System.getProperty("user.dir");
+        String cmd = Executar("sh "+userHome+"/src/teste/script.sh");//PATH PROJETO
+        System.err.println(cmd);
+        System.err.println(userHome);
+    }
+
+    public static String Executar(String cmd) {
+        Process p=null;
+        BufferedReader reader=null;
+        
+        try {
+
+            p = Runtime.getRuntime().exec(cmd);
+            reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            int read;
+            char[] buffer = new char[4096];
+            StringBuffer output = new StringBuffer();
+            while ((read = reader.read(buffer)) > 0) {
+                output.append(buffer, 0, read);
+            }
+            
+            p.waitFor();
+            return output.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }finally{
+            try {
+                reader.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Teste.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+}
+//====================================================================
+//FIM
+//====================================================================
+
+
 //====================================================================
 //INSTALLAR APP USANDO INTENT [GOOGLE PLAY]
 //====================================================================
