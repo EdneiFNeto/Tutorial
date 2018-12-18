@@ -4,6 +4,73 @@
 //====================================================================
 
 //====================================================================
+//================ ATUALIZAR BACKGROUND IMAGEM VIA URL =============== 
+//====================================================================
+package broadcast.com.br.lausherprojectsv2.services;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import java.io.InputStream;
+
+public class DownloadImageBackground extends AsyncTask<String, Void, Bitmap> {
+
+   RelativeLayout relativeLayout;
+   private String TAG = "DownloadImageBGLog";
+
+   public DownloadImageBackground(RelativeLayout relativeLayout) {
+      this.relativeLayout = relativeLayout;
+   }
+
+   @Override
+   protected void onPreExecute() {
+      super.onPreExecute();
+      Log.e(TAG, "loading...");
+   }
+
+   @Override
+   protected Bitmap doInBackground(String... urls) {
+
+      String urldisplay = urls[0];
+      Bitmap mIcon11 = null;
+
+      try {
+         InputStream in = new java.net.URL(urldisplay).openStream();
+         mIcon11 = BitmapFactory.decodeStream(in);
+      } catch (Exception e) {
+         Log.e(TAG, e.getMessage());
+         e.printStackTrace();
+      }
+      return mIcon11;
+   }
+
+   protected void onPostExecute(Bitmap result) {
+      Drawable dr = new BitmapDrawable(result);
+      relativeLayout.setBackgroundDrawable(dr);
+      Log.e(TAG, "Sucesso !");
+   }
+}
+//====================================================================
+//MAINACTIVITY
+RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+public void changeImagemBG(int position) {
+      new DownloadImageBackground(relativeLayout)
+              .execute("https://divertenet.com.br/apps/images/" + 
+                       backgrounds.get(position));
+}
+
+//====================================================================
+//============================= FIM ================================== 
+//====================================================================
+
+
+
+//====================================================================
 //==================== PASSAR LIST<OBJECT> POR INTENT ================ 
 //====================================================================
  Intent intent = new Intent(context, MainHttpTestActivity.class);
