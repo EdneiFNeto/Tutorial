@@ -3,6 +3,23 @@
 //                          ANDROID
 //====================================================================
 
+//====================================================================
+//==================== PASSAR LIST<OBJECT> POR INTENT ================ 
+//====================================================================
+ Intent intent = new Intent(context, MainHttpTestActivity.class);
+               Bundle bundle = new Bundle();
+               bundle.putSerializable("listApp", listapps);
+               intent.putExtras(bundle);
+               context.startActivity(intent);
+
+//get list via intent
+private ArrayList<AppsList> listsApps;
+listsApps = (ArrayList<AppsList>) bundle.getSerializable("listApp");
+//====================================================================
+//============================== FIM ================================= 
+//====================================================================
+
+
 
 //====================================================================
 //==================== EXECUTAR SCRIPT LINUX ========================= 
