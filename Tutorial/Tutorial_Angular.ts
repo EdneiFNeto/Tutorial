@@ -3,6 +3,87 @@
 //================================================================
 
 //================================================================
+//ROTAS
+//================================================================
+//app.routing.ts
+//================================================================
+import { PageComprasComponent } from './page-compras/page-compras.component';
+import { ListarAutoPecasComponent } from './listar-auto-pecas/listar-auto-pecas.component';
+
+
+import { ModuleWithProviders } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+
+const APP_ROUTING: Routes = [
+    { path: '', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'listar-auto-pecas', component: ListarAutoPecasComponent },
+    { path: 'page-compras', component: PageComprasComponent },
+];
+
+export const routing: ModuleWithProviders = RouterModule.forRoot(
+    APP_ROUTING
+);
+//================================================================
+//app.module.ts
+//================================================================
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import{ FormsModule} from '@angular/forms';//ADD
+
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { ListarAutoPecasComponent } from './listar-auto-pecas/listar-auto-pecas.component';
+import { LoginComponent } from './login/login.component';
+
+import { routing } from './app.routing';//ADD
+import { PageComprasComponent } from './page-compras/page-compras.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    ListarAutoPecasComponent,
+    LoginComponent,
+    PageComprasComponent
+  ],
+  imports: [
+    BrowserModule,
+    routing,
+    FormsModule 
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+//================================================================
+//INSERIR ROTAS
+//================================================================
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  constructor(private router:Router) { }
+
+  //INSEIRIR ROTAS
+  buscarCEP():void{
+    console.log("CEP: "+this.cep);
+    this.router.navigate(['listar-auto-pecas']);
+  }
+
+}
+
+
+//================================================================
 //=================== MODULO TYPE SCRIPT =========================
 //================================================================
 
