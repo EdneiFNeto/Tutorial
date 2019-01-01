@@ -3,6 +3,91 @@
 //================================================================
 
 //================================================================
+//HTTPCLIENT
+//================================================================
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent  {
+
+  loja:String;
+  numero:String;
+  cep:String;
+  logradouro:String;
+  localidade:String;
+  uf:String;
+  bairro:String;
+ 
+  constructor(private router:Router, private http:HttpClient) {
+    
+  }
+  
+  buscarCEP():void{
+
+    this.http.get<Comment>("https://viacep.com.br/ws/"+this.cep+"/json/").subscribe((data) =>{
+
+      this.cep = data.cep;
+      this.logradouro = data.logradouro;
+      this.bairro = data.bairro;
+      this.uf = data.uf;
+      this.localidade = data.localidade;
+      console.log(data);
+    });
+  }
+}
+
+
+//================================================================
+//APP.MODULE.TS
+//================================================================
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import{ FormsModule} from '@angular/forms';//ADD
+
+import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
+import { ListarAutoPecasComponent } from './listar-auto-pecas/listar-auto-pecas.component';
+import { LoginComponent } from './login/login.component';
+
+import { routing } from './app.routing';
+import { PageComprasComponent } from './page-compras/page-compras.component';
+import { environment } from './environment ';
+
+import{AngularFireModule} from '@angular/fire'//add
+import { AngularFireDatabase } from '@angular/fire/database';
+import { FirebaseComponent } from './firebase/firebase.component';//add
+
+import { HttpClientModule } from '@angular/common/http';;//ADD
+
+@NgModule({
+  declarations: [
+    AppComponent,
+  ],
+  imports: [
+    BrowserModule,
+    routing,
+    FormsModule,
+    HttpClientModule,//ADD
+    AngularFireModule.initializeApp(environment.firebase) 
+  ],
+  providers: [
+    AngularFireDatabase
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+
+//================================================================
 //ROTAS
 //================================================================
 //app.routing.ts
