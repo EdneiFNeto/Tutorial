@@ -1,0 +1,46 @@
+//========================================================
+//ZOOM
+//========================================================
+var canvas,ctx, img;
+
+window.onload = function () {
+
+    canvas = document.querySelector('canvas');
+    ctx = canvas.getContext('2d');
+    img = document.querySelector('img');
+    var w = img.width;
+    var h = img.height;
+    canvas.width = w;
+    canvas.height = h;
+
+    img.addEventListener('mousemove', function (ev) {
+        var x = ev.clientX * 3;
+        var y = ev.clientY * 3;
+
+        var sourceWidth = w;
+        var sourceHeight = h;
+        var dW = sourceWidth;
+        var dH = sourceHeight;
+        var dX = (canvas.width / 2) - (dW / 2);
+        var dY = (canvas.height / 2) - (dH / 2);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, x, y, dW, dH, dX, dY, dW, dH);
+    });
+
+    img.addEventListener('mousedown', function (ev) {
+
+    });
+}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8" id="img-principal">
+                <img src="images/praia.jpg" alt="" width="600">
+            </div>
+            <div class="col-sm-4">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
