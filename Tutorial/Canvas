@@ -1,5 +1,3 @@
-
-
 //==================================================
 //ZOOM CANVAS VIDEO
 //==================================================
@@ -30,160 +28,72 @@ window.onload = function () {
     ctx = canvas.getContext('2d');
     video = document.querySelector('video');
     img = document.querySelector('img');
+    body = document.querySelector('body');
 
     canvas.width = 200;//(video.width/2);
     canvas.height = 200;//(video.height/2);
 
-    //console.log("W: " + canvas.width + "\nH: " + canvas.height);
-    cropImageVideAddCanvas();
-
+    zoomVideo(body);
 }
 
 
-//crop image video add canvas
-function cropImageVideAddCanvas() {
+function zoomVideo(elem) {
 
-    document.querySelector('body').addEventListener('mousemove', function (ev) {
 
-        var $this = this;
+    elem.addEventListener('mousemove', function (ev) {
 
-        var mouseposition = [{
+        var pos = [{
             x: ev.clientX,
             y: ev.clientY,
         }];
 
-        var x = 100;
-        var y = 100;
+        draw((pos[0].x * 2) - 355, (pos[0].y * 2) - 300, 0, 0, canvas.width, canvas.width);
+        canvas.style.left = (pos[0].x - 100) + "px";
+        canvas.style.top = (pos[0].y) + "px";
 
-        mouseposition[0].x -= x;
+        document.getElementById('x').innerHTML = "X: " + (pos[0].x);
+        document.getElementById('y').innerHTML = "Y: " + (pos[0].y);
 
-        if (mouseposition[0].x <= 400) {
-            //mouseposition[0].x -= x;
-            //mouseposition[0].y += y;
-        }else{
-            //mouseposition[0].x += x;
-            //mouseposition[0].y -= y;
+    });
 
-        }
 
-        if (mouseposition[0].y <= (canvas.height)) {
-            //mouseposition[0].y += 100;
-        }
-
-        if ((mouseposition[0].x <= 0 || mouseposition[0].x > 1000)
-            || (mouseposition[0].y > 400 || mouseposition[0].y < 120)) {
-            canvas.style.display = 'none';
-        } else {
-            canvas.style.display = 'block';
-        }
-
-        sourceWidth = canvas.width;
-        sourceHeight = canvas.height;
-
-        dW = sourceWidth;
-        dH = sourceHeight;
-        dX = (sourceWidth / 2) - (dW / 2);
-        dY = (sourceHeight / 2) - (dH / 2);
-
-        draw(video, mouseposition[0].x, mouseposition[0].y, dW, dH);
-
-        canvas.style.left = (mouseposition[0].x + 10) + "px";
-        canvas.style.top = (mouseposition[0].y + 10) + "px";
-
-        console.log(mouseposition[0].x + "-" + mouseposition[0].y);
-        console.log("Video:" + video.width);
-
-        document.getElementById('x').innerHTML="X: "+mouseposition[0].x;
-        document.getElementById('y').innerHTML="Y: "+mouseposition[0].x;
-        
-    }, false);
-
-    video.addEventListener('mouseover', function (ev) {
+    elem.addEventListener('mouseover', function (ev) {
         // canvas.style.display = 'block';
     }, false);
 
-    video.addEventListener('mouseout', function (ev) {
+    elem.addEventListener('mouseout', function (ev) {
         //canvas.style.display = 'none';
     }, false);
 
 
     //event zoom mouse
-    document.querySelector('body').addEventListener('mousedown', function (ev) {
+    elem.addEventListener('keydown', function (ev) {
+        console.log(ev.keyCode);
 
-        switch (ev.button) {
+        switch (ev.keyCode) {
             //button left
-            case 0:
+            case 187:
                 scale += 0.5;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.scale(scale, scale);
+                canvas.style.width = canvas.width + scale;
                 break;
             //button center
-            case 1:
+            case 189:
                 scale = 0.8;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.scale(scale, scale);
+                canvas.style.width = canvas.width - scale;
                 break;
         }
     });
 }
 
-function draw($this, x, y, dW, dH) {
-
-    ctx.clearRect(0, 0, sourceWidth, sourceWidth);
-    //ctx.save();
-    //draw canvas
-    ctx.drawImage($this, x, y, dW, dH, dX, dY, dW, dH * 2);
-    //ctx.restore();
+function draw(sx, sy, dx, dy, w, h) {
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(video, sx, sy, w, h, dx, dy, w, h);
 }
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset='utf-8' />
-    <title>Zoom </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body>
-    <canvas></canvas>
-    <div class="container" id="content">
-        <div class="row">
-            <div class="col-sm-12 text-center">
-                <h1 style="text-transform: uppercase">Aplicar zoom no vídeo </h1>
-                <h2 class="text-center">Passe o mouse sobre o video</h2>
-                <hr>
-            </div>
-            <div class="col-sm-8">
-                <video src="video.mp4" controls></video>
-            </div>
-
-            <div class="col-sm-4">
-                <img src="images/mouse-tutorial.png" alt="">
-            </div>
-
-            <div class="col-sm-12">
-                <hr>
-                <h2>Cordenadas:</h2>
-                <h3 id="x"></h3>
-                <h3 id="y"></h3>
-            </div>
-        </div>
-    </div>
-
-    <!--video id="video" src="video.mp4" controls="false"></video-->
-</body>
-<script src="js/js.js"></script>
-
-</html>
-
-
-//========================================================================
-//ZOOM - V2
-//========================================================================
 <!DOCTYPE html>
 <html lang="en">
 
@@ -232,166 +142,3 @@ function draw($this, x, y, dW, dH) {
 <script src="js/js.js"></script>
 
 </html>
-
-//==================================================
-//JS
-//==================================================
-var temp;
-var video, ctx, canvas;
-var count = 0;
-var zoom = 1;
-var img;
-
-var sourceWidth,
-    sourceHeight,
-    dW,
-    dH,
-    dX,
-    dY;
-
-var maxMouseButtonLeft = 0;
-var maxMouseButtonCenter = 0;
-var scale = 1.0;
-var mult = 0.8;
-var isMaxZoom = true;
-var isMinZoom = false;
-
-
-window.onload = function () {
-
-    canvas = document.querySelector('canvas');
-    ctx = canvas.getContext('2d');
-    video = document.querySelector('video');
-    img = document.querySelector('img');
-    body = document.querySelector('body');
-
-    canvas.width = 200;//(video.width/2);
-    canvas.height = 200;//(video.height/2);
-
-    var w = canvas.width;
-    var h = canvas.height;
-    //console.log("W: " + canvas.width + "\nH: " + canvas.height);
-    // init(img);
-    zoomVideo(body)
-    //ctx.drawImage(video, 100, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-    //ctx.drawImage(video, 0, 0, w, h, 0,0, w, h );
-}
-
-function zoomImg(elem) {
-
-    elem.addEventListener('mousemove', function (ev) {
-
-        var pos = [{
-            x: ev.clientX,
-            y: ev.clientY,
-        }];
-
-        draw((pos[0].x * 3) - 345, (pos[0].y*2) -305, 0, 0, canvas.width, canvas.height);
-        
-        canvas.style.left = (pos[0].x +10) + "px";
-        canvas.style.top = (pos[0].y -75) + "px";
-
-        document.getElementById('x').innerHTML = "X: " + (pos[0].x);
-        document.getElementById('y').innerHTML = "Y: " + (pos[0].y);
-
-    });
-}
-
-function zoomVideo(elem) {
-
-    elem.addEventListener('mousemove', function (ev) {
-
-        var pos = [{
-            x: ev.clientX,
-            y: ev.clientY,
-        }];
-
-        draw((pos[0].x*2) -355, (pos[0].y *2)-300, 0, 0, canvas.width, canvas.width);
-        canvas.style.left = (pos[0].x -100) + "px";
-        canvas.style.top = (pos[0].y ) + "px";
-
-        document.getElementById('x').innerHTML = "X: " + (pos[0].x);
-        document.getElementById('y').innerHTML = "Y: " + (pos[0].y);
-
-    });
-}
-
-
-//crop image video add canvas
-function init(elem) {
-
-    document.querySelector('body').addEventListener('mousemove', function (ev) {
-
-        var $this = this;
-
-        var mouseposition = [{
-            x: ev.clientX - 100,
-            y: ev.clientY + 30,
-        }];
-
-        var x = 100;
-        var y = 100;
-
-        if (mouseposition[0].x <= (elem.width / 2)) {
-
-        }
-        console.log("W:" + elem.width);
-
-        if ((mouseposition[0].x <= 0 || mouseposition[0].x > 1000)
-            || (mouseposition[0].y > 400 || mouseposition[0].y < 120)) {
-            //canvas.style.display = 'none';
-        } else {
-            //canvas.style.display = 'block';
-        }
-
-        sourceWidth = canvas.width;
-        sourceHeight = canvas.height;
-
-        dW = sourceWidth;
-        dH = sourceHeight;
-        dX = (sourceWidth / 2) - (dW / 2);
-        dY = (sourceHeight / 2) - (dH / 2);
-
-        draw(elem, mouseposition[0].x, mouseposition[0].y, dW, dH);
-
-        canvas.style.left = (mouseposition[0].x) + "px";
-        canvas.style.top = (mouseposition[0].y) + "px";
-
-        document.getElementById('x').innerHTML = "X: " + (mouseposition[0].x);
-        document.getElementById('y').innerHTML = "Y: " + (mouseposition[0].y);
-
-    }, false);
-
-    elem.addEventListener('mouseover', function (ev) {
-        // canvas.style.display = 'block';
-    }, false);
-
-    elem.addEventListener('mouseout', function (ev) {
-        //canvas.style.display = 'none';
-    }, false);
-
-
-    //event zoom mouse
-    document.querySelector('body').addEventListener('mousedown', function (ev) {
-
-        switch (ev.button) {
-            //button left
-            case 0:
-                scale += 0.5;
-                ctx.scale(scale, scale);
-                break;
-            //button center
-            case 1:
-                scale = 0.8;
-                ctx.scale(scale, scale);
-                break;
-        }
-    });
-}
-
-
-function draw(sx, sy, dx, dy, w, h) {
-    ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(video, sx, sy, w, h, dx, dy, w, h);
-}
-
