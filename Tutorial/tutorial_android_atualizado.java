@@ -62,6 +62,7 @@ public void changeImagemBG(int position) {
       new DownloadImageBackground(relativeLayout)
               .execute("https://divertenet.com.br/apps/images/" + 
                        backgrounds.get(position));
+   
 }
 
 //====================================================================
