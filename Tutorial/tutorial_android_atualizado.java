@@ -578,27 +578,51 @@ swipeRefreshLayout.setColorSchemeResources(R.color.colorSelected, R.color.coloGr
 //=======================================================================
 //INSTALL APP USING INTENT
 //=======================================================================
-public static void installApp(Context context, String ...str) {
-      try{
-         File toInstall = new File(str[0], str[1]);
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri apkUri = FileProvider.getUriForFile(context,
-                    BuildConfig.APPLICATION_ID + ".provider", toInstall);
-            Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-            intent.setData(apkUri);
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+package nbtelecomtv.com.br.nbtelecom_allversion.adapter.utils;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.BuildConfig;
+import android.support.v4.content.FileProvider;
+
+import java.io.File;
+
+public class InstallAppUtil {
+
+    private static Context context;
+      private String location = Environment.getExternalStorageDirectory() + "/Download/";
+    private String nameAPK = "tv-release.apk";
+    public InstallAppUtil(Context context){
+        this.context = context;
+    }
+
+    public static void openIntentInstall(String location, String nameAPK) throws Exception {
+
+        File toInstall = new File(location, nameAPK);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+            Uri fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", toInstall);
+            Intent intent = new Intent(Intent.ACTION_VIEW, fileUri);
+            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            intent.setDataAndType(fileUri, "application/vnd.android" + ".package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             context.startActivity(intent);
-         } else {
+
+        } else {
+
             Uri apkUri = Uri.fromFile(toInstall);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
-         }
-      }catch (ActivityNotFoundException e){
-         Log.e(TAG, "Erro Activity "+e.getMessage());
-      }
-   }
+        }
+    }
+}
+
 //=======================================================================
 //CHANGE MANIFEST
 //=======================================================================
@@ -627,14 +651,16 @@ public static void installApp(Context context, String ...str) {
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
+       
+       <!-- Add provider -->
+       <provider
+                android:name="android.support.v4.content.FileProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
             <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths"/>
         </provider>
         <activity android:name=".InstallActivity"></activity>
     </application>
@@ -644,9 +670,13 @@ public static void installApp(Context context, String ...str) {
 //CREATE XML [RES/XML/provider_paths.xml
 //=======================================================================
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="external_download" path="Download"/>
-</paths>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--external-path name="external_download" path="Download"/-->
+
+    <external-path
+            name="external_file"
+            path="."/>
+</PreferenceScreen>
 
 //=======================================================================
 //DONWLOAD
