@@ -3,6 +3,103 @@
 //                          ANDROID
 //====================================================================
 
+//================================================================
+//SEND POST
+//=================================================================
+package broadcast.com.br.lausherprojectsv2.utils;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+
+import broadcast.com.br.lausherprojectsv2.enums.ConfigEnum;
+
+public class SendPOSTUtil extends AsyncTask<String, String, String> {
+
+    private static String TAG = "SendDataLog";
+
+    private Context context;
+
+    public SendPOSTUtil(Context context){
+        this.context = context;
+    }
+
+    @Override
+    protected String doInBackground(String... strings) {
+
+        InputStream is = null;
+        String NewsData = "";
+
+        try {
+
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("ether_mac", ConsumoUtil.getMacAddrEther()));
+            nameValuePairs.add(new BasicNameValuePair("FreeDisk", ConsumoUtil.getMacAddrWifi()));
+            nameValuePairs.add(new BasicNameValuePair("ipv4", ConsumoUtil.IPV4()));
+            nameValuePairs.add(new BasicNameValuePair("cpu_perc", ConsumoUtil.CPUUsed()));
+            nameValuePairs.add(new BasicNameValuePair("mem_perc", ConsumoUtil.RamSize(context)));
+            nameValuePairs.add(new BasicNameValuePair("disk_perc", ConsumoUtil.FreeDisk()));
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost(ConfigEnum.URL_POST.getConfig());
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            HttpResponse response = httpclient.execute(httppost);
+
+            HttpEntity entity = response.getEntity();
+            is = entity.getContent();
+
+            NewsData = Stream2String(is);
+            publishProgress(NewsData);
+            Log.e(TAG, NewsData);
+            
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String Stream2String(InputStream in) {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String line ="";
+        String text ="";
+
+        try {
+            while((line=br.readLine())!=null) {
+                text+=line;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return text;
+    }
+}
+//================================================================
+//FIM
+//=================================================================
+
 //====================================================================
 //================ ATUALIZAR BACKGROUND IMAGEM VIA URL =============== 
 //====================================================================
