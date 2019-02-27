@@ -4,6 +4,103 @@
 //====================================================================
 
 //================================================================
+//SEND POST USANDO API VOLLEY
+//=================================================================
+
+package broadcast.com.br.lausherprojectsv2.services;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
+
+import broadcast.com.br.lausherprojectsv2.enums.ConfigEnum;
+import broadcast.com.br.lausherprojectsv2.utils.ConsumoUtil;
+
+
+public class SendPOSTHTTP {
+
+
+   private static final String TAG = "HttpSendDataLog";
+   private static Context context;
+
+   public SendPOSTHTTP(Context context) {
+      this.context = context;
+   }
+
+   public static void sendPOST() {
+
+
+      StringRequest postRequest = new StringRequest(Request.Method.POST, ConfigEnum.URL_POST.getConfig(),
+              new Response.Listener<String>() {
+                 @Override
+                 public void onResponse(String response) {
+                    try {
+                       JSONArray jsonarray = new JSONArray(response);
+                       Log.e(TAG, "ArrayJson: "+jsonarray);
+
+                       /*for (int i = 0; i < jsonarray.length(); i++) {
+                          JSONObject jsonobject = jsonarray.getJSONObject(i);
+                          String resp = jsonobject.getString("resp");
+                          Log.e(TAG, "resp: " + resp);
+                       }*/
+                    } catch (JSONException e) {
+                       e.printStackTrace();
+                    }
+                 }
+              },
+              new Response.ErrorListener() {
+                 @Override
+                 public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                 }
+              }
+      ) {
+         @Override
+         protected Map<String, String> getParams() {
+            Map<String, String> params = new HashMap<>();
+            try {
+               // the POST parameters:
+               params.put("ether_mac", ConsumoUtil.getMacAddrEther());
+               params.put("wifi_mac", ConsumoUtil.getMacAddrWifi());
+               params.put("ipv4", ConsumoUtil.IPV4());
+               params.put("ipv6", ConsumoUtil.IPV6());
+               params.put("cpu_perc", ConsumoUtil.CPUUsed2());
+               params.put("mem_perc", ConsumoUtil.RamSize(context));
+               params.put("disk_perc", ConsumoUtil.FreeDisk());
+
+            } catch (SocketException e) {
+               e.printStackTrace();
+            }
+
+            return params;
+         }
+      };
+
+      Volley.newRequestQueue(context).add(postRequest);
+   }
+
+
+}
+//================================================================
+//GRADLE [MODULE:APP]
+//================================================================
+
+dependencies {
+    implementation  'com.android.volley:volley:1.1.1'
+}
+//================================================================
 //SEND POST
 //=================================================================
 package broadcast.com.br.lausherprojectsv2.utils;
