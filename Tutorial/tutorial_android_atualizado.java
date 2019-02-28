@@ -4,6 +4,19 @@
 //====================================================================
 
 //================================================================
+//SEND DELETE FILES DIR DOWNLOAD
+//=================================================================
+//delete files
+      File file = new File(Environment.getExternalStorageDirectory().getPath()+"/Download/");
+      File filesInDirectory[] = file.listFiles();
+
+      if (filesInDirectory != null) {
+         for (int i = 0; i < filesInDirectory.length;i++) {
+            filesInDirectory[i].delete();
+         }
+      }
+
+//================================================================
 //SEND POST USANDO API VOLLEY
 //=================================================================
 
