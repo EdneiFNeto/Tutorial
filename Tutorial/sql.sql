@@ -359,7 +359,9 @@ SELECT * from backup_fibras where data between current_timestamp(0) - interval '
 SELECT DATE_PART('hour', data) AS minutio,  DATE_PART('minute', data) AS segundo from backup_fibras limit 1;
 
 
-
+--select campos que tem o menor espaco em disco na data de hj
+select *  from stb_stats where  disk_perc = 
+	(select max(disk_perc) from stb_stats where cast(reading as date) = current_date);
 
 
 
