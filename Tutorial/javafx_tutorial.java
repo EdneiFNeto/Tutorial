@@ -1,4 +1,469 @@
 //=================================================================
+//TV IP
+//================================================================
+//===============================================================
+//Class Principal
+//===============================================================
+
+package vlc;
+
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+import enums.ConfigEmun;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.ScrollPane;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
+import static javax.swing.GroupLayout.Alignment.BASELINE;
+import static javax.swing.GroupLayout.Alignment.LEADING;
+import static javax.swing.GroupLayout.Alignment.TRAILING;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+public class VLC extends JFrame {
+
+    private static Canvas c;
+    static JPanel p;
+    static double width, height;
+
+    //NAMES CHANNEL
+    private static String channels[] = {
+        ConfigEmun.URL_CINE_MAX.getChannel(), //1
+        ConfigEmun.URL_FOX_LIFE.getChannel(), //2
+        ConfigEmun.URL_FOX.getChannel(), //3
+        ConfigEmun.URL_FX.getChannel(), //4
+        ConfigEmun.URL_PARAMONT.getChannel(), //5
+        ConfigEmun.URL_WARNNER.getChannel(), //6
+        ConfigEmun.URL_TNT_SERIES.getChannel(), //7
+        ConfigEmun.URL_TCM.getChannel(), //8
+        ConfigEmun.URL_SPACE.getChannel(), //9
+        ConfigEmun.URL_HBO.getChannel(), //10
+        ConfigEmun.URL_HBO_PLUS.getChannel(), //11
+        ConfigEmun.URL_HBO_2.getChannel(), //12
+        ConfigEmun.URL_MAX_UP.getChannel(), //13
+        ConfigEmun.URL_MAX_PRIME.getChannel(), //14
+        ConfigEmun.URL_MAX.getChannel(), //15
+        ConfigEmun.URL_UNIVERSAL_CHANNEL.getChannel(), //16
+        ConfigEmun.URL_SPORT_TV.getChannel(), //17
+        ConfigEmun.URL_SPORT_TV_2.getChannel(), //18
+        ConfigEmun.URL_SPORT_TV_3.getChannel(), //19
+        ConfigEmun.URL_PREMIER.getChannel(), //20
+        ConfigEmun.URL_PREMIER_3.getChannel(), //21
+        ConfigEmun.URL_PREMIER_4.getChannel(), //22
+        ConfigEmun.URL_PREMIER_5.getChannel(), //23
+        ConfigEmun.URL_ESPN.getChannel(), //24
+        ConfigEmun.URL_ESPN_2.getChannel(), //25
+        ConfigEmun.URL_ESPN_BRASIL.getChannel(), //26
+        ConfigEmun.URL_FOX_SPORT_1.getChannel(), //27
+        ConfigEmun.URL_FOX_SPORT_2.getChannel(), //28
+        ConfigEmun.URL_RECORD_RJ.getChannel(), //29
+        ConfigEmun.URL_BOOMERANG.getChannel(), //30
+        ConfigEmun.URL_CARTTON.getChannel(), //31
+        ConfigEmun.URL_DISCOVERY_KIDS.getChannel(), //32
+        ConfigEmun.URL_DISNEY_JR.getChannel(), //33
+        ConfigEmun.URL_DISNEY_XD.getChannel(), //34
+        ConfigEmun.URL_NIK.getChannel(), //35
+        ConfigEmun.URL_NIK_JR.getChannel(), //36
+        ConfigEmun.URL_TOOMCAT.getChannel(), //37
+        ConfigEmun.URL_MTV.getChannel(), //38
+        ConfigEmun.URL_AE.getChannel(), //39
+    };
+
+    //URL CHANNEL
+    private static final String names[] = {
+        ConfigEmun.CINE_MAX.getChannel(), //0
+        ConfigEmun.FOX_LIFE.getChannel(), //1
+        ConfigEmun.FOX.getChannel(), //2
+        ConfigEmun.FX.getChannel(), //3
+        ConfigEmun.PARAMONT.getChannel(), //4
+        ConfigEmun.WARNNER.getChannel(), //5
+        ConfigEmun.TNT_SERIES.getChannel(), //6
+        ConfigEmun.TCM.getChannel(), //7
+        ConfigEmun.SPACE.getChannel(), //8
+        ConfigEmun.HBO.getChannel(), //9
+        ConfigEmun.HBO_PLUS.getChannel(), //10
+        ConfigEmun.HBO_2.getChannel(), //11
+        ConfigEmun.MAX_UP.getChannel(), //12
+        ConfigEmun.MAX_PRIME.getChannel(), //13
+        ConfigEmun.MAX.getChannel(), //14
+        ConfigEmun.UNIVERSAL_CHANNEL.getChannel(), //15
+        ConfigEmun.SPORT_TV.getChannel(), //16
+        ConfigEmun.SPORT_TV_2.getChannel(), //17
+        ConfigEmun.SPORT_TV_3.getChannel(), //18
+        ConfigEmun.PREMIER.getChannel(), //19
+        ConfigEmun.PREMIER_3.getChannel(), //20
+        ConfigEmun.PREMIER_4.getChannel(), //21
+        ConfigEmun.PREMIER_5.getChannel(), //22
+        ConfigEmun.ESPN.getChannel(), //23
+        ConfigEmun.ESPN_2.getChannel(), //24
+        ConfigEmun.ESPN_BRASIL.getChannel(), //25
+        ConfigEmun.FOX_SPORT_1.getChannel(), //26
+        ConfigEmun.FOX_SPORT_2.getChannel(), //27
+        ConfigEmun.RECORD_RJ.getChannel(), //28
+        ConfigEmun.BOOMERANG.getChannel(), //29
+        ConfigEmun.CARTTON.getChannel(), //30
+        ConfigEmun.DISCOVERY_KIDS.getChannel(), //31
+        ConfigEmun.DISNEY_JR.getChannel(), //32
+        ConfigEmun.DISNEY_XD.getChannel(), //33
+        ConfigEmun.NIK.getChannel(), //34
+        ConfigEmun.NIK_JR.getChannel(), //35
+        ConfigEmun.TOOMCAT.getChannel(), //36
+        ConfigEmun.MTV.getChannel(), //37
+        ConfigEmun.AE.getChannel(), //38
+    };
+
+    private static EmbeddedMediaPlayer emp;
+    private static MediaPlayerFactory mpf;
+    static int i = 0;
+    private static JLabel lbChannel;
+
+    public VLC() {
+    }
+
+    public static void main(String[] args) {
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                width = screenSize.getWidth() - 200;
+                height = screenSize.getHeight() - 200;
+
+                VLC frame = new VLC();
+
+                frame.setLocation(0, 0);
+                frame.setSize((int) width, (int) height);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+                frame.setLayout(new BorderLayout(5, 5));
+
+                c = new Canvas();
+                c.setBackground(Color.black);
+
+                lbChannel = new JLabel(names[0]);
+                lbChannel.setPreferredSize(new Dimension((int) width, 20));
+                lbChannel.setHorizontalAlignment(JLabel.CENTER);
+
+                JPanel p1 = new JPanel();
+                JPanel p2 = new JPanel();
+
+                JScrollPane scrollPane = new JScrollPane(p2, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+                scrollPane.setPreferredSize(new Dimension(200, 100));
+
+                //p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+                p2.setLayout(new GridLayout(0, 1));
+                p2.setPreferredSize(new Dimension(100, (int) height));
+
+                NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:/Program Files/VideoLAN/VLC");
+                Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+
+                mpf = new MediaPlayerFactory();
+                emp = mpf.newEmbeddedMediaPlayer(new Win32FullScreenStrategy(frame));
+                emp.setVideoSurface(mpf.newVideoSurface(c));
+
+                for (i = 0; i < names.length; i++) {
+
+                    JButton btn = new JButton();
+                    btn.setPreferredSize(new Dimension(150, 60));
+                    btn.setName(String.valueOf(i));
+                    btn.setText(names[i]);
+
+                    btn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            int id = Integer.parseInt(btn.getName());
+                            chengeChannel(id);
+                        }
+                    });
+
+                    //add buttns painel 2
+                    p2.add(btn);
+                }
+
+                p1.setLayout(new BorderLayout());
+
+                //add canvas painel 1
+                p1.add(c, BorderLayout.CENTER);
+
+                //add label top
+                p1.add(lbChannel, BorderLayout.NORTH);
+
+                //add layouts
+                frame.add(p1, BorderLayout.CENTER);
+                //frame.add(p2, BorderLayout.WEST);
+
+                frame.add(scrollPane, BorderLayout.WEST);
+                //emp.toggleFullScreen();
+
+                emp.setEnableKeyInputHandling(false);
+                emp.setEnableMouseInputHandling(false);
+                emp.prepareMedia(channels[0]);
+                emp.play();
+            }
+        });
+    }
+
+    public static void chengeChannel(int i) {
+        play(i);
+    }
+    
+    public static void play(int i){
+        lbChannel.setText(names[i]);
+        emp.prepareMedia(channels[i]);
+        emp.addMediaPlayerEventListener(new MediaPlayerEventListener() {
+            @Override
+            public void mediaChanged(MediaPlayer mp, libvlc_media_t l, String string) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void opening(MediaPlayer mp) {
+            }
+
+            @Override
+            public void buffering(MediaPlayer mp, float f) {
+            }
+
+            @Override
+            public void playing(MediaPlayer mp) {
+            }
+
+            @Override
+            public void paused(MediaPlayer mp) {
+            }
+
+            @Override
+            public void stopped(MediaPlayer mp) {
+            }
+
+            @Override
+            public void forward(MediaPlayer mp) {
+            }
+
+            @Override
+            public void backward(MediaPlayer mp) {
+            }
+
+            @Override
+            public void finished(MediaPlayer mp) {
+                
+            }
+
+            @Override
+            public void timeChanged(MediaPlayer mp, long l) {
+                
+            }
+
+            @Override
+            public void positionChanged(MediaPlayer mp, float f) {
+            }
+
+            @Override
+            public void seekableChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void pausableChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void titleChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void snapshotTaken(MediaPlayer mp, String string) {
+            }
+
+            @Override
+            public void lengthChanged(MediaPlayer mp, long l) {
+            }
+
+            @Override
+            public void videoOutput(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void error(MediaPlayer mp) {
+            }
+
+            @Override
+            public void mediaMetaChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
+            }
+
+            @Override
+            public void mediaDurationChanged(MediaPlayer mp, long l) {
+            }
+
+            @Override
+            public void mediaParsedChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void mediaFreed(MediaPlayer mp) {
+            }
+
+            @Override
+            public void mediaStateChanged(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void newMedia(MediaPlayer mp) {
+            }
+
+            @Override
+            public void subItemPlayed(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void subItemFinished(MediaPlayer mp, int i) {
+            }
+
+            @Override
+            public void endOfSubItems(MediaPlayer mp) {
+            }
+        });
+        emp.play();
+    }
+}
+
+/*
+ * Class que trata acesso aos canais
+ */
+package enums;
+
+public enum ConfigEmun {
+
+    //======================= URL ===============================
+    URL_CINE_MAX("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/568.m3u8"),
+    URL_FOX_LIFE("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/526.m3u8"),
+    URL_FOX("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/525.m3u8"),
+    URL_FX("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/383.m3u8"),
+    URL_PARAMONT("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/384.m3u8"),
+    URL_WARNNER("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/398.m3u8"),
+    URL_TNT_SERIES("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/410.m3u8"),
+    URL_TCM("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/421.m3u8"),
+    URL_SPACE("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/431.m3u8"),
+    URL_HBO("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/486.m3u8"),
+    URL_HBO_PLUS("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/484.m3u8"),
+    URL_HBO_2("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/483.m3u8"),
+    URL_MAX_UP("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/473.m3u8"),
+    URL_MAX_PRIME("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/475.m3u8"),
+    URL_MAX("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/474.m3u8"),
+    URL_UNIVERSAL_CHANNEL("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/404.m3u8"),
+    URL_SPORT_TV("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/424.m3u8"),
+    URL_SPORT_TV_2("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/429.m3u8"),
+    URL_SPORT_TV_3("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/427.m3u8"),
+    URL_PREMIER("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/449.m3u8"),
+    URL_PREMIER_3("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/453.m3u8"),
+    URL_PREMIER_4("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/454.m3u8"),
+    URL_PREMIER_5("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/455.m3u8"),
+    URL_ESPN("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/538.m3u8"),
+    URL_ESPN_2("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/536.m3u8"),
+    URL_ESPN_BRASIL("https://gbbrslbps-sambatech.akamaized.net/live/3170%2C8466%2C0c93d3a53ee212d5d9b0e2e3a2114102%3Bbase64np%3Bt0Ra-0WB1fg0PMk%21/amlst%3At0Si4ljK0PkrfEV_/chunklist_b964608.m3u8"),
+    URL_FOX_SPORT_1("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/522.m3u8"),
+    URL_FOX_SPORT_2("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/524.m3u8"),
+    URL_RECORD_RJ("https://gbbrslbps-sambatech.akamaized.net/live/3170%2C7572%2C91b5d3b827420a1672ca14495409c832%3Bbase64np%3BwRt34eUEhlq-Gp8%21/amlst%3AwRuP-PhPg1uhWhM4/chunklist_b475136.m3u8"),
+    URL_BOOMERANG("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/574.m3u8"),
+    URL_CARTTON("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/573.m3u8"),
+    URL_DISCOVERY_KIDS("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/552.m3u8"),
+    URL_DISNEY_JR("https://gbbrslbps-sambatech.akamaized.net/live/3170%2C8784%2Ce684993f245c481f1f1bb14b273256e3%3Bbase64np%3B-uribHdW7Nh31Zw%21/amlst%3A-uoadWod6dlolRBm/chunklist_b1089536.m3u8"),
+    URL_DISNEY_XD("https://gbbrslbps-sambatech.akamaized.net/live/3170%2C8784%2C7f7978dabb948939a8a5b1b171ef599c%3Bbase64np%3Bcyzcx3V5SZ4JJwc%21/amlst%3Acywk3mgyTJ8WZ4s4/chunklist_b1089536.m3u8"),
+    URL_NIK("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/463.m3u8"),
+    URL_NIK_JR("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/464.m3u8"),
+    URL_TOOMCAT("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/409.m3u8"),
+    URL_MTV("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/471.m3u8"),
+    URL_AE("http://158.69.22.210:25461/live/KsK3aqCJIr/qFndT1FvXA/588.m3u8"),
+    
+    //======================= NEMS ===============================
+    CINE_MAX("CINE MAX"),
+    FOX_LIFE("FOX LIFE"),
+    FOX("FOX"),
+    FX("FX"),
+    PARAMONT("PARAMONT"),
+    WARNNER("WARNNER"),
+    TNT_SERIES("TNT SERIES"),
+    TCM("TCM"),
+    SPACE("SPACE"),
+    HBO("HBO"),
+    HBO_PLUS("HBO PLUS"),
+    HBO_2("HBO 2"),
+    MAX_UP("MAX UP"),
+    MAX_PRIME("MAX PRIME"),
+    MAX("MAX"),
+    UNIVERSAL_CHANNEL("UNIVERSAL CHANNEL"),
+    SPORT_TV("SPORT TV"),
+    SPORT_TV_2("SPORT TV 2"),
+    SPORT_TV_3("SPORT TV 3"),
+    PREMIER("PREMIER"),
+    PREMIER_3("PREMIER 3"),
+    PREMIER_4("PREMIER 4"),
+    PREMIER_5("PREMIER 5"),
+    ESPN("ESPN"),
+    ESPN_2("ESPN 2"),
+    ESPN_BRASIL("ESPN BRASIL"),
+    FOX_SPORT_1("FOX SPORT 1"),
+    FOX_SPORT_2("FOX SPORT 2"),
+    RECORD_RJ("RECORD"),
+    BOOMERANG("BOOMERANG"),
+    CARTTON("CARTTON NETWORK"),
+    DISCOVERY_KIDS("DISCOVERY KIDS"),
+    DISNEY_JR("DISNE JR"),
+    DISNEY_XD("DISNE XD"),
+    NIK("NIK"),
+    NIK_JR("NIK JR"),
+    TOOMCAT("TOOMCAT"),
+    MTV("MTV"),
+    AE("A&E"),
+    
+    ;
+
+    private String channel;
+
+    ConfigEmun(String channel) {
+        this.channel = channel;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+}
+
+//===========================================================================
+//LINK IPTV: https://pastebin.com/raw/HXpsBwJA
+install jars: jars.zip
+//===========================================================================
+
+//=================================================================
 //MONITORAMENTO DE VIDEO -2 [USANDO PRIORIDADE DE THREADS
 //================================================================
 /*
