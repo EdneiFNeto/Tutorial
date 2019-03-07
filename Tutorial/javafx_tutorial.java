@@ -177,7 +177,9 @@ public class VLC extends JFrame {
                 scrollPane.setPreferredSize(new Dimension(200, 100));
 
                 //p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-                p2.setLayout(new GridLayout(0, 1));
+		GridLayout gridLayout = new GridLayout(0, 3, 1, 0);
+                p2.setLayout(gridLayout);
+                //p2.setLayout(new GridLayout(0, 1));
                 p2.setPreferredSize(new Dimension(100, (int) height));
 
                 NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:/Program Files/VideoLAN/VLC");
@@ -193,6 +195,7 @@ public class VLC extends JFrame {
                     btn.setPreferredSize(new Dimension(150, 60));
                     btn.setName(String.valueOf(i));
                     btn.setText(names[i]);
+			btn.setFont(new Font("Arial", Font.PLAIN, 10));
 
                     btn.addActionListener(new ActionListener() {
                         @Override
