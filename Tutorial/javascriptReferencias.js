@@ -4,7 +4,9 @@
 const CONSTANTE = 24;
 
 
-
+valida cpf
+var cpf = $(this).val();
+var res = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 //var btnLigar = document.getElementById("btnLigar");
 
 
