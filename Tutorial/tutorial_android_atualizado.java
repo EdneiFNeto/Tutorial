@@ -1,4 +1,49 @@
+//====================================================================
+//                          ALURA
+//====================================================================
+//                          TIRAR FOTO
+//====================================================================
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+      //executar click para tirar foto
+      ImageButton button = (ImageButton) findViewById(R.id.formulario_botao);
+      button.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
 
+                      Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                      String caminhoFoto = getExternalFilesDir(null)+"/"+System.currentTimeMillis()+".jpg";//inseire o aquivo na pasta
+                      File file  = new File(caminhoFoto);
+                      intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+                      startActivityForResult(intent, 567);
+                  }
+              });
+}
+//methodo executado toda vez qye chamar statactivity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode){
+            //verifica se a foto nao foi cancelada
+            case  Activity.RESULT_OK:
+                //verifica se o codigo para tirar a foto
+                switch (requestCode){
+
+                    case CODIGO_CAMERA:
+
+                        // Abre foto da camera
+                        ImageView foto = (ImageView) findViewById(R.id.formulario_photo);
+                        Bitmap bitmap = BitmapFactory.decodeFile(caminhoFoto);
+                        Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                        foto.setImageBitmap(bitmapReduzido);
+                        foto.setScaleType(ImageView.ScaleType.FIT_XY); //ocupa todo espaco disponivel
+                        break;
+                }
+                break;
+        }
+
+    }
 //====================================================================
 //                          ANDROID
 //====================================================================
