@@ -35,6 +35,7 @@ protected void onCreate(Bundle savedInstanceState) {
                         // Abre foto da camera
                         ImageView foto = (ImageView) findViewById(R.id.formulario_photo);
                         Bitmap bitmap = BitmapFactory.decodeFile(caminhoFoto);
+                            //reduz a imagem
                         Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
                         foto.setImageBitmap(bitmapReduzido);
                         foto.setScaleType(ImageView.ScaleType.FIT_XY); //ocupa todo espaco disponivel
