@@ -45,6 +45,77 @@ protected void onCreate(Bundle savedInstanceState) {
         }
 
     }
+
+//====================================================================
+//                          ListView
+//====================================================================
+package br.com.alura.alura.adapter;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import br.com.alura.alura.MainActivity;
+import br.com.alura.alura.R;
+import modelo.Aluno;
+
+import java.util.List;
+
+public class AlunosAdapter extends BaseAdapter {
+
+    List<Aluno> alunos;
+    Context context;
+
+    public AlunosAdapter(Context context, List<Aluno> alunos) {
+        this.alunos = alunos;
+        this.context = context;
+    }
+
+    @Override
+    public int getCount() {
+        return alunos.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return alunos.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return alunos.get(position).getId();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        Aluno aluno = alunos.get(position);
+
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = convertView;
+
+        if (view == null) {
+            view = inflater.inflate(R.layout.list_item, parent, false);
+        }
+
+        TextView item_nome = (TextView) view.findViewById(R.id.item_nome);
+        item_nome.setText(aluno.toString());
+
+        TextView item_telefone = (TextView) view.findViewById(R.id.item_telefone);
+        item_telefone.setText(aluno.getTelefone());
+
+        ImageView foto = (ImageView) view.findViewById(R.id.item_foto);
+        String caminhoFoto = context.getExternalFilesDir(null) + "/" + System.currentTimeMillis() + ".jpg";
+
+        return view;
+    }
+}
+
 //====================================================================
 //                          ANDROID
 //====================================================================
