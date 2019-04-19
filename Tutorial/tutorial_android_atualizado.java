@@ -1,6 +1,65 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+//                          BRAODCAST
+//====================================================================
+//CRIAR CLASS BROADCAST
+package br.com.alura.alura.receiver;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
+
+public class SMSReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        
+        Toast.makeText(context, "Receiver", Toast.LENGTH_SHORT).show();
+    }
+}
+//REGISTRAR ORADCAST DENTRO O MANIFEST
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="br.com.alura.alura">
+
+
+    <uses-permission android:name="android.permission.CALL_PHONE "/>
+
+    <!-- Add permissao SMS -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS "/>
+
+
+    <application
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
+
+        <activity android:name=".FormularioActivity">
+        </activity>
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- registrar receive -->
+        <receiver android:name=".receiver.SMSReceiver">
+            <!-- detecta qual o tipo de acao -->
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
+
+//====================================================================
 //                          TIRAR FOTO
 //====================================================================
 @Override
