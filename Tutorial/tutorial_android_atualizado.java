@@ -1,6 +1,134 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+//WEBSERVICE
+//====================================================================
+
+//cria uma lista 
+List<Aluno> alunos  = dao.buscaAlunos();
+AlunoConverte conversor = new AlunoConverte();
+//chama o metodo para converte json em string
+String json = conversor.converteParaJSON(alunos);
+
+//cnverte json
+public String converteParaJSON(List<Aluno> alunos) {
+
+        //montar o json
+        JSONStringer js = new JSONStringer();
+        try {
+            js.object().key("List").array().object().key("alunos").array();
+            for(Aluno aluno: alunos){
+                js.object();//abre objeto
+                js.key("nome").value(aluno.getNome());
+                js.key("nota").value(aluno.getNome());
+                js.endObject();//fecha objeto
+            }
+
+            js.endArray().endObject().endArray().endObject();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return js.toString();
+    }
+//======================================================================================
+//enviar json post
+//======================================================================================
+//enviar os dados post
+//======================================================================================
+WebCliente webCliente = new WebCliente();
+String resposata = webCliente.post(json);
+//======================================================================================
+//criar classe de service
+//======================================================================================
+package br.com.alura.alura;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.widget.Toast;
+import br.com.alura.alura.converter.AlunoConverte;
+import dao.AlunoDao;
+import modelo.Aluno;
+
+import java.util.List;
+
+public class EnviarAlunoTask extends AsyncTask<Object, Object, String/*retorn das funcoes*/> {
+
+    private Context context;
+
+    public EnviarAlunoTask(Context context){
+        this.context = context;
+    }
+
+    @Override
+    protected String doInBackground(Object ...objects) {
+
+        AlunoDao dao = new AlunoDao(context);
+        List<Aluno> alunos  = dao.buscaAlunos();
+        AlunoConverte conversor = new AlunoConverte();
+        String json = conversor.converteParaJSON(alunos);
+
+        //enviar os dados post
+        WebCliente webCliente = new WebCliente();
+        String resposata = webCliente.post(json);
+        return resposata;
+    }
+
+    @Override
+    protected void onPostExecute(String resposata) {
+        super.onPostExecute(resposata);
+        Toast.makeText(context,  resposata, Toast.LENGTH_SHORT).show();
+    }
+}
+
+//======================================================================================
+//class que enviar post  get
+//======================================================================================
+package br.com.alura.alura;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Scanner;
+
+public class WebCliente {
+
+    public String  post(String json){
+
+        try {
+            URL url = new URL("http://www.caelum.com.br/mobile");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Content-type", "json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setDoInput(true);//informa que quer realizar post
+            PrintStream out = new PrintStream(connection.getOutputStream());
+            out.println(json);
+            connection.connect();//connecta com servidro
+
+            //ler reesposta
+            Scanner scanner = new Scanner(connection.getInputStream());
+            String resposta = scanner.next();
+
+            return resposta;
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+}
+
+//======================================================================================
+//executar web service
+//======================================================================================
+Acitviti principal
+new EnviarAlunoTask(MainActivity.this).execute();
+
+//====================================================================
 //                          BRAODCAST
 //====================================================================
 //CRIAR CLASS BROADCAST
