@@ -1,0 +1,90 @@
+<div id="player-video"></div>
+<script>
+    var count = 0;
+    var player;
+    var videos = [
+
+        "GP-nR1Insmc",
+
+        "O2uuappAIxE",
+
+        "uNc1wCBmVMg",
+
+        "RNfrFKQM6ps",
+
+        "nVuMsUrOeYc",
+
+        "NpBqQvq1ifo",
+
+        "IjNaPIH12o0",
+
+        "_UeiOZ2hwPU",
+
+        "XRlDDoMSLLc",
+
+        "IkffvqNlvJw",
+
+        "-yt4XSt5eLI",
+
+        "6oJVsBD51Dw",
+
+        "kKix5HcR-dA",
+
+        "TlUyh0JJ9nk",
+
+        "9XI_R2zutvs",
+
+        "Bx1MssvC478",
+    ];
+
+    // 2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player-video', {
+          height: '390',
+          width: '640',
+          videoId: 'Bx1MssvC478',
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+    }
+
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+        event.target.playVideo();
+    }
+
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    var done = false;
+    function onPlayerStateChange(event) {
+
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+        }
+
+        if (event.data == YT.PlayerState.ENDED && !done) {
+
+            if(count === videos.length)
+                count = 0;
+            
+            player.loadVideoById(videos[count]);
+            count++;
+
+        }
+    }
+
+    function stopVideo() {
+        player.stopVideo();
+    }
+</script>
