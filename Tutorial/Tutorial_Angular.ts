@@ -1,6 +1,70 @@
 //================================================================
 //=================== CURSO ANGULAR 5 ============================
 //================================================================
+//================================================================
+//POST
+//================================================================
+
+//SERVICO
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+const API = 'https://baitaplay.com.br/api/';
+
+@Injectable()
+export class AuthUserServiceProvider {
+
+  headers: any;
+  params = new FormData();
+  constructor(public http: HttpClient) {
+    this.headers = new Headers();
+    this.headers.append('Content-Type', 'application/json');
+  }
+
+  authUser(login, senha) {
+
+    this.params.append('login', login);
+    this.params.append('senha', senha);
+    return this.http.post(API + 'auth_user.php', this.params, this.headers);
+  }
+
+}
+
+//ENVIO
+import { Component } from '@angular/core';
+import { NavController, NavParams, IonicPage } from 'ionic-angular';
+
+import { AlertController } from 'ionic-angular';
+import { BoraFilmesPage } from '../bora-filmes/bora-filmes';
+import { NavCycleView } from '../../modelos/nav-cycle-view';
+import { AuthUserServiceProvider } from '../../providers/auth-user-service/auth-user-service';
+
+@IonicPage()
+@Component({
+  selector: 'page-login',
+  templateUrl: 'login.html',
+})
+export class LoginPage  implements NavCycleView{
+  
+  private login: string;
+  private senha: string;
+
+  constructor(private authUserService: AuthUserServiceProvider) {}
+
+  logar(): void {
+    let usuario = {
+      login:'ednei',
+      senha:'12345'
+    }
+
+    this.authUserService.authUser(usuario.login, usuario.senha)
+      .subscribe(
+        (resp)=>{console.log(resp)},
+        (err)=>{console.log(err)}
+      );
+  }
+}
+
 
 //================================================================
 //NAVEGACAO
