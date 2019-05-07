@@ -1,6 +1,134 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+//====================================================================
+//FRAGMENTS
+//====================================================================
+//1 - CRIAR ACTIVITY PRINCIPAL
+//====================================================================
+package br.com.alura.alura;
+
+import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import modelo.Prova;
+
+public class ProvaActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_prova);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //abre a transacao
+        FragmentTransaction tx = fragmentManager.beginTransaction();
+
+        tx.replace(R.id.frame_principal/*pega esse layout*/, /*troca por esse*/ new ListaPorvaFragment());
+        tx.commit();
+    }
+}
+
+//====================================================================
+//2 - CRIAR ACTIVITY LAYOUT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/frame_principal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</FrameLayout>
+
+//====================================================================
+//3 - CRIAR FRAGMENT
+//====================================================================
+package br.com.alura.alura;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import modelo.Prova;
+
+public class ListaPorvaFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //cria a view para referenciar o fragment
+        View view = inflater.inflate(R.layout.fragment_lista_prova, container, false);
+
+        List<String> topicosPortugues = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+        List<String> topicosMatematica = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+
+        Prova provaPortugues  = new Prova("Porugues", "25/07/19", topicosPortugues);
+        Prova provamatematica = new Prova("Matematica", "25/07/19", topicosMatematica);
+
+        List<Prova> provas = Arrays.asList(provaPortugues, provamatematica);
+
+        ArrayAdapter<Prova> adapter = new ArrayAdapter<Prova>(getContext(), android.R.layout.simple_list_item_1, provas);
+        ListView listView = (ListView) view.findViewById(R.id.prova_lista);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Prova prova = (Prova) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), DetelhesActivity.class);
+                intent.putExtra("prova", prova);
+                startActivity(intent);
+            }
+        });
+
+        return view;
+    }
+}
+
+//====================================================================
+//4 - CRIAR LAYOUT DO FRAGMENT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/prova_lista"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</android.support.v7.widget.CardView>
+
+
+//====================================================================
 //WEBSERVICE
 //====================================================================
 
