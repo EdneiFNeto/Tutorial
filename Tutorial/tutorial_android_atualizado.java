@@ -1,6 +1,694 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+/====================================================================
+//================== FRAGMENT ADAPTADO PARA TABLET ===================
+//====================================================================
+//1 - CRIAR 1° CLASS FRAGMENT
+//====================================================================
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class DetalheFragment extends Fragment {
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_detalhe, container, false);
+        return view;
+    }
+
+}
+//====================================================================
+//2 - CRIAR LAYOUT FRAGMENT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="10dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00abec"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/detalhe_prova_materia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Materia"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detalhe_prova_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Data"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/detalhe_prova_topicos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
+
+//====================================================================
+//3 - CRIAR 2° CLASS FRAGMENT
+//====================================================================
+package br.com.alura.alura;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import modelo.Prova;
+
+public class ListaPorvaFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //cria a view para referenciar o fragment
+        View view = inflater.inflate(R.layout.fragment_lista_prova, container, false);
+
+        List<String> topicosPortugues = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+        List<String> topicosMatematica = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+
+        Prova provaPortugues  = new Prova("Porugues", "25/07/19", topicosPortugues);
+        Prova provamatematica = new Prova("Matematica", "25/07/19", topicosMatematica);
+
+        List<Prova> provas = Arrays.asList(provaPortugues, provamatematica);
+
+        ArrayAdapter<Prova> adapter = new ArrayAdapter<Prova>(getContext(), android.R.layout.simple_list_item_1, provas);
+        ListView listView = (ListView) view.findViewById(R.id.prova_lista);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Prova prova = (Prova) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), DetelhesActivity.class);
+                intent.putExtra("prova", prova);
+                startActivity(intent);
+            }
+        });
+
+        return view;
+    }
+}
+
+
+//====================================================================
+//4 - CRIAR 2° LAYOUT FRAGMENT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/prova_lista"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</android.support.v7.widget.CardView>
+
+
+//====================================================================
+//5 - CRIAR  1 LAYOUT PARA PORTRAINT COM MESMO NOME
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+
+    android:id="@+id/frame_principal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+</FrameLayout>
+
+//====================================================================
+//6 - CRIAR  1 LAYOUT PARA LANDSCAPE COM MESMO NOME
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+    <!--guarda espaco para fragemt-->
+    <FrameLayout
+        android:id="@+id/frame_principal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+
+    <FrameLayout
+        android:id="@+id/frame_secundario"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+</LinearLayout>
+
+
+//====================================================================
+//8 - CRIAR 2 XML PARA VERIFICAR A ORIENTACAO
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+
+//DEFINE A PROPRIEDADE DO XML COMO ORIENTACAO LANDSCAPE
+//COLOCAR O MESMO NOME PARA AMBOS
+<resources>
+    <bool name="modoPaisagem">false</bool>
+</resources>
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="modoPaisagem">true</bool>
+</resources>
+
+//====================================================================
+//9 - ADD OS FRAGMENTS NA CLASSE PRINCIPAL
+//====================================================================
+package br.com.alura.alura;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class ProvaActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_prova);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //abre a transacao
+        FragmentTransaction tx = fragmentManager.beginTransaction();
+        tx.replace(R.id.frame_principal/*pega esse layout*/, /*troca por esse*/ new ListaPorvaFragment());
+
+        //verifica no xml o tipo de orientacao
+        if (estaNoModoPaisagem()) {
+            tx.replace(R.id.frame_secundario/*pega esse layout*/, /*troca por esse*/ new DetalheProvaFragment());
+        }
+
+        tx.commit();
+    }
+}
+
+
+//====================================================================
+//================ TROCAR DE FRAGMENT USANDO CLIK EVENTO =============
+//====================================================================
+//1 - ADD METHODO NA ACIVITY PRINCIPAL
+//====================================================================
+package br.com.alura.alura;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import modelo.Prova;
+
+public class ProvaActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_prova);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //abre a transacao
+        FragmentTransaction tx = fragmentManager.beginTransaction();
+        tx.replace(R.id.frame_principal/*pega esse layout*/, /*troca por esse*/ new ListaPorvaFragment());
+
+        //verifica no xml o tipo de orientacao
+        if (estaNoModoPaisagem()) {
+            tx.replace(R.id.frame_secundario/*pega esse layout*/, /*troca por esse*/ new DetalheProvaFragment());
+        }
+
+        tx.commit();
+    }
+
+    private boolean estaNoModoPaisagem() {
+        return getResources().getBoolean(R.bool.modoPaisagem);
+    }
+
+
+    //seleciona o fragment
+    public void selecionaProva(Prova prova) {
+
+        FragmentManager manager = getSupportFragmentManager();
+
+
+        if (!estaNoModoPaisagem()) {
+
+            FragmentTransaction tx = manager.beginTransaction();
+            DetalheProvaFragment detalheProvaFragment = new DetalheProvaFragment();
+
+            Bundle parametros = new Bundle();
+            parametros.putSerializable("prova", prova);
+
+            detalheProvaFragment.setArguments(parametros);//pupular a activity
+            tx.replace(R.id.frame_principal, detalheProvaFragment);
+            tx.commit();
+
+        } else {
+
+            DetalheProvaFragment detalheFragment = (DetalheProvaFragment) manager.findFragmentById(R.id.frame_secundario);
+            detalheFragment.popularcampo(prova);
+
+        }
+    }
+}
+
+//====================================================================
+//2 - CRIAR CLASS FRAGMENT 1
+//====================================================================
+package br.com.alura.alura.fragments;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.List;
+
+import br.com.alura.alura.R;
+import modelo.Prova;
+
+
+public class DetalheProvaFragment extends Fragment {
+
+
+    private TextView campoMateria;
+    private TextView campoData;
+    private ListView listaTopicos;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_detalhe, container, false);
+        campoMateria    = (TextView) view.findViewById(R.id.detalhe_prova_materia);
+        campoData       = (TextView) view.findViewById(R.id.detalhe_prova_data);
+        listaTopicos    = (ListView) view.findViewById(R.id.detalhe_prova_topicos);
+
+        Bundle parametros = getArguments();
+
+        if (parametros != null) {
+
+            Prova prova = (Prova) parametros.getSerializable("prova");
+            popularcampo(prova);
+        }
+
+        return view;
+    }
+
+    //preenche  os campos
+    public void popularcampo(Prova prova) {
+
+        campoMateria.setText(prova.getMateria());
+        campoData.setText(prova.getData());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, prova.getTopicos());
+        listaTopicos.setAdapter(adapter);
+    }
+
+}
+
+//====================================================================
+//3 - CRIAR LAYOUT FRAGMENT 1
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="10dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00abec"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/detalhe_prova_materia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Materia"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detalhe_prova_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Data"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/detalhe_prova_topicos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
+
+
+//====================================================================
+//4 - CRIAR CLASS FRAGMENT 2
+//====================================================================
+package br.com.alura.alura.fragments;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import br.com.alura.alura.ProvaActivity;
+import br.com.alura.alura.R;
+import modelo.Prova;
+
+public class ListaPorvaFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //cria a view para referenciar o fragment
+        View view = inflater.inflate(R.layout.fragment_lista_prova, container, false);
+
+        List<String> topicosPortugues = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+        List<String> topicosMatematica = Arrays.asList("Matematica discreta", "Funcao 2°", "funcao Afin");
+
+        Prova provaPortugues  = new Prova("Porugues", "25/07/19", topicosPortugues);
+        Prova provamatematica = new Prova("Matematica", "25/07/19", topicosMatematica);
+
+        List<Prova> provas = Arrays.asList(provaPortugues, provamatematica);
+
+        ArrayAdapter<Prova> adapter = new ArrayAdapter<Prova>(getContext(), android.R.layout.simple_list_item_1, provas);
+
+        //list view xml
+        ListView listView = (ListView) view.findViewById(R.id.prova_lista);
+        listView.setAdapter(adapter);
+
+        //trocar o fragment por outro
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                //pega a posicao da prova
+                Prova prova = (Prova) parent.getItemAtPosition(position);
+
+                //seleciona a activity evento click
+                ProvaActivity provaActivity = (ProvaActivity) getActivity();
+
+                //envia os dados da prova com os campos preenvhidos
+                provaActivity.selecionaProva(prova);
+            }
+        });
+
+        return view;
+    }
+}
+
+//====================================================================
+//5 - CRIAR LAYOUT FRAGMENT 2
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/prova_lista"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</android.support.v7.widget.CardView>
+
+//====================================================================
+//6 - CRIAR LAYOUT ACTIVITY PRINCIPAL COM O MESMO NOME
+//====================================================================
+<!-- fragment landscape -->
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+    <!--guarda espaco para fragemt-->
+    <FrameLayout
+        android:id="@+id/frame_principal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+
+    <FrameLayout
+        android:id="@+id/frame_secundario"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"/>
+</LinearLayout>
+
+<!-- fragment portrait -->
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/frame_principal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</FrameLayout>
+
+
+//====================================================================
+//======================== MAPAS =====================================
+//====================================================================
+//1 - CRIAR GOOGLE MAPS ACTIVITY AUTOMATICA 
+//====================================================================
+//ADD CHAVE XML
+//====================================================================
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=3A:21:2D:2A:EE:6B:E7:B0:0D:36:52:21:63:D7:1F:CA:8E:F7:14:4B%3Bbr.com.alura.alura
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    3A:21:2D:2A:EE:6B:E7:B0:0D:36:52:21:63:D7:1F:CA:8E:F7:14:4B
+
+    SHA-1 certificate fingerprint:
+    3A:21:2D:2A:EE:6B:E7:B0:0D:36:52:21:63:D7:1F:CA:8E:F7:14:4B
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAa95ViIHq4tyWxJ4pSoR2vg1AqugOqXNY</string>
+</resources>
+//====================================================================
+//DELETAR GOOGLE MAPS ACTIVITY
+//====================================================================
+//2 - CRIAR  CALSS MAPA ACTIVITY
+//====================================================================
+package br.com.alura.alura;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import com.google.android.gms.maps.SupportMapFragment;
+import br.com.alura.alura.fragments.MapaFragment;
+
+public class MapaActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_mapa);
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction tx = manager.beginTransaction();
+        tx.replace(R.id.frame_mapa, new MapaFragment());
+        tx.commit();
+    }
+}
+
+//====================================================================
+//2 - CRIAR FRAGMENT MAPA FRAGEMT
+//====================================================================
+package br.com.alura.alura.fragments;
+
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
+
+import dao.AlunoDao;
+import modelo.Aluno;
+
+public class MapaFragment extends SupportMapFragment implements OnMapReadyCallback {
+
+    private String TAG = "MapLog";
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng posicaoEscola = pegaCoordenadaDoEndereco("Rua Vergueiro 3185, Vila Maria, São Paulo");
+        if(posicaoEscola!=null){
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(posicaoEscola, 17);
+            googleMap.moveCamera(update);
+        }else{
+            Log.e(TAG, "Mapa null");
+        }
+
+        //pegas a pocsicao dos  alunos   cadastrado no mapa
+        AlunoDao dao = new AlunoDao(getContext());
+        for(Aluno aluno: dao.buscaAlunos()){
+            LatLng coordenada = pegaCoordenadaDoEndereco(aluno.getEndereco());
+            if(coordenada!=null){
+                MarkerOptions marcador = new MarkerOptions();
+                marcador.position(coordenada);
+                marcador.title(aluno.getNome());
+                marcador.snippet(String.valueOf(aluno.getNota()));
+                googleMap.addMarker(marcador);
+            }
+
+            dao.close();
+        }
+    }
+
+    //PEGA AS CORDENADAS DO MAPA
+    private LatLng pegaCoordenadaDoEndereco(String endereco){
+
+        Geocoder geocoder = new Geocoder(getContext());
+        try {
+            List<Address> resultado = geocoder.getFromLocationName(endereco, 1);
+            if(resultado.isEmpty()){
+                LatLng latLng = new LatLng(resultado.get(0).getLatitude(), resultado.get(0).getLongitude());
+                return latLng;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return  null;
+    }
+}
+
 
 //====================================================================
 //FRAGMENT ADAPTADO PARA TABLET
