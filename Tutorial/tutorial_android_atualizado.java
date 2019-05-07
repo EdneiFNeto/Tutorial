@@ -1,6 +1,229 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+
+//====================================================================
+//FRAGMENT ADAPTADO PARA TABLET
+//====================================================================
+//1 - CRIAR 1° CLASS FRAGMENT
+//====================================================================
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class DetalheFragment extends Fragment {
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_detalhe, container, false);
+        return view;
+    }
+
+}
+//====================================================================
+//2 - CRIAR LAYOUT FRAGMENT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="10dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00abec"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/detalhe_prova_materia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Materia"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detalhe_prova_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Data"
+                android:textColor="#fff"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/detalhe_prova_topicos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
+
+//====================================================================
+//3 - CRIAR 2° CLASS FRAGMENT
+//====================================================================
+package br.com.alura.alura;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import modelo.Prova;
+
+public class ListaPorvaFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //cria a view para referenciar o fragment
+        View view = inflater.inflate(R.layout.fragment_lista_prova, container, false);
+
+        List<String> topicosPortugues = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+        List<String> topicosMatematica = Arrays.asList("Sujeito", "Objeto direto", "Objeto indireto");
+
+        Prova provaPortugues  = new Prova("Porugues", "25/07/19", topicosPortugues);
+        Prova provamatematica = new Prova("Matematica", "25/07/19", topicosMatematica);
+
+        List<Prova> provas = Arrays.asList(provaPortugues, provamatematica);
+
+        ArrayAdapter<Prova> adapter = new ArrayAdapter<Prova>(getContext(), android.R.layout.simple_list_item_1, provas);
+        ListView listView = (ListView) view.findViewById(R.id.prova_lista);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Prova prova = (Prova) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), DetelhesActivity.class);
+                intent.putExtra("prova", prova);
+                startActivity(intent);
+            }
+        });
+
+        return view;
+    }
+}
+
+
+//====================================================================
+//4 - CRIAR 2° LAYOUT FRAGMENT
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/prova_lista"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</android.support.v7.widget.CardView>
+
+
+//====================================================================
+//5 - CRIAR  1 LAYOUT PARA PORTRAINT COM MESMO NOME
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+
+    android:id="@+id/frame_principal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+</FrameLayout>
+
+//====================================================================
+//6 - CRIAR  1 LAYOUT PARA LANDSCAPE COM MESMO NOME
+//====================================================================
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+    <!--guarda espaco para fragemt-->
+    <FrameLayout
+        android:id="@+id/frame_principal"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+
+    <FrameLayout
+        android:id="@+id/frame_secundario"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+</LinearLayout>
+
+
+
+//====================================================================
+//7 - ADD OS FRAGMENTS NA CLASSE PRINCIPAL
+//====================================================================
+package br.com.alura.alura;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class ProvaActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_prova);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        //abre a transacao
+        FragmentTransaction tx = fragmentManager.beginTransaction();
+        tx.replace(R.id.frame_principal/*pega esse layout*/, /*troca por esse*/ new ListaPorvaFragment());
+        tx.replace(R.id.frame_secundario/*pega esse layout*/, /*troca por esse*/ new DetalheFragment());
+        tx.commit();
+    }
+}
+
 //====================================================================
 //FRAGMENTS
 //====================================================================
