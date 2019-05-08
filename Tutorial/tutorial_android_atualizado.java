@@ -1,7 +1,34 @@
 //====================================================================
 //                          ALURA
 //====================================================================
-/====================================================================
+//====================================================================
+//======================== CONSTRAINT LAYOUT =========================
+//====================================================================
+app:layout_constraintStart_toStartOf="parent" //linha left
+app:layout_constraintEnd_toEndOf="parent" //alinha righrt
+app:layout_constraintTop_toTopOf="parent" //alinha top
+app:layout_constraintBottom_toBottomOf="parent"//alinha bottom
+android:scaleType="centerCrop"//mantem centralizada e preenche toda o espaco
+app:layout_constraintVertical_bias="0.0" //alinha top
+//====================================================================
+//TESTAR LIST VIEW USANDO XML
+//====================================================================
+//DETRO DO LIST VIEW ADD TOOLS
+ <ListView
+        
+        android:id="@+id/lista_pacote_listView"
+        tools:listitem="@layout/item_pacote" //add layout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+//====================================================================
+//SAMPLE DATA DIRECTY
+//====================================================================
+
+//====================================================================
 //================== FRAGMENT ADAPTADO PARA TABLET ===================
 //====================================================================
 //1 - CRIAR 1° CLASS FRAGMENT
