@@ -1,6 +1,14 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+//===========================================================
+        //converter string em Drawable
+        //===========================================================
+        Resources resources = view.getResources();
+        int idDoDrawable = resources.getIdentifier(pacote.getImagem(), "drawable", context.getPackageName());
+        Drawable drawable = resources.getDrawable(idDoDrawable);
+        imageView.setImageDrawable(drawable);
+
 //====================================================================
 //======================== CONSTRAINT LAYOUT =========================
 //====================================================================
