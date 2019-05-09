@@ -1,13 +1,22 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+//===================================================================================================
+//FORMATANDO MOEDA
+//===================================================================================================
+NumberFormat formato = DecimalFormat.getCurrencyInstance(new Locale("pt", "br"));
+BigDecimal precoDoPacote =  pacote.getPreco();
+String moeda = formato
+                .format(precoDoPacote)
+                .replace("R$", "R$ ");
+item_preco.setText(moeda);
 //===========================================================
-        //converter string em Drawable
-        //===========================================================
-        Resources resources = view.getResources();
-        int idDoDrawable = resources.getIdentifier(pacote.getImagem(), "drawable", context.getPackageName());
-        Drawable drawable = resources.getDrawable(idDoDrawable);
-        imageView.setImageDrawable(drawable);
+//converter string em Drawable
+//===========================================================
+Resources resources = view.getResources();
+int idDoDrawable = resources.getIdentifier(pacote.getImagem(), "drawable", context.getPackageName());
+Drawable drawable = resources.getDrawable(idDoDrawable);
+imageView.setImageDrawable(drawable);
 
 //====================================================================
 //======================== CONSTRAINT LAYOUT =========================
