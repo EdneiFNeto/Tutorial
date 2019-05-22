@@ -3,6 +3,19 @@ window.onload = function(){
     apiAJAX('url', 'GET');
 }
 
+function ajax(){
+        var xhttp = new XMLHttpRequest();
+            xhttp.responseType = 'json';
+            xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    console.log(this.response);
+                }
+            };
+
+            xhttp.open("POST", "controller/selectControll.php", true);
+            xhttp.send();
+    }
+
 function apiAJAX(url, type) {
 
     var param;
