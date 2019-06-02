@@ -657,7 +657,8 @@ public class ListaPorvaFragment extends Fragment {
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAa95ViIHq4tyWxJ4pSoR2vg1AqugOqXNY</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" 
+	    translatable="false">KEY</string>
 </resources>
 //====================================================================
 //DELETAR GOOGLE MAPS ACTIVITY
