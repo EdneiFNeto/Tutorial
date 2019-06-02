@@ -1,6 +1,32 @@
 //====================================================================
 //                          ALURA
 //====================================================================
+
+
+//==============================================
+//EVENTO [ObjectExcpression]
+//==============================================
+btn.setOnClickLostener{
+	Toast.makeText(this@Activity, "", tempo)
+}
+
+//==============================================
+//DIOLOG LAYOUT
+//==============================================
+lista_transacoes_adiciona_receita
+    .setOnClickListener {
+
+    	//Criar layout
+    	val view: View = window.decorView
+        
+        val viewCriada = LayoutInflater.from(context: this)
+        	.inflate(R.layout.form_trasacao, view as ViewGroup, attachToRoot: false)
+
+            AlertDialog.Builder(context: this)
+                .setTitle(R.string.adiciona_receita)
+                .setView(viewCriada)//ADD LAYPUT
+                .show()
+}
 //===================================================================================================
 //FORMATANDO DATA
 //===================================================================================================
