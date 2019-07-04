@@ -2,6 +2,26 @@
 //                          ALURA
 //====================================================================
 
+//====================================================================
+//                          camera
+//====================================================================
+camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+
+                    Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    caminho = Environment.getExternalStorageDirectory().toString()+ "/Pictures/" + System.currentTimeMillis() + ".jpg";
+                    file = new File(caminho);
+                    file_uri = Uri.fromFile(file);
+                    i.putExtra(MediaStore.EXTRA_OUTPUT, file_uri);
+                    startActivityForResult(i, CAMERA_CODE);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 //==============================================
 //EVENTO [ObjectExcpression]
@@ -27,6 +47,38 @@ lista_transacoes_adiciona_receita
                 .setView(viewCriada)//ADD LAYPUT
                 .show()
 }
+
+private void permission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                //ask for permission
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                //ask for permission
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+            }
+        }
+    }
+    
+//salva camera no diretoriop e no campo imagemview
+ @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_CODE && resultCode == RESULT_OK) {
+            foto = findViewById(R.id.foto);
+            Bitmap bitmap = BitmapFactory.decodeFile(caminho);
+            Bitmap reduzido = Bitmap.createScaledBitmap(bitmap, 400, 300, true);
+            foto.setImageBitmap(reduzido);
+
+            ImageView galeria = findViewById(R.id.galeria);
+            galeria.setImageBitmap(reduzido);
+        }
+    }
 //===================================================================================================
 //FORMATANDO DATA
 //===================================================================================================
