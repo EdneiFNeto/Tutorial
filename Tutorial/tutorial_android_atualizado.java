@@ -2,6 +2,17 @@
 //                          ALURA
 //====================================================================
 
+//image bitmapt
+private Bitmap getBitmap(int w, int h) {
+        Bitmap bitmap = BitmapFactory.decodeFile(caminho);
+        return Bitmap.createScaledBitmap(bitmap, w, h, true);
+}
+
+myImage = findViewById(R.id.my_image);
+Bitmap reduze = getBitmap(300, 200);
+myImage.setImageBitmap(reduze);
+
+
 //====================================================================
 //                          camera
 //====================================================================
