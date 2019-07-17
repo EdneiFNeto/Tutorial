@@ -1,6 +1,11 @@
 <?php
 
 
+//crorrigir erro de utf-8
+utf8_encode($values['descricao'])
+
+
+
     class Database
     {
         /*Método construtor do banco de dados*/
