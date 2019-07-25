@@ -1,4 +1,57 @@
 
+//======================================================================================
+//MASCARA CPF/EMAIL/TELEFONE
+//======================================================================================
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	<input type="text" name="cpf" onkeypress="validarCPF(this.value)" id="cpf" onchange="maskCPF(this.value)"><br>
+	<input type="text" name="email" id="email" onchange="maskEMAIL(this.value)"><br>
+	<input type="text" name="tel" id="tel" onchange="maskTEl(this.value)" onkeypress="validarTEL(this.value)"><br>
+</body>
+
+
+<script>
+
+	function validarCPF(value){
+		if(value.length > 10){
+			event.preventDefault();
+		}
+	}
+
+	function maskCPF(value){
+		if(value.length>10){
+			value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+			document.getElementById('cpf').value = value;
+		}
+	}
+
+	function maskEMAIL(value){
+		isValid =  /\w+@\w+\.\w{2,3}/.test(value);
+		console.log(isValid)
+		return isValid;
+	}
+
+	function validarTEL(value){
+		//21969809294
+		if(value.length >=11){
+			event.preventDefault();
+		}
+	}
+
+	function  maskTEl(value){
+		value = value.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+		document.getElementById('tel').value = value;
+	}
+</script>
+</html>
+//======================================================================================
 
 //DELCLARACAO DE CONSTANTE
 const CONSTANTE = 24;
