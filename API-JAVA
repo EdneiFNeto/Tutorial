@@ -1,0 +1,83 @@
+//=======================================================================================
+//=========================== JSON API ==================================================
+//=======================================================================================
+//busca a url e converte para string
+public static String lerArquivoURLConvereteParaString(String file) throws IOException {
+
+		URL url = new URL(file);
+		HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+		
+		if(httpURLConnection != null) {
+			
+			int response = httpURLConnection.getResponseCode();
+			String mesage = httpURLConnection.getResponseMessage();
+			String method = httpURLConnection.getRequestMethod();
+			
+			System.out.println("Reponse code "+response);
+			System.out.println("Mesage "+mesage);
+			System.out.println("Method "+method);
+			
+			if(response == 200 && mesage.equals("OK")) {
+				//InputStream in = url.openStream();
+				InputStream in = httpURLConnection.getInputStream();
+				BufferedReader bf = new BufferedReader(new InputStreamReader(in));
+				String linha = "";
+				StringBuilder  strJson = new StringBuilder();
+				
+				while((linha = bf.readLine())!= null) 
+					strJson.append(linha);
+				
+				bf.close();
+				return strJson.toString();
+			}
+		}
+		
+		return null;
+	}
+  
+  //recebe string e converte em json
+  public static JSONObject converterStringParaJson(String json) {
+
+		JSONParser parser = new JSONParser();
+		try {
+			// ler arquivo json e converte em objeto
+			Object obj = parser.parse(json);
+			JSONObject jsonObject = (JSONObject) obj;
+			return jsonObject;
+			
+			//String name = (String) jsonObject.get("cep");
+			//System.out.println(name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+  
+  
+  //Utiliza o metodo
+  public class Main {
+	
+	public static void main(String[] args) {
+		
+		//buscar da internet e transforma em string
+		String json;
+		try {
+			
+			json = IOUtil.lerArquivoURLConvereteParaString("https://viacep.com.br/ws/20950091/json/");
+			if(json!=null) {
+				System.out.println(json);
+				JSONObject jsonObject = IOUtil.converterStringParaJson(json);
+				String cep = (String) jsonObject.get("cep");
+				System.out.println("CEP: "+cep);
+			}else {
+				System.out.println("Json null");
+			}
+		
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
