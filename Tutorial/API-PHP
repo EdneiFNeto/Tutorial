@@ -1,5 +1,14 @@
 <?php
 
+//intervalo de data
+$date = DateTime::createFromFormat('Y-m-d H:i:s', date("Y-m-d H:i:s"));
+
+    // Modify the date
+    $date->modify('+120 minutes');
+    
+    // Output
+    echo $date->format('Y-m-d H:i:s')."<br>";
+ 
 
 //crorrigir erro de utf-8
 utf8_encode($values['descricao'])
