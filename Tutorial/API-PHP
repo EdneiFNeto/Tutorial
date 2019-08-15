@@ -1,5 +1,152 @@
 <?php
 
+//===========================================================================================================
+//======================================== JWT =============================================================
+
+
+function validToken($token, $senha)
+{
+    $part       = explode(".",$token);
+    $header     = $part[0];
+    $payload    = $part[1];
+    $signature  = $part[2];
+
+
+    $senha = json_encode('123456');
+    $senha = base64_encode('123456');
+    $valid = hash_hmac('sha256',"$header.$payload", $senha, true);
+    $valid = base64_encode($valid);
+
+        
+    if($signature == $valid)
+        return true; 
+    else
+        return false;
+
+        $header = base64_decode($header);
+            $header = json_decode($header, true);
+    
+            echo "<pre>";
+            print_r($header);
+            echo "</pre>";
+    
+            $payload = base64_decode($payload);
+            $payload = json_decode($payload, true);
+    
+            echo "<pre>";
+            print_r($payload);
+            echo "</pre>";
+    
+    }
+
+
+?>
+
+<?php
+
+    //1 - 
+    date_default_timezone_set('America/Sao_Paulo');
+    $date = DateTime::createFromFormat('Y-m-d H:i:s', date("Y-m-d H:i:s"));
+
+    // Modify the date
+    $date->modify('+120 minutes');    
+    
+    $header = [
+        'alg' => 'HS256',
+        'typ' => 'JWT',
+        //'exp' => $date->format('Y-m-d H:i:s'),
+    ];
+
+    
+    $header = json_encode($header);
+    $header = base64_encode($header);
+
+    $payload = [
+        'iss' => 'http://172.16.0.246/android-api/',
+        'name' =>'admin',
+    ];
+    
+    $payload = json_encode($payload);
+    $payload = base64_encode($payload);
+
+    $senha = json_encode('123456');
+    $senha = base64_encode('123456');
+
+    $signature = hash_hmac('sha256',"$header.$payload",$senha,true);
+    $signature = base64_encode($signature);
+    //enviar para o android
+    $token = $header.".".$payload.".".$signature;
+
+    echo $token;
+
+
+    header('Content-Type: application/json');
+    header('Accept: application/json');
+    //header('Authorization: '.$senha);
+    
+    require "database.php";
+    require "config.php";
+    require "usuario.php";
+    require "usuarioDao.php";
+
+    if(isset($_POST['login']) && isset($_POST['senha']))
+    {
+        
+        $usuario = new Usuario();
+        $usuario->setLogin($_POST['login']);
+        $usuario->setPassword($_POST['senha']);
+        $usuarioDao = new UsuarioDao();
+        
+        if($usuarioDao->verificarConexao())
+        {
+            
+            $usuarios = $usuarioDao->listarAll($usuario);
+            if(count($usuarios) > 0)
+            {
+                foreach($usuarios as $values)
+                {
+                    $data[] = array(
+                        'id'  =>$values['id'],
+                        'login'  =>$values['login'],
+                        'nome'  =>utf8_encode($values['nome']),
+                        'senha'  =>utf8_encode($values['senha']),
+                        'situacao'  =>utf8_encode($values['situacao']),
+                        'perfis_id'  =>utf8_encode($values['perfis_id']),
+                        'estacionamento_id'  =>utf8_encode($values['estacionamento_id']),
+                        'area_id'  =>utf8_encode($values['area_id']),
+                    );
+                }   
+                //echo json_encode($data); 
+            }
+            else
+            {  
+                resposta(UNAUTHORIZED, MSG_NOT_EXISTS_USUARIO, ''); 
+            } 
+        }          
+        else
+        {
+            resposta(INTERNAL_SERVE_ERROR, MSG_ERROR_CONNECTION, ''); 
+        }
+    }
+    else
+    {
+        resposta(UNAUTHORIZED, MSG_NOT_EXISTS_POST, ''); 
+    }
+        
+    function resposta($resp, $msg, $error){
+        $data[] = array(
+            'resp'  => $resp,
+            'msg'   => $msg,
+            'error' => $error,
+        );
+        echo json_encode($data);
+    }
+
+?>
+
+//===========================================================================================================
+//=================================================== JWT ===================================================
+//===========================================================================================================
 //intervalo de data
 $date = DateTime::createFromFormat('Y-m-d H:i:s', date("Y-m-d H:i:s"));
 
