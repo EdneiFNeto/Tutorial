@@ -1,4 +1,40 @@
 //====================================================================
+//                          DIALOG
+//====================================================================	
+//show alert dialog for window filter
+    private void showAlertFiltro() {
+
+        View view = LayoutInflater.from(this).inflate(R.layout.filter_layout, null, false);
+        //DatePicker
+	final DatePicker datapicker = view.findViewById(R.id.datePicker);
+	//BUTTON
+        view.findViewById(R.id.button_filtrar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //filtar
+
+                month = datapicker.getMonth() + 1;
+                day = datapicker.getDayOfMonth();
+                year = datapicker.getYear();
+
+                if (month > 12) {
+                    month = 1;
+                }
+                data_atual = year + "-" + month + "-" + day;
+                new ExtratoApi(ExtratoActivity.this, listView, progressbar, usuario, data_atual).execute();
+                alert.dismiss();
+            }
+        });
+
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setView(view);
+        alert = alertDialog.create();
+        alert.show();
+    }
+
+
+//====================================================================
 //                          ALURA
 //====================================================================
 
