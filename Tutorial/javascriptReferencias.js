@@ -1,5 +1,16 @@
 
 //======================================================================================
+//VALIDAR PLACA
+//======================================================================================
+String regex = "\\w{3,4}\\d{3,4}";
+boolean isValiPlaca = Pattern.matches(regex, edit_text_placa_registro_entrada.getText().toString());
+
+if(isValiPlaca){
+	Log.e(TAG, "Placa valida ");
+}else{
+	Log.e(TAG, "Placa Invalido ");
+}
+//======================================================================================
 //MASCARA CPF/EMAIL/TELEFONE
 //======================================================================================
 <!DOCTYPE html>
