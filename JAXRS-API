@@ -243,3 +243,89 @@ public class TesteProduto {
 }
 
 
+//=======================================================================
+//API REST JAX RS + HIBERNATE
+//=======================================================================
+//DAO
+//=======================================================================
+package br.com.loja.dao;
+
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import br.com.loja.factory.JAPFactory;
+import br.com.loja.model.Produto;
+
+public class ProdutoDao {
+
+	private EntityManager em = JAPFactory.getEntityManager();
+
+	public Produto listar(long id) {
+
+		em.getTransaction().begin();
+		Produto p = em.find(Produto.class, id);
+		em.getTransaction().commit();
+		em.close();
+
+		return p;
+	}
+
+	public List<Produto> findAll() {
+
+		em.getTransaction().begin();
+		String jpql = "select p from Produto p";
+		Query query = em.createQuery(jpql);
+		List<Produto> produtos = query.getResultList();
+		em.getTransaction().commit();
+		em.close();
+
+		return produtos;
+	}
+
+}
+
+//=======================================================================
+//RESOURCES
+//=======================================================================
+package br.com.loja.resources;
+
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import com.google.gson.Gson;
+import br.com.loja.dao.ProdutoDao;
+import br.com.loja.model.Produto;
+
+@Path("produto")
+public class ProdutosResource {
+
+	
+	//RETORNA O PRODUTOS PELO ID
+	@Path("{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String listar(@PathParam("id") long id){
+		
+		Produto p = new ProdutoDao().listar(id);
+		return p.toJSON();
+	}
+	
+
+	//RETIRNA TODOS OS PRODUTOS
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String findAll(){
+		List<Produto> produtos = new ProdutoDao().findAll();
+		return new Gson().toJson(produtos);
+	}
+}
+
+//=======================================================================
+//EXECUTAR: 
+	http://localhost:8080/produto
+	http://localhost:8080/produto/1
+//=======================================================================
