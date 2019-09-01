@@ -1,0 +1,245 @@
+//=======================================================================
+//CRINANDO SERVIDOR servido
+//=======================================================================
+package br.com.loja.server;
+
+import java.io.IOException;
+import java.net.URI;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+
+public class Servidor {
+
+	public static void main(String[] args) throws IOException {
+
+		HttpServer serve = inicilizaServidor();
+		System.out.println("Servidor rodando");
+		System.in.read();
+		serve.stop();
+
+	}
+
+	public static HttpServer inicilizaServidor() {
+		
+		ResourceConfig config = new ResourceConfig().packages("br.com.loja");
+		URI uri = URI.create("http://localhost:8080/");
+		HttpServer serve = GrizzlyHttpServerFactory.createHttpServer(uri, config);
+		return serve;
+	}
+
+}
+
+//=======================================================================
+//CRINADO RESOUCES
+//=======================================================================
+package br.com.loja.resources;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import br.com.loja.dao.CarrinhoDao;
+import br.com.loja.model.Carrinho;
+
+@Path("carrinhos")
+public class CarrinhoResource {
+
+	@Path("{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String busca(@PathParam ("id") long id) {
+		Carrinho carrinho = new CarrinhoDao().buscar(id);
+		return carrinho.toJSON();
+	}
+}
+
+//=======================================================================
+//ACESSANDO: http://localhost:8080/carrinhos/id
+//=======================================================================
+
+//=======================================================================
+//========================= JPA =========================================
+//=======================================================================
+//CRIAR PASTA DENTRO SRC/META-INF
+//=======================================================================
+
+//CRIAR ARQUIVO DENTRO DA PASTA META-INF/persistence.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+    version="2.0">
+
+    <!-- unidade de persistencia com o nome financas -->
+    <persistence-unit name="api">
+
+        <!-- Implementação do JPA, no nosso caso Hibernate -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Aqui são listadas todas as entidades -->
+        <class>br.com.loja.model.Produto</class>
+
+        <properties>    
+            <!-- Propriedades JDBC -->
+            <property name="javax.persistence.jdbc.driver" 
+                value="com.mysql.jdbc.Driver" />
+
+            <property name="javax.persistence.jdbc.url" 
+                value="jdbc:mysql://localhost:3306/api?useTimezone=true&amp;serverTimezone=UTC" />
+
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="" />
+
+            <!-- Configurações específicas do Hibernate -->
+            <property name="hibernate.dialect" 
+                value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+        </properties>
+    </persistence-unit>
+</persistence>
+
+
+//=======================================================================
+//CRIAR CONEXAO
+//=======================================================================
+
+package br.com.loja.factory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+public class JAPFactory {
+
+	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("api");
+	public static EntityManager getEntityManager() {
+		return emf.createEntityManager();
+	}
+}
+
+//=======================================================================
+//PERSISTIR
+//=======================================================================
+
+package br.com.loja.test;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import br.com.loja.factory.JAPFactory;
+import br.com.loja.model.Produto;
+
+public class TesteProduto {
+	
+	public static void main(String[] args) {
+		
+		Produto p = new Produto();
+		p.setDescricao("XBOX desbloqueado");
+		p.setNome("XBOX - Slim");
+		
+		//CRIA A CONEXAO
+		EntityManager em = JAPFactory.getEntityManager();
+		
+		em.getTransaction().begin();
+		em.persist(p);
+		em.getTransaction().commit();
+		
+		em.close();
+		
+	}
+
+}
+
+//=======================================================================
+//======================= JPQL ==========================================
+//=======================================================================
+//LISTAR TODOS OS  PRODUTOS
+//=======================================================================
+package br.com.loja.test;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
+import br.com.loja.factory.JAPFactory;
+import br.com.loja.model.Produto;
+
+public class TesteProduto {
+	
+	public static void main(String[] args) {
+		
+	
+		EntityManager em = JAPFactory.getEntityManager();
+		em.getTransaction().begin();
+		
+		//query jpql
+		String jpql = "select p from Produto p ";
+		Query query = em.createQuery(jpql);
+		List<Produto> produtos = query.getResultList();
+		for(Produto ps: produtos)
+			System.out.println("Produtos "+ps.getNome());
+		
+		
+		em.getTransaction().commit();
+		em.close();
+		
+	}
+
+}
+
+//=======================================================================
+//LISTAR PRODUTOS POR ID
+//=======================================================================
+package br.com.loja.test;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
+import br.com.loja.factory.JAPFactory;
+import br.com.loja.model.Produto;
+
+public class TesteProduto {
+	
+	public static void main(String[] args) {
+		
+	
+		EntityManager em = JAPFactory.getEntityManager();
+		em.getTransaction().begin();
+		
+		Produto p = new Produto();
+		p.setId(1L);
+		
+		String jpql = "select p from Produto p where p.id = :id ";
+		Query query = em.createQuery(jpql);
+		query.setParameter("id", p.getId());
+		
+		List<Produto> produtos = query.getResultList();
+		for(Produto ps: produtos){
+			System.out.println("Produtos "+ps.getNome());
+		}
+		
+		
+		em.getTransaction().commit();
+		em.close();
+	}
+
+}
+
+
