@@ -346,6 +346,7 @@ public class ProdutosResource {
 
 //=======================================================================
 //EXECUTAR: 
-	http://localhost:8080/produto
-	http://localhost:8080/produto/1
+	http://localhost:8080/produto [GET]
+	http://localhost:8080/produto/1 [GET]
+	http://localhost:8080/produto/Nintento 64/Clasico [POST]
 //=======================================================================
