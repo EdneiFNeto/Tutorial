@@ -1,4 +1,36 @@
 //====================================================================
+//                          ADD MENU FRAGMENTS
+//====================================================================	
+ @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        MenuItem item = menu.add("Pequisar");
+        item.setIcon(R.drawable.ic_search);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(onSearch());
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private SearchView.OnQueryTextListener onSearch() {
+        return new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //usuari faz a busca
+                Toast.makeText(getActivity(), "Placa "+ query, Toast.LENGTH_LONG).show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //mudou o texto
+                return false;
+            }
+        };
+    }
+
+
+//====================================================================
 //                          DIALOG
 //====================================================================	
 //show alert dialog for window filter
