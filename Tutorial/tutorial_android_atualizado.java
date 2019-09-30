@@ -1,3 +1,36 @@
+
+
+
+//====================================================================
+//                  ATUALIZAR NAVIGATION BOTTOM
+//====================================================================	
+    private void updateNavigationBarState(int index) {
+        Menu menu = bottom_navigation.getMenu();
+
+        for (int i = 0, size = menu.size(); i < size; i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.toString().equals("Home") && index == 0) {
+                item.setChecked(true);
+            }
+            if (item.toString().equals("Estacionados") && index == 1) {
+                item.setChecked(true);
+            }
+            if (item.toString().equals("Mensalista") && index == 2) {
+                item.setChecked(true);
+            }
+            if (item.toString().equals("Painel") && index == 3) {
+                item.setChecked(true);
+            }
+
+            Log.e(TAG, "Item " + item.toString());
+            Log.e(TAG, "Index " + index);
+        }
+
+
+    }
+
+
+
 //====================================================================
 //                          ADD MENU FRAGMENTS
 //====================================================================	
