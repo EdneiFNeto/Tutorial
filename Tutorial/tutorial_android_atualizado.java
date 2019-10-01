@@ -1,5 +1,429 @@
 
+//====================================================================
+//                  IMPRIMIR QR CONDE BLUETHOP
+//====================================================================	
+try{
 
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            BitMatrix bitMatrix = multiFormatWriter.encode("Vc E B...a :-)",
+                    BarcodeFormat.QR_CODE, 230, 230);
+
+            BarcodeEncoder encoder = new BarcodeEncoder();
+            Bitmap bitmap = encoder.createBitmap(bitMatrix);
+
+            ImageView imgQr = findViewById(R.id.img_qr);
+            imgQr.setImageBitmap(bitmap);
+
+            final Intent i = new Intent(this, PrinterTest.class);
+            ByteArrayOutputStream bs = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bs);
+            i.putExtra("byteArray", bs.toByteArray());
+
+            Button button_qr = findViewById(R.id.button_gerar_qr);
+            button_qr.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(i);
+                }
+            });
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+//====================================================================
+//                  GERAR IMPRESSAO
+//====================================================================	
+
+package com.example.urbano_park_fiscal.ui;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.urbano_park_fiscal.R;
+import com.example.urbano_park_fiscal.model.Convenio;
+import com.example.urbano_park_fiscal.model.Estacionamento;
+import com.example.urbano_park_fiscal.model.Estatistica;
+import com.example.urbano_park_fiscal.model.Fechamento;
+import com.example.urbano_park_fiscal.model.URLS;
+import com.example.urbano_park_fiscal.util.CheckNetowrkUtil;
+import com.example.urbano_park_fiscal.util.DialogUtil;
+import com.example.urbano_park_fiscal.util.FormatarStringUtil;
+import com.example.urbano_park_fiscal.util.PrinterCommands;
+import com.example.urbano_park_fiscal.util.PrinterUtils;
+import com.example.urbano_park_fiscal.util.UtilsText;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+public class PrinterTest extends AppCompatActivity implements Runnable {
+
+    private static final int REQUEST_ENABLE_BT = 2;
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static String BILL = "";
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothDevice mBluetoothDevice;
+    private BluetoothSocket mBluetoothSocket;
+    private UUID applicationUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private String TAG = "PrinterTestLOg";
+    private boolean isPrinter2Via;
+    private boolean isPrinter = false;
+    private File PATH;
+    private String NOME_PDF = "cupom_fiscal.pdf";
+    private String NOME_TEXT = "arquivo.txt";
+    private OutputStream outputStream;
+    private byte FONT_TYPE;
+    private TextView text_imprimindo;
+    private String comeco, placa, marca, cod_ticket;
+    private String estacionamento_id;
+    private List<Estacionamento> estacionamentos;
+    private List<Fechamento> fechamentos;
+    private List<Estatistica> estatisticas;
+    private List<Convenio> convenios;
+    private static String resp, msg;
+    private Bitmap bitmapImage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_printer);
+
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        toolbar.setTitle("IMPRESSÃO DE CUPOM");
+        setSupportActionBar(toolbar);
+
+        fechamentos = new ArrayList<>();
+        estatisticas = new ArrayList<>();
+        convenios = new ArrayList<>();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (getIntent().hasExtra("byteArray")) {
+
+            bitmapImage = BitmapFactory.decodeByteArray(
+                    getIntent().getByteArrayExtra("byteArray"), 0,
+                    getIntent().getByteArrayExtra("byteArray").length);
+
+            ImageView imgQr = findViewById(R.id.imageViewImpressora);
+            imgQr.setImageBitmap(bitmapImage);
+
+            isPrinter = !isPrinter;
+            if (isPrinter) {
+                imprimir();
+            }
+        }
+    }
+
+    private void imprimir() {
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter != null) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            } else {
+                try {
+                    ListPairedDevices();
+                    //envia para essa activity
+                    Intent connectIntent = new Intent(PrinterTest.this, DeviceListActivity.class);
+                    startActivityForResult(connectIntent, REQUEST_CONNECT_DEVICE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void ListPairedDevices() {
+        Set<BluetoothDevice> mPairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (mPairedDevices.size() > 0) {
+            for (BluetoothDevice mDevice : mPairedDevices) {
+                Log.e(TAG, "PairedDevices: " + mDevice.getName() + "\n" + mDevice.getAddress());
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int mRequestCode, int mResultCode,
+                                 Intent mDataIntent) {
+        super.onActivityResult(mRequestCode, mResultCode, mDataIntent);
+
+        switch (mRequestCode) {
+            case REQUEST_CONNECT_DEVICE:
+
+                //when receive result code, execute printer
+                if (mResultCode == Activity.RESULT_OK) {
+
+                    Log.e(TAG, "RESULT_OK ");
+                    Bundle mExtra = mDataIntent.getExtras();
+                    String mDeviceAddress = mExtra.getString("DeviceAddress");
+
+                    //calling device
+                    mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(mDeviceAddress);
+                    Log.e(TAG, "Coming incoming address " + mDeviceAddress);
+
+                    Thread mBlutoothConnectThread = new Thread(PrinterTest.this);
+                    mBlutoothConnectThread.start();
+
+                    // pairToDevice(mBluetoothDevice); This method is replaced by
+                    // progress falhaConexao with thread
+                }
+                break;
+
+            case REQUEST_ENABLE_BT:
+                if (mResultCode == Activity.RESULT_OK) {
+                    ListPairedDevices();
+                    Intent connectIntent = new Intent(this, DeviceListActivity.class);
+                    startActivityForResult(connectIntent, REQUEST_CONNECT_DEVICE);
+                } else {
+                    Toast.makeText(PrinterTest.this, "Message", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case 10:
+                break;
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            mBluetoothSocket = mBluetoothDevice
+                    .createRfcommSocketToServiceRecord(applicationUUID);
+            mBluetoothAdapter.cancelDiscovery();
+            mBluetoothSocket.connect();
+            mHandler.sendEmptyMessage(0);
+        } catch (IOException eConnectException) {
+            Log.d(TAG, "CouldNotConnectToSocket", eConnectException);
+            closeSocket(mBluetoothSocket);
+            return;
+        }
+    }
+
+    private void closeSocket(BluetoothSocket mBluetoothSocket) {
+        try {
+            mBluetoothSocket.close();
+            Log.d(TAG, "SocketClosed");
+        } catch (IOException ex) {
+            PrinterUtils.falhaNaImpressao(PrinterTest.this);
+            finish();
+            Log.d(TAG, "CouldNotCloseSocket");
+        }
+    }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    printer();
+                }
+            }, 2000);
+        }
+    };
+
+
+    protected void printer() {
+
+        try {
+
+            outputStream = mBluetoothSocket.getOutputStream();
+            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+            outputStream.write(printformat);
+
+            printPhoto(R.drawable.ic_logo_cupom52x74);
+
+            printCustom("FIRMEZA TOTAL", 3, 1);
+            printCustom("MAIS UM ANO SE PASSOU", 3, 1);
+            printCustom("GRACAS A DEUS AGENTE", 3, 1);
+            printCustom("ESTA COM SAUDE", 3, 1);
+            printCustom("MUITA COLETIVIDADE DA QUEBRADA", 3, 1);
+            printCustom("DINHEIRO NO BOLSO, SEM MISERIA", 3, 1);
+            printCustom("VAMOS BRINDAR O DIA DE HJ", 3, 1);
+            printCustom("QUE O AMANHA SO PERTENCE A DEUS", 3, 1);
+            printCustom("A VIDA E LOUCA", 3, 1);
+            printCustom("", 1, 1);
+            printNewLine();
+
+            printCustom("", 1, 1);
+            printNewLine();
+            printBitmap(bitmapImage);
+            printCustom("", 1, 1);
+            printCustom("", 1, 1);
+            printNewLine();
+            printNewLine();
+
+
+            printCustom("", 0, 1);
+            printCustom("www.urbanopark.com.br", 0, 1);
+            printNewLine();
+            printCustom("", 0, 1);
+            printNewLine();
+            printNewLine();
+
+            outputStream.flush();
+            finish();
+
+        } catch (
+                IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private String leftRightAlign(String str1, String str2) {
+        String ans = str1 + str2;
+        if (ans.length() < 31) {
+            int n = (31 - str1.length() + str2.length());
+            ans = str1 + new String(new char[n]).replace("\0", " ") + str2;
+        }
+        return ans;
+    }
+
+    //print custom
+    private void printCustom(String msg, int size, int align) {
+        //Print config "mode"
+        byte[] cc = new byte[]{0x1B, 0x21, 0x03};  // 0- normal size text
+        //byte[] cc1 = new byte[]{0x1B,0x21,0x00};  // 0- normal size text
+        byte[] bb = new byte[]{0x1B, 0x21, 0x08};  // 1- only bold text
+        byte[] bb2 = new byte[]{0x1B, 0x21, 0x20}; // 2- bold with medium text
+        byte[] bb3 = new byte[]{0x1B, 0x21, 0x10}; // 3- bold with large text
+
+        try {
+            switch (size) {
+                case 0:
+                    outputStream.write(cc);
+                    break;
+                case 1:
+                    outputStream.write(bb);
+                    break;
+                case 2:
+                    outputStream.write(bb2);
+                    break;
+                case 3:
+                    outputStream.write(bb3);
+                    break;
+            }
+
+            switch (align) {
+                case 0:
+                    //left align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_LEFT);
+                    break;
+                case 1:
+                    //center align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+                    break;
+                case 2:
+                    //right align
+                    outputStream.write(PrinterCommands.ESC_ALIGN_RIGHT);
+                    break;
+            }
+            outputStream.write(msg.getBytes());
+            outputStream.write(PrinterCommands.LF);
+            //outputStream.write(cc);
+            //printNewLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void printPhoto(int img) {
+
+        try {
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), img);
+            if (bmp != null) {
+                byte[] command = UtilsText.decodeBitmap(bmp);
+                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+                printText(command);
+            } else {
+                Log.e("Print Photo error", "the file isn't exists");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("PrintTools", "the file isn't exists");
+        }
+    }
+
+    public void printBitmap(Bitmap bitmap) {
+
+
+        try {
+            if (bitmap != null) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
+                byte[] image = UtilsText.decodeBitmap(bitmap);
+                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER);
+                printText(image);
+            } else {
+                Log.e("Print Photo error", "the file isn't exists");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("PrintTools", "the file isn't exists");
+        }
+    }
+
+
+    //print new line
+    private void printNewLine() {
+        try {
+            outputStream.write(PrinterCommands.FEED_LINE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //print byte[]
+    private void printText(byte[] msg) {
+        try {
+            // Print normal text
+            outputStream.write(msg);
+            printNewLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
 
 //====================================================================
 //                  ATUALIZAR NAVIGATION BOTTOM
