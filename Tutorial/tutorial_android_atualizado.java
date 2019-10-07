@@ -1,5 +1,24 @@
 
 //====================================================================
+//                  PASSANDO ARRAY POR INTENT
+//====================================================================	
+
+//ENVIANDO
+var intent = Intent(context, PrinterActivity::class.java)
+intent.putExtra("produtos",listaProdutos as Serializable)
+context.startActivity(intent)
+	
+//RECEBENDO
+if (intent.getSerializableExtra("produtos") as ArrayList<Produto> != null) {
+            var produtos = intent.getSerializableExtra("produtos") as ArrayList<Produto>
+            if (produtos.isNotEmpty()) {
+                for (p in produtos){
+                    imprimir(p)
+                }
+            }
+        }
+
+//====================================================================
 //                  IMPRIMIR QR CONDE BLUETHOP
 //====================================================================	
 try{
