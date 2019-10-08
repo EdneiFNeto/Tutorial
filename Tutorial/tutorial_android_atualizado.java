@@ -1,3 +1,91 @@
+//====================================================================
+//                 DATA E HORA UTIL
+//====================================================================	
+
+package com.example.urbano_park_fiscal.util;
+import android.util.Log;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class DataUtil {
+
+    private static final String TAG = "DataUtilLog";
+
+    public static String getDataAtualAmericana() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
+    public static String getDataAtual() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+    public static String getDataAtualHora() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
+    public static String getDataAtualHoraPadraoAmericano() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
+    public static String converteDataHoraPadraoAmericano(String strData)  {
+        // Format of the date defined in the input String
+
+        Log.e(TAG, "Data params "+strData);
+
+        String[] data = strData.split("/");
+        String dia = data[0];
+        String mes = data[1];
+        String ano = data[2];
+
+        String [] hora = ano.split(" ");
+        ano = hora[0];
+
+        String dataFormatada = ano+"/"+mes+"/"+dia+" "+hora[1];
+        Log.e(TAG, "Data formatada "+dataFormatada);
+
+        return dataFormatada;
+    }
+
+    public static String converteDataPadraoBrasilerio(String strData)  {
+        // Format of the date defined in the input String
+
+        Log.e(TAG, "Data params "+strData);
+
+        String[] data = strData.split("/");
+        String dia = data[2];
+        String mes = data[1];
+        String ano = data[0];
+
+        String dataFormatada = dia+"/"+mes+"/"+ano;
+        Log.e(TAG, "Data formatada "+dataFormatada);
+
+        return dataFormatada;
+    }
+
+    public static String getHora() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        Date hora = Calendar.getInstance().getTime(); // Ou qualquer outra forma que tem
+        return sdf.format(hora);
+    }
+
+    public static String converteDataPadraoAmericano(String dataInicio) {
+        String[] dataSplit = dataInicio.split("/");
+        String dia = dataSplit[0];
+        String mes = dataSplit[1];
+        String ano = dataSplit[2];
+        return ano +"/"+mes+"/"+dia;
+    }
+}
 
 //====================================================================
 //                  PASSANDO ARRAY POR INTENT
