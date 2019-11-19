@@ -32,3 +32,32 @@ p)
     echo "nao existe "
     ;;
 esac
+
+com.example.applock.MainActivity
+
+
+//start app using adb
+adb shell am start -a android.intent.action.MAIN -n com.example.applock/.MainActivity
+
+//uninstall 
+adb uninstall com.example.urbano_park_est
+
+//Install
+adb install com.example.urbano_park_est
+
+
+//start 
+adb shell am start -c android.intent.category.HOME -a android.intent.action.MAIN
+
+
+//listar todos os pacotes
+adb shell pm  list packages -e
+
+//start app
+adb shell monkey -p com.example.urbano_park_est -c android.intent.category.LAUNCHER 1
+
+//reinstalar 
+adb -s 192.168.1.106:5555 install -r app-debug.apk
+
+//Desinstalar packeges
+adb shell pm uninstall com.example.urbano_park_est
