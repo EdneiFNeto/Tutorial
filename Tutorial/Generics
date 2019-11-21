@@ -1,0 +1,212 @@
+
+=======================================================================
+//1 - cria uma interface generica
+=======================================================================
+package com.gymseries.database.dao.interfaces
+import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
+import com.gymseries.model.Ombro
+
+@Dao
+interface BaseRoom<T> {
+
+    @Insert
+    fun insert(t: T):Long
+
+    @Delete
+    fun delete(t: T)
+
+    @Update
+    fun update(t: T)
+
+    @RawQuery
+    fun all(query: SupportSQLiteQuery ): List<T>
+}
+
+=======================================================================
+//2 - criar class abstrata para que implente uma interface
+=======================================================================
+package com.gymseries.database.dao
+import androidx.room.*
+import com.gymseries.database.dao.interfaces.BaseRoom
+import com.gymseries.model.Biceps
+
+@Dao
+abstract class BicepsRoom:BaseRoom<Biceps>
+
+=======================================================================
+//3 - Utilizando o metodo abstrato
+=======================================================================
+var appData = AppData.getInstance(context)
+var dao = appData.GetRoom()
+dao.insert(Model)
+
+
+
+=======================================================================
+//=================== ADAPTER GENERIC =================================
+=======================================================================
+1 - CRIA MODELS
+=======================================================================
+
+package com.gymseries.model
+
+import androidx.room.PrimaryKey
+
+open class CorpoHumano(
+    @PrimaryKey(autoGenerate = true)
+    open val id: Long,
+    open val descr: String,
+    open val repeticoes: String,
+    open val peso: String,
+    open val status: Boolean) {
+
+    override fun toString(): String {
+        return String.format("%s,%s,%s,%s,%s", id, descr, repeticoes, peso, status)
+    }
+}
+
+=======================================================================
+
+package com.gymseries.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+class Biceps : CorpoHumano {
+
+    constructor(id:Long, descr: String, repeticoes: String, peso: String, status: Boolean):
+            super(id, descr, repeticoes, peso, status)
+
+    override fun toString(): String {
+        return String.format("%s,%s,%s,%s,%s", id, descr, repeticoes, peso, status)
+    }
+}
+
+=======================================================================
+2 - ADAPTER GENERICS
+=======================================================================
+package com.gymseries.adapter
+import android.content.Context
+
+class MyAdapter<T>(context: Context, list: ArrayList<T>) :
+    BaseAdapter<T>(context = context, list = list) {}
+
+=======================================================================
+  BASE ADAPTER: TODOS METODOS DEVEM SER IMPLEMETADOS AQUI
+=======================================================================
+package com.gymseries.adapter
+import android.content.Context
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Switch
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
+import com.gymseries.R
+
+abstract class BaseAdapter<T>(
+    val context: Context,
+    private val list: List<T>) : RecyclerView.Adapter<BaseAdapter.MyHolder<T>>() {
+
+    private val TAG = "BaseAdapterLog"
+
+    override fun onBindViewHolder(holder: MyHolder<T>, position: Int) {
+        Log.e(TAG, "T: ${list[position]}")
+        holder.add(list[position])
+        holder.itemView.setOnClickListener {
+            dialog(list[position])
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder<T> {
+        return MyHolder(
+            LayoutInflater.from(context).inflate(
+                R.layout.activity_treino,
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    class MyHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var title = itemView.findViewById<TextView>(R.id.text_title_treino)
+        var repeticao = itemView.findViewById<TextView>(R.id.text_num_repeticao)
+        var peso = itemView.findViewById<TextView>(R.id.text_kg)
+
+        fun add(t: T) {
+            var str = t.toString().split(",")
+            for (i in 0..str.size) {
+                when (i) {
+                    1 -> title.text = str[i]
+                    2 -> repeticao.text = "Repetição: ${str[i]}"
+                    3 -> peso.text = "Kg: ${str[i]}"
+                }
+            }
+        }
+    }
+
+    fun dialog(t: T) {
+
+        var str = t.toString().split(",")
+        var title= ""
+        var repeticao= ""
+        var peso = ""
+        var mySatutus=""
+
+        for (i in 0..str.size) {
+            when (i) {
+                1 -> title = str[i]
+                2 -> repeticao= str[i]
+                3 -> peso = str[i]
+                4 -> mySatutus = str[i]
+            }
+        }
+
+        //exeibe dialog para opcao de treinos
+        var builder = AlertDialog.Builder(context)
+        builder.setIcon(R.mipmap.ic_descri_treino)
+        builder.setTitle(title)
+
+        val view: View =
+            LayoutInflater.from(context).inflate(R.layout.layout_select_peso_repeticao_treino, null)
+        var edittext_kg = view.findViewById<EditText>(R.id.edttext_kg)
+        var edittext_num_repeticao = view.findViewById<EditText>(R.id.edittext_repeticao)
+        var button_salvar = view.findViewById<Button>(R.id.button_salvar_dialog_treino)
+        var status = view.findViewById<Switch>(R.id.switch_is_enabled)
+
+        edittext_kg.setText(peso)
+        edittext_num_repeticao.setText(repeticao)
+        if(mySatutus=="true"){
+            status.isChecked = true
+        }
+
+        builder.setView(view)
+        var dialog = builder.create()
+        dialog.show()
+
+        button_salvar.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
+}
+
+=======================================================================
+3 - UTILIZANDO ADAPTER ABSTRATO
+=======================================================================
+
+var recyclerViewBiceps = findViewById<RecyclerView>(R.id.recycle_view_biceps)
+val list = ArrayList<Model>()
+var adapter = MyAdapter(this, list)
+recyclerViewBiceps.adapter = adapter
+
+
