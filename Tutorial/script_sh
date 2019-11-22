@@ -3,61 +3,38 @@
 opt=$1
 msg=$2
 b=$3  #brnach
+package=$4 
 
 case $opt in
-st)
-    git status
+
+start_conn)
+    adb tcpip 5555
     ;;
-a)
-    git add .
+conn_device)
+    adb connect 192.168.1.109:5555
     ;;
-cm)
-    git commit -m "$msg" 
+start_main)
+    adb shell am start -a android.intent.action.MAIN -n $packages/.SplashActivity
     ;;
-l)
-    git log --oneline 
+uninstall)
+    adb uninstall com.example.urbano_park_est
     ;;
-#ir pra brnach 
-ck)
-    git checkout $b 
+install)
+    adb install com.example.urbano_park_est
     ;;
-#veficia em qual brnache eu estou
-b)
-    git branch 
+start)
+    adb shell am start -c android.intent.category.HOME -a android.intent.action.MAIN
     ;;
-p)
-    git push  origin $b 
+list_packege)
+    adb shell pm  list packages -e
     ;;
-*)
-    echo "nao existe "
+monkey)
+    adb shell monkey -p $packages -c android.intent.category.LAUNCHER 1
+    ;;
+reinstalar) 
+    adb -s 192.168.1.106:5555 install -r app-debug.apk
+    ;;
+uninstall_package)
+    adb shell pm uninstall $packages
     ;;
 esac
-
-com.example.applock.MainActivity
-
-
-//start app using adb
-adb shell am start -a android.intent.action.MAIN -n com.example.applock/.MainActivity
-
-//uninstall 
-adb uninstall com.example.urbano_park_est
-
-//Install
-adb install com.example.urbano_park_est
-
-
-//start 
-adb shell am start -c android.intent.category.HOME -a android.intent.action.MAIN
-
-
-//listar todos os pacotes
-adb shell pm  list packages -e
-
-//start app
-adb shell monkey -p com.example.urbano_park_est -c android.intent.category.LAUNCHER 1
-
-//reinstalar 
-adb -s 192.168.1.106:5555 install -r app-debug.apk
-
-//Desinstalar packeges
-adb shell pm uninstall com.example.urbano_park_est
