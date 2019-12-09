@@ -1,5 +1,26 @@
 
 //======================================================================================
+//ADD caracter em nom meio de uma string
+//======================================================================================
+<input type="text" name="valor" id="n" class="number">
+<div id='id'></div>
+
+<script type="text/javascript">
+	
+var count=0
+var str = "1212121"
+var temp="";
+var n  = document.getElementById('n')
+var id = document.getElementById('id')
+
+var el = document.querySelector('input.number');
+el.addEventListener('keyup', function (event) {
+	console.log(this.value.length);
+
+	if(this.value.length>3)
+  		this.value = this.value.replace(/\D/g, '').replace(/\B(?=(\d{2})+(?!\d))/g, 'X');
+
+//======================================================================================
 //VALIDAR PLACA
 //======================================================================================
 String regex = "\\w{3,4}\\d{3,4}";
