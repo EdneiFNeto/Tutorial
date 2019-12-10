@@ -1,4 +1,41 @@
 //====================================================================
+//                 SHARPREFERENCES
+//====================================================================	
+package com.example.arca.util
+
+import android.content.Context
+import android.content.SharedPreferences
+
+class PreferencesUtils {
+
+    val LOCALIDADE_ID = "localidade_id"
+    private lateinit var sharedPreferences: SharedPreferences
+    private val PREFERENCES = "PREFERENCES"
+
+    fun preferences(context: Context): SharedPreferences {
+        sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+        return sharedPreferences
+    }
+}
+//====================================================================
+//ADD
+//====================================================================
+if (operadores.isNotEmpty()) {
+            //init session preferences
+            preferences = PreferencesUtils().preferences(this)
+            var editor = preferences.edit()
+            for (n in operadores) {
+                editor?.putLong(PreferencesUtils().LOCALIDADE_ID, n.localidade_id)
+            }
+            editor?.commit()
+        }
+//====================================================================
+//LISTAR
+//====================================================================
+var preferences = PreferencesUtils().preferences(this)
+localidade_id = preferences.getLong(PreferencesUtils().LOCALIDADE_ID, 0)
+
+//====================================================================
 //                 DATA E HORA UTIL
 //====================================================================	
 
