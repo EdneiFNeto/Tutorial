@@ -1,4 +1,26 @@
 //=================================================================
+//POST
+//=================================================================
+
+
+var data = new FormData();
+data.append('user', 'person');
+data.append('pwd', 'password');
+data.append('organization', 'place');
+data.append('requiredkey', 'key');
+
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'somewhere', true);
+xhr.onload = function () {
+    // do something to response
+    console.log(this.responseText);
+};
+xhr.send(data);
+
+
+
+
+//=================================================================
 //CRONOMETRO
 //=================================================================
 <!DOCTYPE html>
