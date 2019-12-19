@@ -1,4 +1,26 @@
 //====================================================================
+//                 FORMATAR EDTTEXT MONETARIO
+//====================================================================	 
+
+private String current = "";
+@Override
+public void onTextChanged(CharSequence s, int start, int before, int count) {
+	String formater = RegextUtil.formater(s.toString());
+        if(!s.toString().equals(current)) {
+	Locale myLocale = new Locale("pt", "BR");
+        //Nesse bloco ele monta a maskara para money
+        myValor.removeTextChangedListener(this);
+        String cleanString = s.toString().replaceAll("[R$,.]", "");
+        Double parsed = Double.parseDouble(cleanString);
+        String formatted = NumberFormat.getCurrencyInstance(myLocale).format((parsed / 100));
+        current = formatted;
+
+        myValor.setText(formatted);
+        myValor.setSelection(formatted.length());
+        myValor.addTextChangedListener(this)
+}
+
+//====================================================================
 //                 SHARPREFERENCES
 //====================================================================	
 package com.example.arca.util
