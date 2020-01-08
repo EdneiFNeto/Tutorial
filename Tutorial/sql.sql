@@ -105,6 +105,11 @@ update cliente set nome = 'Novo Ednei' where nome='Ednei' and cod_cidade
 
 
 -- ===================================================
+-- Add Column
+-- ===================================================
+alter table pule add column created_at timestamp;
+
+-- ===================================================
 -- COUNT
 -- ===================================================
 
