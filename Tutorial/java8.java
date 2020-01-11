@@ -1,7 +1,97 @@
-
 //=======================================================================
 //JAVA 8
 //=======================================================================
+//DIFERENCA ENTRE DATAS
+//=======================================================================
+
+package data;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class MyData {
+
+	public static void main(String[] args) {
+
+		Calendar c = Calendar.getInstance();
+		String myData = getData(c);
+
+		String hour_ = String.valueOf(c.get(Calendar.HOUR_OF_DAY));
+		String min_ = String.valueOf(c.get(Calendar.MINUTE));
+		String seg_ = String.valueOf(c.get(Calendar.SECOND));
+
+		String hour = "02";
+		String min = "30";
+		String seg = "00";
+
+		String dateStart = myData + " " + hour_ + ":" + min_ + ":" + seg;
+		String dateStop = myData + " " + hour + ":" + min + ":" + seg;
+		
+		long diff = converte(dateStart, dateStop, 1);
+
+	}
+
+	public static String getData(Calendar c) {
+		Date data = c.getTime();
+		DateFormat formataData = DateFormat.getDateInstance();
+		return formataData.format(data);
+	}
+
+	public static long converte(String dateStart, String dateStop, int ops) {
+
+		long myDiff = 0;
+		
+		SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
+
+		Date d1 = null;
+		Date d2 = null;
+
+		try {
+			
+			d1 = format.parse(dateStart);
+			d2 = format.parse(dateStop);
+
+			// in milliseconds
+			long diff = d2.getTime() - d1.getTime();
+
+			long diffSeconds = diff / 1000 % 60;
+			long diffMinutes = diff / (60 * 1000) % 60;
+			long diffHours = diff / (60 * 60 * 1000) % 24;
+			long diffDays = diff / (24 * 60 * 60 * 1000);
+
+			switch (ops) {
+				case 0:
+					myDiff= diffDays;
+					System.out.print(diffDays + " days, ");
+					break;
+	
+				case 1:
+					myDiff = diffHours;
+					System.out.print(diffHours + " hours, ");
+					break;
+				case 2:
+					myDiff = diffMinutes;
+					System.out.print(diffMinutes + " minutes, ");
+					break;
+	
+				case 3:
+					myDiff = diffSeconds;
+					System.out.print(diffSeconds + " seconds.");
+					break;
+			}
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+
+		return myDiff;
+	}
+}
+
+
 //=======================================================================
 //ENUM
 //=======================================================================
