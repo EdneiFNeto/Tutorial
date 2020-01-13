@@ -1,6 +1,22 @@
 //=======================================================================
 //JAVA 8
 //=======================================================================
+//ADD HOra
+//=======================================================================
+
+
+public static void addHour(int hour) {
+		GregorianCalendar gc = new GregorianCalendar();
+	    gc.setTime(new Date());
+	    
+	    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+	    System.out.println(sdf.format(gc.getTime()));
+	    
+	    gc.add(Calendar.HOUR_OF_DAY, hour);
+	    System.out.println(sdf.format(gc.getTime()));
+	}
+
+//=======================================================================
 //DIFERENCA ENTRE DATAS
 //=======================================================================
 
