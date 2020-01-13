@@ -5,18 +5,25 @@
 //=======================================================================
 
 
-public static void addHour(int hour) {
-		GregorianCalendar gc = new GregorianCalendar();
-	    gc.setTime(new Date());
-	    
-	    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-	    System.out.println(sdf.format(gc.getTime()));
-	    
-	    gc.add(Calendar.HOUR_OF_DAY, hour);
-	    System.out.println(sdf.format(gc.getTime()));
-	}
+public static void main(String[] args) {
+        Calendar c = getHour(2, 11, 36, 0);
+    }
 
-//=======================================================================
+    private static Calendar getHour(int interval, int h, int m, int s) {
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, h);
+        c.set(Calendar.MINUTE, m);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        System.out.println("My calendar: " +sdf.format(c.getTime()));
+
+        //add hour
+        c.add(Calendar.HOUR_OF_DAY, interval);
+        System.out.println("Hour next: " +sdf.format(c.getTime()));
+
+        return c;
+    }//=======================================================================
 //DIFERENCA ENTRE DATAS
 //=======================================================================
 
