@@ -1,4 +1,118 @@
 //====================================================================
+//                 RETROFIT
+//====================================================================	
+
+package com.watssap.retrofit;
+import com.watssap.retrofit.service.UsuarioService;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+public class RetrofitInicializador {
+    private final Retrofit retrofit;
+    public RetrofitInicializador() {
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.0.15/api/public/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    public UsuarioService getUser(){
+        return retrofit.create(UsuarioService.class);
+    }
+}
+
+
+//====================================================================
+//INTERFACE 
+//====================================================================
+package com.watssap.retrofit.service;
+import com.watssap.model.Usuario;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+
+public interface UsuarioService {
+
+    @POST("usuario/usuario")
+    Call<List<Usuario>> insert(@Body Usuario usuario);
+}
+
+
+//====================================================================
+//                 USANDO RETREFIT
+//====================================================================	 
+UsuarioService user = new RetrofitInicializador().getUser();
+                Usuario usuario = new Usuario();
+                Call<List<Usuario>> call = user.insert(usuario);
+                call.enqueue(new Callback<List<Usuario>>() {
+                    @Override
+                    public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
+                        Log.e(TAG, "onReponse "+response.body());
+                    }
+                    @Override
+                    public void onFailure(Call<List<Usuario>> call, Throwable t) {
+                        Log.e(TAG, "onFailure  "+t.getMessage());
+                    }
+                });
+
+//====================================================================
+//                 GRADLE CONFIGURACOES
+//====================================================================	 
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.watssap"
+        minSdkVersion 15
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    //Add
+    packagingOptions {
+        exclude "META-INF/LICENSE"
+    }
+
+    //Add
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.core:core-ktx:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+
+    //Gojson
+    implementation'com.squareup.retrofit2:converter-gson:2.5.0'
+}
+
+
+//====================================================================
 //                 FORMATAR EDTTEXT MONETARIO
 //====================================================================	 
 
