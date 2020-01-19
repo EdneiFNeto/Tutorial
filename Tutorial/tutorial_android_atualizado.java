@@ -1,14 +1,20 @@
 //====================================================================
 //                 RETROFIT
 //====================================================================	
-
 package com.watssap.retrofit;
 import com.watssap.retrofit.service.UsuarioService;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 public class RetrofitInicializador {
     private final Retrofit retrofit;
     public RetrofitInicializador() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+        client.addInterceptor(interceptor);
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://192.168.0.15/api/public/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -109,6 +115,9 @@ dependencies {
 
     //Gojson
     implementation'com.squareup.retrofit2:converter-gson:2.5.0'
+	   
+	    //log interceptor
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.1"
 }
 
 
