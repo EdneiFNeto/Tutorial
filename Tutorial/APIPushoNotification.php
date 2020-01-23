@@ -172,3 +172,32 @@ $token = '<85afc3d0 be937cf2 f3637824 01886f4b ccbeef74 a524873c 315e3b82 aeebd4
 PushNotifications::iOS($token, "Teste de Menssagem");
 
 ?>
+
+
+private function useCurl($id, $message)
+	{
+	        // Open connection
+            $url = 'https://fcm.googleapis.com/fcm/send';
+
+            $fields = array (
+                'registration_ids' => array ($id),
+                'data' => $message
+            );
+            $fields = json_encode ( $fields );
+        
+            $headers = array (
+                    'Authorization: key=' . 'AIzaSyBbjrR4JglUziFCt3WYkLDUgN3Aalgjw4g',
+                    'Content-Type: application/json'
+            );
+        
+            $ch = curl_init ();
+            curl_setopt ( $ch, CURLOPT_URL, $url );
+            curl_setopt ( $ch, CURLOPT_POST, true );
+            curl_setopt ( $ch, CURLOPT_HTTPHEADER, $headers );
+            curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
+        
+            $result = curl_exec ( $ch );
+            echo $result;
+            curl_close ( $ch );
+	}
