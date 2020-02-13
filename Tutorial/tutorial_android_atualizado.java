@@ -1,4 +1,116 @@
 //====================================================================
+//                 CHANGE BACKGOUR ITEM RECYCLKE VIEW
+//====================================================================	
+package com.example.urbano_park_fiscal.adapter;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.example.urbano_park_fiscal.R;
+import com.example.urbano_park_fiscal.model.Tarifas;
+import com.example.urbano_park_fiscal.util.PrefendecsUtil;
+import com.example.urbano_park_fiscal.util.StringsUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TarifasAdapter extends RecyclerView.Adapter<TarifasAdapter.MyHolder> {
+
+    private static final String TAG = "TarifasAdapterLog";
+    private final Context context;
+    private final List<Tarifas> tarifas;
+    private final Tarifas tarifa;
+    private final SharedPreferences sharedPreferences;
+    private List<LinearLayout> layouts = new ArrayList<>();
+
+    public TarifasAdapter(Context context, List<Tarifas> tarifas) {
+        this.context = context;
+        this.tarifas = tarifas;
+        tarifa = new Tarifas();
+        sharedPreferences = PrefendecsUtil.getInstance(context);
+    }
+
+    @NonNull
+    @Override
+    public MyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        return new MyHolder(LayoutInflater.from(context).inflate(R.layout.tarifas_layout, viewGroup, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
+        holder.add(tarifas.get(position));
+        layouts.add(holder.layout);
+        if (layouts.size() > 0) {
+            layouts.get(0).setBackgroundResource(R.color.colorPrimary);
+            if (tarifas.size() > 0) {
+                tarifa.setDescricao(tarifas.get(0).getDescricao());
+                tarifa.setDescricao(tarifas.get(0).getId());
+                tarifa.setDescricao(tarifas.get(0).getValor());
+            }
+        }
+
+        holder.layout.setOnClickListener(listener(tarifas.get(position), tarifas, position));
+
+    }
+
+    private View.OnClickListener listener(final Tarifas tarifa, final List<Tarifas> tarifas, final int position) {
+        return new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < layouts.size(); i++) {
+                    if (position == i) {
+                        Log.e(TAG, "Position "+tarifa.getValor());
+                        layouts.get(i).setBackgroundResource(R.color.colorPrimary);
+                        //select o tipo de veculo
+                    } else {
+                        layouts.get(i).setBackgroundResource(android.R.color.transparent);
+                    }
+                }
+
+                tarifa.setId(tarifas.get(position).getId());
+                tarifa.setDescricao(tarifas.get(position).getDescricao());
+                tarifa.setValor(tarifas.get(position).getValor());
+                PrefendecsUtil.saveTrifaPreferences(sharedPreferences, tarifa);
+            }
+        };
+    }
+
+    @Override
+    public int getItemCount() {
+        return tarifas.size();
+    }
+
+    public class MyHolder extends RecyclerView.ViewHolder{
+
+        private TextView descr ;
+        private TextView valor ;
+        private LinearLayout layout;
+
+        public MyHolder(@NonNull View itemView) {
+            super(itemView);
+            descr = itemView.findViewById(R.id.text_tarifa_descricao);
+            layout = itemView.findViewById(R.id.layout_tarifas_adapter);
+            valor = itemView.findViewById(R.id.text_tarifa_valor);
+        }
+
+        public void add(Tarifas tarifas) {
+            descr.setText(tarifas.getDescricao());
+            valor.setText(StringsUtil.formater(tarifas.getValor()));
+        }
+    }
+}
+
+
+//====================================================================
 //                 RETROFIT
 //====================================================================	
 package com.watssap.retrofit;
