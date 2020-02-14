@@ -1,3 +1,11 @@
+
+
+//====================================================================
+//                 MEDIA PLAYER
+//====================================================================	
+var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, R.raw.sound_file_1)
+mediaPlayer?.start() // no need to call prepare(); create() does that for you
+
 //====================================================================
 //                 CHANGE BACKGOUR ITEM RECYCLKE VIEW
 //====================================================================	
