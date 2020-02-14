@@ -1,4 +1,13 @@
 
+//====================================================================
+//                 REGEX
+//====================================================================
+fun removeAll(str:String):String?{
+   return str.replace("[^A-Z0-9]".toRegex(), "").toRegex().toString()
+}
+fun aceptNumber(str:String):String?{
+	return str.replace("[^0-9]".toRegex(), "")
+}
 
 //====================================================================
 //                 MEDIA PLAYER
