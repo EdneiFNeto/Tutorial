@@ -1,5 +1,16 @@
 
 //====================================================================
+//                 LOCK onBackPressed
+//====================================================================
+
+ override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            dialogDiscartGame()
+        }
+        return true
+    }
+
+//====================================================================
 //                 REGEX
 //====================================================================
 fun removeAll(str:String):String?{
