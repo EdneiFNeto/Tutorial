@@ -137,6 +137,41 @@ public class TarifasAdapter extends RecyclerView.Adapter<TarifasAdapter.MyHolder
     }
 }
 
+<?xml version="1.0" encoding="utf-8"?>
+//====================================================================
+//                 XML
+//====================================================================	
+
+<LinearLayout android:id="@+id/layout_tarifas_adapter"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ic_bg_layout"
+    android:orientation="vertical"
+    android:padding="12dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <TextView
+            android:id="@+id/text_tarifa_descricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="30 Min"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/text_tarifa_valor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="R$ 2,00"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+
 
 //====================================================================
 //                 RETROFIT
