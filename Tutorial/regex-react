@@ -1,0 +1,55 @@
+                <InputComponent
+                    maxLength={19}
+                    value={numeroCartao}
+                    keyboardType='numeric'
+                    onChangeText={(text) => {
+                        var v = text.replace(/\D/g, '');
+                        v = v.replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
+                        text = v;
+                        setNumeroCartao(text)
+                    }}
+                    style={styles.input}
+                    placeholder="Número do Cartao" />
+
+                <InputComponent
+                    onChangeText={(text) => setNomeTitular(text)}
+                    style={styles.input}
+                    placeholder="Titular do Cartão" />
+
+                <InputComponent
+                    maxLength={14}
+                    value={cpf}
+                    keyboardType='numeric'
+                    onChangeText={(text) => {
+                        var v = text.replace(/\D/g, '');
+                        v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+                        text = v;
+                        setCPF(text)
+                    }}
+                    style={styles.input}
+                    placeholder="CPF Titular" />
+
+                <View style={{ flexDirection: 'row' }}>
+
+                    <InputComponent
+                        maxLength={3}
+                        keyboardType='numeric'
+                        onChangeText={(text) => {
+
+                            setVCC(text)
+                        }}
+                        style={styles.input2}
+                        placeholder="CVV" />
+
+                    <InputComponent
+                        value={dataVencimento}
+                        maxLength={5}
+                        keyboardType='numeric'
+                        onChangeText={(text) => {
+                            var v = text.replace(/\D/g, '');
+                            v = v.replace(/\B(?=(\d{2})+(?!\d))/g, '/');
+                            text = v;
+                            setDataVencimento(text)
+                        }}
+                        style={styles.input2}
+                        placeholder="Data Vencimento" />
