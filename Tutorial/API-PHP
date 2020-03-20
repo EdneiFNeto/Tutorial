@@ -1,5 +1,58 @@
 <?php
+<?php
+//receber
+ public function notificar_ganhador(int $id)
+    {
+        $usuario = Usuario::where('id', '=', $id)
+            ->select('token', 'nome', 'id')
+            ->where('token', '<>', '')
+            ->get()
+            ->first();
+        $token = $usuario['token'];
+        $nome = $usuario['nome'];
+        $message =  'Parabéns ' . $nome . ' seu número foi sorteado !';
+        UtilController::useCurl($token, $message);
 
+        // return response()->json($message, 201);
+
+    }
+//enviar 
+namespace App\Http\Controllers;
+//notificacao lumen
+class UtilController extends Controller
+{
+    public static function useCurl($id, $message)
+    {
+        // Open connection
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $fields = array(
+            'registration_ids' => array($id),
+            'data' => array('message' => $message)
+        );
+
+        $fields = json_encode($fields);
+
+        $headers = array(
+            'Authorization: key=' . 'AIzaSyDUhqm31DsQyzMzq2VRUkO0v6GZg_eKZYs',
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+
+        $result = curl_exec($ch);
+        echo $result;
+        curl_close($ch);
+    }
+}
+
+
+?>
 //===========================================================================================================
 //======================================== JWT =============================================================
 
