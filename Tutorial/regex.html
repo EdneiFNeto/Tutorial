@@ -4,6 +4,16 @@
 	<title>REGEX</title>
 </head>
 <body>
+	
+
+        fun formartterCPF(str: String): CharSequence? {
+            return str.replace("(\\d{3})(\\d{3})(\\d{3})(\\d{2})".toRegex(), "\$1.\$2.\$3-\$4")
+        }
+
+        fun formartterPhone(str: String): CharSequence? {
+            return str.replace("(\\d{3})(\\d{4})(\\d{4})".toRegex(), "(\$1) \$2-\$3")
+        }
+
 
 <script>		
 //======================================================================
