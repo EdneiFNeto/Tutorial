@@ -1,4 +1,175 @@
+//====================================================================
+//                Select impresora
+//====================================================================  
 
+package com.example.arca.fragments
+
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import androidx.recyclerview.widget.RecyclerView
+import com.example.arca.R
+import com.example.arca.adapter.MyBluetoothAdapter
+import com.example.arca.fragments.base.BaseFrament
+import com.example.arca.model.MyDevices
+import com.example.arca.util.LoggerUtisl
+
+class SettingKotlinFraments : BaseFrament(R.layout.layout_fragment_settings) {
+
+    private var adapter: MyBluetoothAdapter? = null
+    private var devices = ArrayList<MyDevices>()
+    private val TAG: String = "SettingKotlinFramentsLog"
+    private val REQUEST_ENABLE_BT: Int = 101
+    private var bluetoothAdapter: BluetoothAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        initBluetooth()
+
+    }
+
+    private fun initBluetooth() {
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (bluetoothAdapter == null) {
+            // Device doesn't support Bluetooth
+            LoggerUtisl(TAG).error("Not supported bluetooth")
+        }
+
+        if (bluetoothAdapter?.isEnabled == false) {
+            LoggerUtisl(TAG).error("Bluetooth inactive")
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+        }
+    }
+
+    private fun listdevices() {
+
+        val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
+        if (pairedDevices?.isNotEmpty() == true) {
+            pairedDevices?.forEach { device ->
+                val name = device.name
+                val address = device.address // MAC address
+                LoggerUtisl(TAG).error("devices $name\nAddress $address")
+                addDeveices(device)
+            }
+        } else {
+
+            LoggerUtisl(TAG).error("Not exists device")
+            // Register for broadcasts when a device is discovered.
+            val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+            context?.registerReceiver(receiver, filter)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            if (receiver != null)
+                context?.unregisterReceiver(receiver)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        }
+    }
+
+    private val receiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            val action: String = intent.action.toString()
+            LoggerUtisl(TAG).error("Execute action $action")
+
+            when (action) {
+                BluetoothDevice.ACTION_FOUND -> {
+                    // Discovery has found a device. Get the BluetoothDevice
+                    // object and its info from the Intent.
+                    val device: BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val deviceName = device.name
+                    val address = device.address //MAC address
+                    var type = device.type
+                    
+                    if (deviceName != null) {
+                        addDeveices(device)
+                    }
+
+                }
+                else -> LoggerUtisl(TAG).error("Not exits action")
+            }
+        }
+    }
+
+    private fun addDeveices(device: BluetoothDevice) {
+        devices.add(MyDevices(null, device.name, device.address, device.type))
+        adapter?.notifyDataSetChanged()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_ENABLE_BT -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    LoggerUtisl(TAG).error("Activity.RESULT_OK")
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        var recyclerView = view.findViewById<RecyclerView>(R.id.recycle_view_bluetooth)
+        view.findViewById<ImageButton>(R.id.button_sync_bluetooth).setOnClickListener {
+            bluetoothAdapter?.startDiscovery()
+        }
+
+        devices = ArrayList()
+        adapter = MyBluetoothAdapter(context, devices)
+        recyclerView.adapter = adapter
+        listdevices()
+        bluetoothAdapter?.startDiscovery()
+    }
+}
+
+//====================================================================
+//                 mascara edtText
+//====================================================================
+edt_number_cartao.addTextChangedListener(listenerChangedEditText(text_view_number_card, 4, " "))
+private fun listenerChangedEditText(myValor: TextView, unidade: Int, char: String): TextWatcher? {
+        return object : TextWatcher {
+            var current = ""
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString().isNotEmpty()) {
+                    when {
+                        unidade > 2 -> myValor.text = "${StringUtils.addCharecterIn(s.toString(), unidade, char)}"
+                        unidade == 2 -> {
+
+                            edt_date_explire.removeTextChangedListener(this)
+                            var cleanString = s.toString().replace("[^0-9]".toRegex(), "")
+                            var formatted = StringUtils.addCharecterIn(cleanString, 4, "/")
+                            edt_date_explire.setText(formatted)
+                            edt_date_explire.setSelection(formatted.length)
+                            myValor.text = "${edt_date_explire.text}"
+                            edt_date_explire.addTextChangedListener(this)
+
+                        }
+                        else -> myValor.text = "$s"
+                    }
+                }
+            }
+        }
+    }
 //====================================================================
 //                 LOCK onBackPressed
 //====================================================================
