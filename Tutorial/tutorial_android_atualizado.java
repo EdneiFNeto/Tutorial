@@ -1,4 +1,39 @@
 //====================================================================
+//                Retrofit passando token header
+//====================================================================  
+class RetrofitInicializador {
+
+    private val retrofit: Retrofit
+
+    constructor(contex: Context, token:String?) {
+
+        val MYURL = MyIp.getLocalIpAddress()
+        var interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        var client = OkHttpClient.Builder()
+        client.addInterceptor(interceptor)
+		
+	//add token header
+        client.addInterceptor{chain ->
+            val newRequest = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+            chain.proceed(newRequest)
+        }
+
+        retrofit = Retrofit.Builder()
+                .baseUrl(MYURL)
+                .client(client.build())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+    }
+
+    fun getExtracao(): ExtracaoService {
+        return retrofit.create(ExtracaoService::class.java)
+    }
+}
+//====================================================================
 //                Select impresora
 //====================================================================  
 
