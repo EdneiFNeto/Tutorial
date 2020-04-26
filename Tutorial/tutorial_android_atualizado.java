@@ -1,3 +1,429 @@
+
+package com.example.arca.test;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.arca.asyncTasks.base.BaseSelect;
+import com.example.arca.model.CarrinhoRifa;
+import com.example.arca.model.ConfigLocalidade;
+import com.example.arca.model.Modalidade;
+import com.example.arca.retrofit.model.Pule;
+import com.example.arca.ui.CarrinhoRifaActivity;
+import com.example.arca.util.LoggerUtisl;
+import com.example.arca.util.PreferencesUtils;
+import com.example.arca.util.ResourcesUtil;
+import com.example.arca.util.StringUtils;
+import com.example.arca.util.ToastUtils;
+import com.mazenrashed.printooth.Printooth;
+import com.example.arca.R;
+import com.mazenrashed.printooth.data.PrintingImagesHelper;
+import com.mazenrashed.printooth.data.converter.ArabicConverter;
+import com.mazenrashed.printooth.data.printable.ImagePrintable;
+import com.mazenrashed.printooth.data.printable.Printable;
+import com.mazenrashed.printooth.data.printable.RawPrintable;
+import com.mazenrashed.printooth.data.printable.TextPrintable;
+import com.mazenrashed.printooth.data.printer.DefaultPrinter;
+import com.mazenrashed.printooth.ui.ScanningActivity;
+import com.mazenrashed.printooth.utilities.Printing;
+import com.mazenrashed.printooth.utilities.PrintingCallback;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TestePrinterActivity extends AppCompatActivity {
+
+    private int PERMISSION_BLUETOOTH = 101;
+    private Printing printing = null;
+    private PrintingCallback printingCallback = null;
+    private Bitmap bitmapImage;
+    private String TAG = "PrinterTermicaActivity";
+    private String address = null;
+    private String nameDevice = null;
+    private boolean isPrinter = false;
+    private long codigoOperador = 0L;
+    private String numberSerial = null;
+    private String localidadeDescr = null;
+    private String dataPule = null;
+    private ArrayList<CarrinhoRifa> carrinhosRifas = new ArrayList<>();
+    private ArrayList<Pule> pules = new ArrayList<>();
+    private String sumTotal = null;
+    private String cliente = null;
+    private String tel = null;
+    private String cpf = null;
+    private int SIZE_PAPEL = 60;
+    private String puleId = null;
+    private String operador_codigo = null;
+    private SharedPreferences sharedPreferences = null;
+    private ArrayList<ConfigLocalidade> configLocalidades = new ArrayList<>();
+    private Bitmap logo = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_teste_printer);
+        Printooth.INSTANCE.init(this);
+        new SelectConfigLocalidade(this, configLocalidades, ResourcesUtil.Companion.getString(this, R.string.class_configs_localidade)).execute();
+    }
+
+    class SelectConfigLocalidade extends BaseSelect<ConfigLocalidade> {
+
+        public SelectConfigLocalidade(Context context, ArrayList<ConfigLocalidade> arrayList, String nameModel) {
+            super(context, arrayList, nameModel);
+        }
+
+        @Override
+        protected void onPostExecute(List<? extends ConfigLocalidade> result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                if (!result.isEmpty()) {
+                    for (ConfigLocalidade c : result) {
+                        configLocalidades.add(c);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Printooth.INSTANCE.hasPairedPrinter()) {
+            printing = Printooth.INSTANCE.printer();
+        }
+
+        sharedPreferences = PreferencesUtils.Companion.preferences(this);
+        numberSerial = sharedPreferences.getString(PreferencesUtils.Companion.getNUMBER_SERIAL(), null);
+        address = sharedPreferences.getString(PreferencesUtils.Companion.getPRINTER_ADDRESS(), null);
+        nameDevice = sharedPreferences.getString(PreferencesUtils.Companion.getPRINTER_NAME(), null);
+        TextView text_termal_printer = findViewById(R.id.text_termal_printer_teste);
+        if (address != null)
+            text_termal_printer.setText("Name: " + nameDevice + "\nAddredd " + address);
+        else
+            text_termal_printer.setText("Nenhuma impressora selecionada!");
+
+        if (getIntent().hasExtra(ResourcesUtil.Companion.getString(this, R.string.extra_login))
+                && getIntent().hasExtra(ResourcesUtil.Companion.getString(this, R.string.extra_tel))
+                && getIntent().hasExtra(ResourcesUtil.Companion.getString(this, R.string.extra_carrinhos_rifas))
+                && getIntent().hasExtra(ResourcesUtil.Companion.getString(this, R.string.extra_pules))
+                && getIntent().hasExtra(ResourcesUtil.Companion.getString(this, R.string.extra_cpf))
+                && getIntent().hasExtra("byteArray")) {
+
+            carrinhosRifas = (ArrayList<CarrinhoRifa>) getIntent().getSerializableExtra(ResourcesUtil.Companion.getString(this, R.string.extra_carrinhos_rifas));
+            pules = (ArrayList<Pule>) getIntent().getSerializableExtra(ResourcesUtil.Companion.getString(this, R.string.extra_pules));
+            sumTotal = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_sum_bets));
+            dataPule = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_data_pule));
+            cliente = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_login));
+            cpf = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_cpf));
+            tel = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_tel));
+            operador_codigo = getIntent().getStringExtra(ResourcesUtil.Companion.getString(this, R.string.extra_operador_codigo));
+
+            initViews();
+            initListeners();
+
+            if (carrinhosRifas != null && !pules.isEmpty() && !carrinhosRifas.isEmpty()) {
+                bitmapImage = BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("byteArray"), 0, getIntent().getByteArrayExtra("byteArray").length);
+
+                ImageView imgQr = findViewById(R.id.image_view_qr_printer_termincal_teste);
+                imgQr.setImageBitmap(bitmapImage);
+                isPrinter = !isPrinter;
+                if (isPrinter) {
+                    btnPrint();
+                }
+            } else {
+                new LoggerUtisl(TAG).error("Empty carrinhos NULL");
+            }
+
+        } else {
+            new LoggerUtisl(TAG).error("Not exists extras");
+        }
+    }
+
+    private void initViews() {
+        if (Printooth.INSTANCE.getPairedPrinter() != null) {
+            Button button = findViewById(R.id.button_teste_printer);
+            button.setText((Printooth.INSTANCE.hasPairedPrinter()) ? ("Un-pair " + Printooth.INSTANCE.getPairedPrinter().getName()) : "Pair with printer");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnPrint();
+                }
+            });
+        } else {
+            ToastUtils.Companion.message(this, "Not paread");
+            Button btn_parear = findViewById(R.id.button_parear);
+            btn_parear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnPiarUnpair();
+                }
+            });
+        }
+    }
+
+    public void btnPrint() {
+        if (!Printooth.INSTANCE.hasPairedPrinter())
+            startActivityForResult(new Intent(this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+        else printSomePrintable();
+    }
+
+    private void printSomePrintable() {
+        Log.d("xxx", "printSomePrintable ");
+        if (printing != null) {
+            printing.print(getSomePrintables());
+            finish();
+        } else
+            Log.e("xxx", "printing null");
+
+    }
+
+    public void btnPrintImages() {
+        if (!Printooth.INSTANCE.hasPairedPrinter())
+            startActivityForResult(new Intent(this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+        else printSomeImages();
+    }
+
+    private void printSomeImages() {
+        if (printing != null) {
+            Log.d("xxx", "printSomeImages ");
+            ArrayList<Printable> al = new ArrayList<>();
+            Resources resources = getResources();
+            Bitmap image = BitmapFactory.decodeResource(resources, R.drawable.logo_mega_rifa_80x80);
+            al.add(new ImagePrintable.Builder(image).build());
+            //al.add(new ImagePrintable.Builder(R.drawable.image1,  resources ).build());
+            //al.add(ImagePrintable.Builder(R.drawable.image2, resources).build());
+            //al.add(ImagePrintable.Builder(R.drawable.image3, resources).build());
+            printing.print(al);
+        }
+    }
+
+    public void btnPiarUnpair() {
+        if (Printooth.INSTANCE.hasPairedPrinter()) {
+            Printooth.INSTANCE.removeCurrentPrinter();
+        } else {
+            startActivityForResult(new Intent(this, ScanningActivity.class), ScanningActivity.SCANNING_FOR_PRINTER);
+            initViews();
+        }
+    }
+
+    private void initListeners() {
+        if (printing != null && printingCallback == null) {
+            Log.d("xxx", "initListeners ");
+            printingCallback = new PrintingCallback() {
+
+                public void connectingWithPrinter() {
+                    Toast.makeText(getApplicationContext(), "Connecting with printer", Toast.LENGTH_SHORT).show();
+                    Log.d("xxx", "Connecting");
+                }
+
+                public void printingOrderSentSuccessfully() {
+                    Toast.makeText(getApplicationContext(), "printingOrderSentSuccessfully", Toast.LENGTH_SHORT).show();
+                    Log.d("xxx", "printingOrderSentSuccessfully");
+                }
+
+                public void connectionFailed(@NonNull String error) {
+                    Toast.makeText(getApplicationContext(), "connectionFailed :" + error, Toast.LENGTH_SHORT).show();
+                    Log.d("xxx", "connectionFailed : " + error);
+                }
+
+                public void onError(@NonNull String error) {
+                    Toast.makeText(getApplicationContext(), "onError :" + error, Toast.LENGTH_SHORT).show();
+                    Log.d("xxx", "onError : " + error);
+                }
+
+                public void onMessage(@NonNull String message) {
+                    Toast.makeText(getApplicationContext(), "onMessage :" + message, Toast.LENGTH_SHORT).show();
+                    Log.d("xxx", "onMessage : " + message);
+                }
+            };
+
+            Printooth.INSTANCE.printer().setPrintingCallback(printingCallback);
+        }
+    }
+
+    private ArrayList<Printable> getSomePrintables() {
+
+        ArrayList<Printable> al = new ArrayList<>();
+        al.add(new RawPrintable.Builder(new byte[]{27, 100, 4}).build()); // feed lines example in raw mode
+
+        //header
+//        al.add(getImage(R.drawable.logo_mega_rifa_80x80));
+        al.add(getTextPrinteable("Mega Rifa", DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+        al.add(getTextPrinteable("Via do cliente", DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        if (!pules.isEmpty()) {
+            for (Pule p : pules) {
+                al.add(getTextPrinteable("POULE " + (p.getPule_id() - 1), DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                        DefaultPrinter.Companion.getFONT_SIZE_LARGE()));
+            }
+        }
+
+        al.add(getTextPrinteable("Realização: " + StringUtils.Companion.removeAcentos(dataPule), DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("Terminal: " + numberSerial, DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("Ponto: " + operador_codigo,DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("---------------------------------------------",DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable(cliente != null ? "Cliente: "+cliente : "Cliente: Não existe cliente",DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable(tel != null ? "Tel: " + tel : "Tel: Não existe telefone",DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("---------------------------------------------", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("Rifas", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        Modalidade modality = Modalidade.Companion.helperPreferences(sharedPreferences);
+
+        //max unity from used
+        long unity = modality.getUnidade();
+
+        for (CarrinhoRifa c : carrinhosRifas) {
+
+            al.add(getTextPrinteable(c.getNome() != null ? StringUtils.Companion.removeAcentos(c.getNome()) : "Não existe rifa", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                    DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+            al.add(getTextPrinteable(c.getValor_rifa()!=null ? "(R$" + StringUtils.Companion.numberFormater(c.getValor_rifa())+")":
+                            "(R$0,00)", DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+            al.add(getTextPrinteable(c.getDataSorteio() != null ? "(Sorteio: " + StringUtils.Companion.removeAcentos(c.getDataSorteio())+")" : "(Sorteio: Não existe)",
+                    DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+            al.add(getTextPrinteable(c.getConcurso() != null ? "(Concurso: " + StringUtils.Companion.removeAcentos(c.getConcurso())+")" : "(Concurso: Não existe)",
+                    DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+            if (c.getNumeros() != null) {
+                String numeros = StringUtils.Companion.removeChar(c.getNumeros());
+                String strAposta = StringUtils.Companion.regex(numeros, (int) unity);
+                al.add(getTextPrinteable("N°: " + strAposta, DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                        DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+            }
+        }
+
+        al.add(getTextPrinteable("---------------------------------------------", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable(sumTotal != null ? "Total " + carrinhosRifas.size() + " jogos ":"Total 0 jogos", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("", DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable(sumTotal != null ? "R$" + StringUtils.Companion.numberFormater(sumTotal) : "Total: R$ 0.00" , DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("---------------------------------------------",
+                DefaultPrinter.Companion.getALIGNMENT_CENTER(), DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("Vale o impresso e confira o seu jogo.",  DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("A sorte é sua e a garantia é nossa.",  DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("---------------------------------------------",  DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("Reclamações 5 dias",DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        al.add(getTextPrinteable("---------------------------------------------",  DefaultPrinter.Companion.getALIGNMENT_CENTER(),
+                DefaultPrinter.Companion.getFONT_SIZE_NORMAL()));
+
+        //QRCode
+        al.add(createQRCode(bitmapImage));
+
+        return al;
+    }
+
+    private void image() {
+        if (printing != null) {
+            Log.d("xxx", "printSomeImages ");
+            ArrayList<Printable> al = new ArrayList<>();
+            Resources resources = getResources();
+            //getContext();
+            Bitmap image = BitmapFactory.decodeResource(resources,R.drawable.logo_200w);
+            al.add(new ImagePrintable.Builder(image).build());
+            //al.add(new ImagePrintable.Builder(R.drawable.image1,  resources ).build());
+            //al.add(ImagePrintable.Builder(R.drawable.image2, resources).build());
+            //al.add(ImagePrintable.Builder(R.drawable.image3, resources).build());
+            printing.print(al);
+        }
+    }
+
+    private Printable space(int size) {
+        return new TextPrintable.Builder()
+                .setNewLinesAfter(size)
+                .build();
+    }
+
+
+    private Printable createQRCode(Bitmap bitmapImage) {
+        return new ImagePrintable.Builder(bitmapImage)
+                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                .build();
+    }
+
+    private Printable getImage(int icon) {
+        Resources resources = getResources();
+        Bitmap image = BitmapFactory.decodeResource(resources, icon);
+        Bitmap bitmap = Bitmap.createScaledBitmap(image, 150, 150, true);
+        return new ImagePrintable.Builder(bitmap)
+                .setAlignment(DefaultPrinter.Companion.getALIGNMENT_CENTER())
+                .build();
+    }
+
+    private Printable getTextPrinteable(String text, byte align, byte font) {
+        return new TextPrintable.Builder()
+                .setText(text)
+                .setFontSize(font)
+//                .setEmphasizedMode(DefaultPrinter.Companion.getEMPHASIZED_MODE_BOLD())
+//                .setCharacterCode(DefaultPrinter.Companion.getCHARCODE_PC1252())
+                .setAlignment(align)
+                .setNewLinesAfter(1)
+                .build();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("xxx", "onActivityResult " + requestCode);
+        if (requestCode == ScanningActivity.SCANNING_FOR_PRINTER && resultCode == Activity.RESULT_OK) {
+            initListeners();
+            printSomePrintable();
+        }
+        initViews();
+    }
+
+}
+
 //====================================================================
 //                Retrofit passando token header
 //====================================================================  
