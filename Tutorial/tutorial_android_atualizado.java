@@ -8,6 +8,7 @@
 //METODO INCREMENT
 button_shared.setOnClickListener {
 	count++
+	//update menu
 	invalidateOptionsMenu()
 }
 override fun onCreateOptionsMenu(menu: Menu): Boolean {
