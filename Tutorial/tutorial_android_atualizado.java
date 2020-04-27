@@ -1,4 +1,84 @@
 
+
+//==============================================================================
+// UPDATE onCreateOptionsMenu
+//CREATE BADIGE IN MENU
+//==============================================================================
+
+//METODO INCREMENT
+button_shared.setOnClickListener {
+	count++
+	invalidateOptionsMenu()
+}
+override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_list, menu)
+        var menuItem = menu.findItem(R.id.item_menu_refresh)
+        menuItem.setActionView(R.layout.layout_badige)
+        badige = menuItem.actionView.findViewById(R.id.text_badige)
+        if(count>0)
+            badige?.visibility = View.VISIBLE
+
+        badige?.text = "$count"
+        Log.e("MenuLog", "Count $count")
+
+        return true
+}
+//MENU
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/item_menu_refresh"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_refresh"
+        android:actionLayout="@layout/layout_badige"
+        android:title="@string/title_menu" >
+    </item>
+</menu>
+
+//LAYOUT
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/ic_action_shopping_cart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+
+        android:visibility="gone"
+        android:id="@+id/text_badige"
+        android:layout_width="20dp"
+        android:layout_height="22dp"
+        android:background="@drawable/border_radius"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text="1"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.03"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+//==============================================================================
+// FIM
+//==============================================================================
 package com.example.arca.test;
 
 import android.app.Activity;
