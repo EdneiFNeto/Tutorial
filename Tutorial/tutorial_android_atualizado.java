@@ -1,4 +1,10 @@
-
+//==============================================================================
+// CONVERTE BITMAP IN BYTE ARRAY
+//==============================================================================
+var bitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_android)
+            var byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            var byte = byteArrayOutputStream.toByteArray()
 
 //==============================================================================
 // UPDATE onCreateOptionsMenu
