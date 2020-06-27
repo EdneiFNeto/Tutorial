@@ -1,3 +1,13 @@
+    public static String getIMEI(Context context) {
+
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+        }
+
+        return tm.getDeviceId();
+    }
+
 //==============================================================================
 // CONVERTE BITMAP IN BYTE ARRAY
 //==============================================================================
