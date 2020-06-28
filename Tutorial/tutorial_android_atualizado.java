@@ -1,4 +1,24 @@
-    public static String getIMEI(Context context) {
+   
+//==============================================================================
+// runOnUiThread
+//==============================================================================
+private void showErrorPrinter(Context context) {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+
+                ToastUtils.Companion.message(BaseActivityPrinter.this,
+                        ResourcesUtil.Companion.getString(context, R.string.faild_printer));
+
+                IntentUtils.Companion.startActivityUsingExtras(context, PageViewInitActivity.class, null, null, null,
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+        });
+    }
+    
+//==============================================================================
+// GET IMEI
+//==============================================================================
+public static String getIMEI(Context context) {
 
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
