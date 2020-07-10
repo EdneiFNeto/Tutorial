@@ -1,4 +1,87 @@
-   
+  
+//==============================================================================
+// callback volley
+//==============================================================================
+package br.com.urbanopark.model
+
+import android.content.Context
+import android.util.Log
+import br.com.urbanopark.model.interfaces.VolleyCallback
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import org.json.JSONArray
+import org.json.JSONException
+
+/*********************************************************
+ *@Add params:
+ *@context: Application context
+ *@params: MutableMap<String, String>
+ *@Method.POST or GET
+ *@url: String
+ *Example:
+ *val params: MutableMap<String, String> = HashMap()
+ *params["key"] = "Value"
+ *************************************************************/
+
+class VolleyUtil(val context: Context){
+
+    val TAG = "VolleyLog"
+
+    fun post(params: MutableMap<String, String>, url:String, callback: VolleyCallback){
+
+        val stringRequest: StringRequest = object : StringRequest(
+            Method.POST, url,
+            Response.Listener { response ->
+                try {
+                    Log.e(TAG, "response $response")
+                    var jsonArray = JSONArray(response)
+                    callback.onSuccess(jsonArray)
+
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    callback.onError(e)
+                }
+            },
+            Response.ErrorListener { error ->
+                error.printStackTrace()
+            }) {
+            override fun getParams(): Map<String, String> {
+                return params
+            }
+        }
+
+        val requestQueue = Volley.newRequestQueue(context)
+        requestQueue.add(stringRequest)
+    }
+}
+
+//INTERFACE
+interface VolleyCallback {
+    fun onSuccess(jsonArray: JSONArray)
+    fun onError(e: JSONException)
+}
+
+//==============================================================================
+//USANDO
+//==============================================================================
+val params: MutableMap<String, String> = HashMap()
+params["estacionamento_id"] = "${listUserGestao[0].estacionamento_id}"
+
+var volleyUtil = VolleyUtil(context)
+volleyUtil.post(params, URLS.GET_TIPO_VEICULOS, object : VolleyCallback {
+	override fun onError(e: JSONException) {
+		Log.e(TAG, "Error ${e.printStackTrace()}")
+	}
+
+        override fun onSuccess(jsonArray: JSONArray) {
+        	Log.e(TAG, "JSONArray callback $jsonArray")
+                saveTipoDeVeiculo(jsonArray)
+	}
+})
+
+
+
 //==============================================================================
 // runOnUiThread
 //==============================================================================
