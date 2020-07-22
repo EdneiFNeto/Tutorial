@@ -1,3 +1,53 @@
+
+
+==========================================================================
+//SEND NOTIFICATION PHP
+==========================================================================
+<?php
+    //Recuperar token ao iniciar aplicativo
+
+    $token = 'cIxdPI16VMQ:APA91bHNrE8rJXITDXwP0lI51c-somT9c6fSgKubiYurPj8gan2s_2sSU7GadbCD5nmMO9fmyJFt1d6JbiHsEqvbldXmm1HOA2CR5o4j9LYXyesAIrQ39I33KRs6az8Hk89GvwbdoUwz';
+    sendFCM($token, "Ola");
+
+    function sendFCM($token, $message)
+    {
+        // Open connection
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $fields = array(
+            'to' => $token,   
+            'data' => array(
+                'message' => $message,
+                'action'=>'nova menssagem'
+                )
+        );
+
+        $fields = json_encode($fields);
+
+        //en configurações cloud message add chave servidor
+        $headers = array(
+            'Authorization: key=' . 'AAAAVktSnoE:APA91bGe6fibSlwy--DBJZ7VxQhB-3WC2VPpkVAD1jxxkrhWz42_s3_CJmdMnlOA1kdAa_0s4T-zQpngzgU2qOJtq2z_aOKolWtXcjfwJUmgnUa-nIgWoqRtAGB0kCSzFM9vqgWv0SRx',
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();  
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false );
+
+        $result = curl_exec($ch);
+        echo $result;
+        curl_close($ch);
+    }
+==========================================================================
+//FIM
+==========================================================================
+
+
+
 <?php
 <?php
 //receber
