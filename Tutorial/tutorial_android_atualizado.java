@@ -1,4 +1,31 @@
-  
+//==============================================================================
+// Send message Whatsap
+//==============================================================================
+    override fun onResume() {
+        super.onResume()
+        button_whatsap.setOnClickListener{
+            val number = "+5502199612-8608"
+            openWhatsApp(number, "Olá tudo bem, preciso de ajuda.")
+        }
+    }
+
+    private fun openWhatsApp(numero: String, mensaje: String ){
+
+        try{
+            var packageManager = packageManager
+            var i = Intent(Intent.ACTION_VIEW);
+            var url = "https://api.whatsapp.com/send?phone="+ numero +"&text=" + URLEncoder.encode(mensaje, "UTF-8");
+            i.setPackage("com.whatsapp")
+            i.data = Uri.parse(url)
+            if (i.resolveActivity(packageManager) != null) {
+                startActivity(i)
+            }
+        } catch(e: Exception ) {
+            Log.e("ERROR WHATSAPP",e.toString())
+        }
+
+    }
+
 //==============================================================================
 // callback volley
 //==============================================================================
