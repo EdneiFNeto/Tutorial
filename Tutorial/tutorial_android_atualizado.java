@@ -1,3 +1,64 @@
+
+//==============================================================================
+// Shared QRcode
+//==============================================================================    
+
+@Override
+    protected void onResume() {
+        super.onResume();
+
+        ImageView imageView = findViewById(R.id.image_qr);
+
+        try {
+
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            BitMatrix bitMatrix = multiFormatWriter.encode("1234", BarcodeFormat.QR_CODE, 240, 240);
+            BarcodeEncoder encoder = new BarcodeEncoder();
+            bitmap = encoder.createBitmap(bitMatrix);
+            imageView.setImageBitmap(bitmap);
+            
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+//                SaveAndShare.save(QRCodeActivity.this, bitmap, "12323s", "RSC-1244", "Cod.Ticket:12443");
+
+                createFile(bitmap);
+            }
+        });
+    }
+
+    private void createFile(Bitmap bitmap) {
+
+        try {
+
+            File root = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+            File cachePath = new File(root + "/" + System.currentTimeMillis() + "_image.jpg");
+
+            if (cachePath.createNewFile()) {
+
+                FileOutputStream ostream = new FileOutputStream(cachePath);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                ostream.close();
+                SharedUtil.Companion.shared(QRCodeActivity.this, cachePath);
+
+            } else {
+                Log.e(TAG, "Error create file");
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 //==============================================================================
 // Send message Whatsap
 //==============================================================================
