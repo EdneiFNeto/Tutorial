@@ -40,21 +40,37 @@ BEGIN
 END $$
 DELIMITER ;
 
+#INSERT LOOP
 DELIMITER $$
-CREATE PROCEDURE LOOP_INSERT( In _nome varchar(255))
+CREATE PROCEDURE LOOP_INSERT(IN _nome VARCHAR(255), IN _size INT)
 BEGIN
-	
 	DECLARE x INT;
+    DECLARE user VARCHAR(255);
     SET x = 1;
-	loop_label: LOOP
-
-		IF  x > 1000 THEN 
+    loop_label: LOOP
+		IF  x > _size THEN 
 			LEAVE  loop_label;
 		END  IF;
-	
         SET x = x + 1;
+        
         CALL INSERT_ALUNO( _nome );
     END LOOP;
+    
+    #SELECT
+    CALL GET_ALL();
+
+END $$
+DELIMITER ;
+
+#GET_USER
+DELIMITER $$
+CREATE PROCEDURE GET_USER(IN _x INT, IN _param_1 INT, IN _param_2 INT, IN _nome VARCHAR(255), IN n VARCHAR(255) )
+BEGIN
+	IF _x > param_1 && _x < _param_2 THEN
+		BEGIN
+			SET _nome = _n;
+        END;
+    END IF;
 END $$
 DELIMITER ;
 
@@ -65,9 +81,12 @@ DROP procedure  IF EXISTS LOOP_INSERT;
 DROP procedure  IF EXISTS GET_ALL;
 DROP procedure  IF EXISTS INSERT_ALUNO;
 DROP procedure  IF EXISTS UPDATE_ALUNO;
+DROP procedure  IF EXISTS GET_USER;
 
 #EXECUTE PROCEDURE
 CALL DELETE_ALUNO(2);
-CALL LOOP_INSERT('ed');
+CALL LOOP_INSERT('Maria', 10);
 CALL GET_ALL();
 CALL DELETE_ALUNO_ALL(0);
+
+
