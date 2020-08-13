@@ -34,6 +34,24 @@ super.onPause()
 }
 
 //==============================================================================
+// USAR 
+//============================================================================== 
+fun success(context: Context, action:String){
+	val intent = Intent(action) //context.resources.getString(R.string.action_seve_receita)
+            intent.putExtra(context.resources.getString(R.string.send_success), true)
+            send(context,intent)
+        }
+
+        fun failed(context: Context, action: String) {
+            val intent = Intent(action)
+            intent.putExtra(context.resources.getString(R.string.send_failed), true)
+            send(context, intent)
+        }
+
+        private fun send(context: Context, intent: Intent) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+        }
+//==============================================================================
 // Shared QRcode
 //==============================================================================    
 
