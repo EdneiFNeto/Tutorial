@@ -1,4 +1,38 @@
 
+
+//==============================================================================
+// LOCAL BROADCAST
+//==============================================================================    
+var mReceivar = Receiver()
+var broadcastManager = LocalBroadcastManager.getInstance(this)
+broadcastManager.registerReceiver(mReceivar, IntentFilter(resources.getString(R.string.action_seve_receita)))
+	
+inner class Receiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+            Log.e(TAG, "Data ${intent?.data}")
+            Log.e(TAG, "Extras ${intent?.extras}")
+
+            when(intent?.action){
+                context?.resources?.getString(R.string.action_seve_receita)->{
+                    if(intent?.hasExtra(context?.resources?.getString(R.string.send_success)) == true){
+                        startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    }
+                    if(intent?.hasExtra(context?.resources?.getString(R.string.send_failed)) == true){
+                        Log.e(TAG, "Receiver failed ")
+                    }
+                }
+            }
+        }
+}
+
+override fun onPause() {
+super.onPause()
+  if(mReceivar!=null){
+   broadcastManager.unregisterReceiver(mReceivar)
+  }
+}
+
 //==============================================================================
 // Shared QRcode
 //==============================================================================    
