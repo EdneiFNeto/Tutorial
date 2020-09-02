@@ -1,5 +1,27 @@
+//==============================================================================
+// MASK MONEY
+//==============================================================================   
+edt_text_altura.addTextChangedListener(object: TextWatcher{
+            var current:String? = null
+            override fun afterTextChanged(p0: Editable?) {
+            }
 
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
 
+            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                //Nesse bloco ele monta a maskara para money
+                edt_text_altura?.removeTextChangedListener(this)
+                var replace = s.toString().replace("\\D".toRegex(), "")
+                var toDouble = replace.toDouble()
+                var formatted = NumberFormat.getCurrencyInstance().format((toDouble/ 100))
+                current = formatted
+                edt_text_altura?.setText(formatted)
+                edt_text_altura?.setSelection(formatted.length)
+                edt_text_altura?.addTextChangedListener(this)
+
+            }
+        })
 //==============================================================================
 // LOCAL BROADCAST
 //==============================================================================    
