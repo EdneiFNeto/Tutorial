@@ -1,6 +1,27 @@
 //==============================================================================
+// DESENHAR LINHA
+//==============================================================================   
+
+fun desenhaLinha(nome: String, valor: String, caracter: String): String? {
+
+    var linha = StringBuilder()
+    val diferenca = nome.length + valor.length
+
+    if (tamPapel < diferenca)
+        throw Exception("Valor incorreto")
+
+    var total = tamPapel - diferenca
+
+    for (i in 0 until total)
+        linha.append("$caracter")
+
+    return "$nome${linha}$valor"
+}
+
+//==============================================================================
 // MASK MONEY
 //==============================================================================   
+
 edt_text_altura.addTextChangedListener(object: TextWatcher{
             var current:String? = null
             override fun afterTextChanged(p0: Editable?) {
